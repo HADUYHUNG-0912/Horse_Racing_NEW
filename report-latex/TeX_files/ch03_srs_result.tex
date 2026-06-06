@@ -1,3 +1,12 @@
+\chapter{Result \& Ranking}
+
+This chapter details the design and workflow of the Result \& Ranking module, which handles recording race results, managing violations, validating entries, and publishing up-to-date leaderboards.
+
+\section{Overview}
+The Result \& Ranking module is a critical component of the Horse Racing Tournament Management System. It coordinates the lifecycle of race outcomes from the moment a race concludes to when the final standings are updated and displayed to spectators. The module employs a dual-step approval mechanism involving both the \textbf{Race Referee} and the \textbf{Admin} to ensure accuracy and prevent tampering or erroneous entries.
+
+\section{Business Workflow (Activity Diagram)}
+The overall business logic and workflow of the Result \& Ranking module are illustrated in Figure~\ref{fig:activity}.
 
 \begin{figure}[H]
 	\centering
@@ -6,8 +15,108 @@
 	\label{fig:activity}
 \end{figure}
 
+The workflow involves three primary participants: the \textbf{Race Referee}, the \textbf{System}, and the \textbf{Admin}.
+
+\begin{itemize}
+	\item \textbf{Result Entry:} The process begins when the \textbf{Race Referee} selects a finished race and clicks \textit{Enter race result}. The referee enters the finish times and positions of the horses.
+	\item \textbf{Violation Entry:} If any rules were broken, the referee proceeds to \textit{Add violations if needed} (e.g., horse lane infractions or jockey misconduct).
+	\item \textbf{Draft Submission:} Once submitted, the \textbf{System} executes \textit{Save result as PENDING}. At this point, the results are in a draft status and not yet visible on public boards.
+	\item \textbf{Verification:} The \textbf{Admin} is notified and performs a \textit{Review result} check.
+	\item \textbf{Decision Node (Result Valid?):}
+	\begin{itemize}
+		\item \textbf{If Valid (Yes):} The Admin performs \textit{Confirm result}. The \textbf{System} executes \textit{Update result status} (marking it as confirmed). The System then triggers \textit{Calculate ranking}, followed by \textit{Update leaderboard}, and finally executes \textit{Publish ranking} to make the results public.
+		\item \textbf{If Invalid (No):} The Admin performs \textit{Reject result}. The \textbf{System} triggers \textit{Update result status} (marking it as rejected). The System then opens the result for editing, transitioning control back to the Referee's \textit{Edit race result} step. The Referee corrects the errors and resubmits the result, cycling back to the \textit{Save result as PENDING} state.
+	\end{itemize}
+\end{itemize}
+
+\section{System Interaction (Sequence Diagram)}
+The sequence of messages and interactions between the frontend, backend, database, and background services is depicted in Figure~\ref{fig:sequence}.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{images/Result_Ranking_Sequence_Final.drawio.png}
 	\caption{Sequence Diagram - Result \& Ranking}
+	\label{fig:sequence}
 \end{figure}
+
+The sequence flow consists of the following interactions:
+\begin{enumerate}
+	\item \textbf{Race Result Submission Flow:}
+	\begin{enumerate}
+		\item The \textbf{Referee} requests the assigned race list and status: \textit{Get assigned race \& status} from the \textbf{System}.
+		\item The \textbf{System} queries the \textbf{Database} and retrieves the race details, returning it to the Referee (\textit{Show result} / \textit{Return race data}).
+		\item The Referee inputs the details and issues a \textit{Submit race result} request to the \textbf{System}.
+		\item The System executes \textit{Validate permission \& status} to ensure the referee is authorized.
+		\item The System sends a \textit{Save result (PENDING)} request to the \textbf{Database}, which returns a confirmation message (\textit{Saved}).
+		\item The System sends a notification to the \textbf{Admin}: \textit{Notify pending review}.
+	\end{enumerate}
+	
+	\item \textbf{Admin Review \& Approval Flow (Alternative Paths):}
+	\begin{enumerate}
+		\item The \textbf{Admin} requests to review the results: \textit{Review pending result} via the System interface.
+		\item \textbf{Path A: Valid Result [Confirm]}
+		\begin{itemize}
+			\item The Admin issues a \textit{Confirm result} request.
+			\item The System requests the Database: \textit{Update status = CONFIRMED}.
+			\item The Database confirms with an \textit{Updated} response.
+			\item The System invokes the \textbf{Ranking Service} with \textit{Calculate \& update leaderboard}.
+			\item The Ranking Service updates the Database table containing the cumulative standings.
+			\item The Database confirms (\textit{Updated}) and the System sends a success notification to the Admin: \textit{Notify confirmation success}.
+		\end{itemize}
+		\item \textbf{Path B: Invalid Result [Reject]}
+		\begin{itemize}
+			\item The Admin issues a \textit{Reject result} request.
+			\item The System requests the Database: \textit{Update status = REJECTED}.
+			\item The Database responds with an \textit{Updated} confirmation.
+			\item The System notifies the Referee to modify the entry: \textit{Request correction}.
+		\end{itemize}
+	\end{enumerate}
+	
+	\item \textbf{Spectator View Flow:}
+	\begin{enumerate}
+		\item A public \textbf{User (Spectator)} visits the platform and requests to see the standings: \textit{View ranking}.
+		\item The System sends a query: \textit{Get leaderboard data} to the \textbf{Database}.
+		\item The Database responds with \textit{Return leaderboard}.
+		\item The System displays the leaderboard: \textit{Display leaderboard} on the user's browser.
+	\end{enumerate}
+\end{enumerate}
+
+\section{User Interface Navigation (Screen Flow)}
+The user interface routing and navigation flow for different system roles are shown in Figure~\ref{fig:screenflow}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/Result_Ranking_ScreenFlow.drawio.png}
+	\caption{ScreenFlow - Result \& Ranking}
+	\label{fig:screenflow}
+\end{figure}
+
+The UI navigation outlines how users transit between different pages:
+\begin{itemize}
+	\item \textbf{Referee Interface Flow:}
+	\begin{itemize}
+		\item The referee starts at the \textbf{Login} screen.
+		\item After successful login, they enter the \textbf{Referee Dashboard}.
+		\item The referee clicks on the assigned races list to view the \textbf{Assigned Race List} page.
+		\item Selecting a specific race opens the \textbf{Race Detail} screen.
+		\item Clicking the edit action takes them to the \textbf{Input Result Form} page.
+		\item After entering the results, they are directed to the \textbf{Result Preview} page to inspect the values.
+		\item Once they submit, they are redirected to the \textbf{Pending Result} screen.
+	\end{itemize}
+	
+	\item \textbf{Admin Interface Flow:}
+	\begin{itemize}
+		\item The admin navigates to the \textbf{Admin Review} screen to inspect the submitted results.
+		\item The admin can choose either:
+		\begin{itemize}
+			\item \textbf{Confirm:} This redirects the Admin to the updated \textbf{Ranking board} and \textbf{Leaderboard} to verify.
+			\item \textbf{Reject:} This triggers a status change that sends the result back to the \textbf{Edit Result} screen. The Referee can then perform a \textbf{Resubmit} which routes back to the \textbf{Pending Result} view for another review.
+		\end{itemize}
+	\end{itemize}
+	
+	\item \textbf{Spectator Interface Flow:}
+	\begin{itemize}
+		\item Public users can access the public-facing pages starting at the \textbf{Ranking board}.
+		\item Clicking on a tournament details link routes them to the comprehensive \textbf{Leaderboard} view to inspect the final standings of teams and individual participants.
+	\end{itemize}
+\end{itemize}
