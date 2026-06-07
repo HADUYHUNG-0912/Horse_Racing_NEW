@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.security import pwd_context
 from app.models.database_models import User, Role
 from app.schemas.auth import TokenPayload
 
