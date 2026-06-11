@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [predictions, setPredictions] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [referees, setReferees] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
 
   // Form states
   const [newTournament, setNewTournament] = useState({ name: "", description: "", start_date: "", end_date: "", location: "" });
@@ -73,16 +74,20 @@ export default function Dashboard() {
       if (roleName === "ADMIN") {
         const listJockeys = await api.get("/jockeys");
         setJockeys(listJockeys);
-        // Find Referees
-        const listReferees = [];
-        const uList = await api.get("/jockeys"); // Dummy pull or filter from other listings. Let's make a mock or list of users with referee profile
-        // Actually, we can get list of all users and filter by role, or fetch from a helper
-        // Since we seeded referee1 & referee2, we can fetch all races to find referee profiles, or list jockeys which lists profiles
-        // For local simplicity, we can fetch referees using a custom list
         setReferees([
           { id: 1, name: "John Referee" },
           { id: 2, name: "David Referee" }
         ]);
+        // Fetch registrations for all tournaments
+        const allTours = await api.get("/tournaments");
+        const allRegs = [];
+        for (const t of allTours) {
+          try {
+            const regs = await api.get(`/tournaments/${t.id}/registrations`);
+            regs.forEach(r => allRegs.push({ ...r, tournament_id: t.id }));
+          } catch (e) { /* ignore per-tournament errors */ }
+        }
+        setRegistrations(allRegs);
       }
 
       if (roleName === "OWNER") {
@@ -537,36 +542,35 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tournaments.map(t => {
-                      const [regs, setRegs] = useState([]);
-                      useEffect(() => {
-                        api.get(`/tournaments/${t.id}/registrations`).then(setRegs).catch(console.error);
-                      }, [tournaments]);
-
-                      if (regs.length === 0) return null;
-                      return regs.map(r => (
-                        <tr key={r.id}>
-                          <td>{t.name}</td>
-                          <td style={{ fontWeight: "700" }}>{r.horse_name}</td>
-                          <td>{r.jockey_name}</td>
-                          <td>
-                            <span className={`badge ${r.status === "APPROVED" ? "badge-approved" : r.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
-                              {r.status}
-                            </span>
-                          </td>
-                          <td>
-                            {r.status === "PENDING" && (
-                              <div style={{ display: "flex", gap: "8px" }}>
-                                <button className="btn-primary" style={{ padding: "4px 8px", fontSize: "12px" }}
-                                  onClick={() => approveRegistration(r.id, "APPROVED")}>Duyệt</button>
-                                <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)" }}
-                                  onClick={() => approveRegistration(r.id, "REJECTED")}>Từ chối</button>
-                              </div>
-                            )}
-                          </td>
-                        </tr>
-                      ));
-                    })}
+                    {registrations.length === 0 ? (
+                      <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa có đăng ký nào</td></tr>
+                    ) : (
+                      registrations.map(r => {
+                        const t = tournaments.find(t => t.id === r.tournament_id);
+                        return (
+                          <tr key={r.id}>
+                            <td>{t ? t.name : `Giải #${r.tournament_id}`}</td>
+                            <td style={{ fontWeight: "700" }}>{r.horse_name}</td>
+                            <td>{r.jockey_name}</td>
+                            <td>
+                              <span className={`badge ${r.status === "APPROVED" ? "badge-approved" : r.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
+                                {r.status}
+                              </span>
+                            </td>
+                            <td>
+                              {r.status === "PENDING" && (
+                                <div style={{ display: "flex", gap: "8px" }}>
+                                  <button className="btn-primary" style={{ padding: "4px 8px", fontSize: "12px" }}
+                                    onClick={() => approveRegistration(r.id, "APPROVED")}>Duyệt</button>
+                                  <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)" }}
+                                    onClick={() => approveRegistration(r.id, "REJECTED")}>Từ chối</button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -642,15 +646,11 @@ export default function Dashboard() {
                     <select className="input-field" required
                       value={newParticipant.registration_id} onChange={(e) => setNewParticipant({ ...newParticipant, registration_id: e.target.value })}>
                       <option value="">-- Chọn đăng ký --</option>
-                      {tournaments.map(t => {
-                        const [regs, setRegs] = useState([]);
-                        useEffect(() => {
-                          api.get(`/tournaments/${t.id}/registrations`).then(setRegs).catch(console.error);
-                        }, [tournaments]);
-
-                        return regs.filter(r => r.status === "APPROVED").map(r => (
-                          <option key={r.id} value={r.id}>{t.name}: {r.horse_name} (Jockey: {r.jockey_name})</option>
-                        ));
+                      {registrations.filter(r => r.status === "APPROVED").map(r => {
+                        const t = tournaments.find(t => t.id === r.tournament_id);
+                        return (
+                          <option key={r.id} value={r.id}>{t ? t.name : `Giải #${r.tournament_id}`}: {r.horse_name} (Jockey: {r.jockey_name})</option>
+                        );
                       })}
                     </select>
                   </div>
