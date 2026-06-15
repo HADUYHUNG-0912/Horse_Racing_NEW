@@ -1,0 +1,214 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { api } from "../../api";
+import { styles } from "./styles";
+
+export default function RefereePanel({ user, activeTab, showMsg }) {
+  const [races, setRaces] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [selectedRace, setSelectedRace] = useState(null);
+  const [resultsForm, setResultsForm] = useState([]); // Array of { race_participant_id, rank, points, notes }
+  const [violationForm, setViolationForm] = useState({ race_participant_id: "", description: "", penalty: "Warning", fine_amount: "0" });
+
+  const loadData = async () => {
+    try {
+      const allRaces = await api.get("/races");
+      setRaces(allRaces);
+    } catch (err) {
+      showMsg(err.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const initResultsForm = (race) => {
+    setSelectedRace(race);
+    setResultsForm(
+      race.participants.map((p) => ({
+        race_participant_id: p.id,
+        horse_name: p.horse_name,
+        rank: 1,
+        points: 10,
+        notes: ""
+      }))
+    );
+  };
+
+  const submitResults = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post(`/results/${selectedRace.id}/results`, resultsForm.map(({ race_participant_id, rank, points, notes }) => ({
+        race_participant_id,
+        rank: parseInt(rank),
+        points: parseInt(points),
+        notes
+      })));
+      showMsg("Ghi nhận kết quả cuộc đua thành công!");
+      setSelectedRace(null);
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  const submitViolation = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post(`/results/${selectedRace.id}/violations`, {
+        race_participant_id: parseInt(violationForm.race_participant_id),
+        description: violationForm.description,
+        penalty: violationForm.penalty,
+        fine_amount: parseFloat(violationForm.fine_amount)
+      });
+      showMsg("Báo cáo vi phạm thành công!");
+      setViolationForm({ race_participant_id: "", description: "", penalty: "Warning", fine_amount: "0" });
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  if (loading) {
+    return <div style={styles.loading}>Đang tải dữ liệu Referee...</div>;
+  }
+
+  return (
+    <>
+      {/* TAB: Trận đua phân công (Referee) */}
+      {activeTab === "assigned-races" && (
+        <div style={styles.tabContent}>
+          <h2>🏁 Các trận đua được phân công giám sát</h2>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Tên trận đua</th>
+                  <th>Thời gian</th>
+                  <th>Khoảng cách</th>
+                  <th>Điều kiện chạy</th>
+                  <th>Số ngựa tham gia</th>
+                  <th>Trạng thái</th>
+                  <th>Ghi kết quả</th>
+                </tr>
+              </thead>
+              <tbody>
+                {races.filter(rc => rc.referee_name === user.full_name).length === 0 ? (
+                  <tr><td colSpan="7" style={{ textAlign: "center", color: "#64748b" }}>Chưa được phân công trận đua nào</td></tr>
+                ) : (
+                  races.filter(rc => rc.referee_name === user.full_name).map(rc => (
+                    <tr key={rc.id}>
+                      <td style={{ fontWeight: "700" }}>{rc.name}</td>
+                      <td>{rc.race_time}</td>
+                      <td>{rc.distance}m</td>
+                      <td>{rc.track_condition}</td>
+                      <td>{rc.participants.length}</td>
+                      <td>
+                        <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : rc.status === "PENDING" ? "badge-pending" : "badge-results-entered" ? "badge-info" : "badge-pending"}`}>
+                          {rc.status}
+                        </span>
+                      </td>
+                      <td>
+                        <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px" }}
+                          onClick={() => initResultsForm(rc)}>
+                          {rc.status === "COMPLETED" ? "Sửa kết quả" : "Nhập kết quả"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Enter Results Overlay Panel */}
+          {selectedRace && (
+            <div style={{ marginTop: "32px", borderTop: "1px solid var(--card-border)", paddingTop: "24px" }}>
+              <h2>📝 Nhập kết quả & Vi phạm cho trận: <span style={{ color: "var(--primary)" }}>{selectedRace.name}</span></h2>
+              
+              <div style={styles.splitLayout}>
+                {/* Results Form */}
+                <form onSubmit={submitResults} style={{ ...styles.formPanel, flex: 1.5 }} className="glass">
+                  <h3>Xếp hạng và Điểm số</h3>
+                  {resultsForm.map((field, idx) => (
+                    <div key={field.race_participant_id} style={{
+                      display: "flex", gap: "16px", background: "rgba(255,255,255,0.01)",
+                      padding: "12px", borderRadius: "8px", marginBottom: "8px", alignItems: "center"
+                    }}>
+                      <span style={{ fontWeight: "700", width: "120px" }}>🐎 {field.horse_name}</span>
+                      <div className="form-group" style={{ margin: 0, flex: 1 }}>
+                        <label>Hạng về đích</label>
+                        <input type="number" min="1" className="input-field" required
+                          value={field.rank} onChange={(e) => {
+                            const copy = [...resultsForm];
+                            copy[idx].rank = e.target.value;
+                            setResultsForm(copy);
+                          }} />
+                      </div>
+                      <div className="form-group" style={{ margin: 0, flex: 1 }}>
+                        <label>Điểm cộng</label>
+                        <input type="number" className="input-field" required
+                          value={field.points} onChange={(e) => {
+                            const copy = [...resultsForm];
+                            copy[idx].points = e.target.value;
+                            setResultsForm(copy);
+                          }} />
+                      </div>
+                      <div className="form-group" style={{ margin: 0, flex: 1.5 }}>
+                        <label>Ghi chú</label>
+                        <input type="text" className="input-field" placeholder="Ghi chú đua..."
+                          value={field.notes} onChange={(e) => {
+                            const copy = [...resultsForm];
+                            copy[idx].notes = e.target.value;
+                            setResultsForm(copy);
+                          }} />
+                      </div>
+                    </div>
+                  ))}
+                  <div style={{ display: "flex", gap: "12px" }}>
+                    <button type="submit" className="btn-primary">Lưu kết quả cuộc đua</button>
+                    <button type="button" onClick={() => setSelectedRace(null)} className="btn-secondary">Hủy</button>
+                  </div>
+                </form>
+
+                {/* Violations Form */}
+                <form onSubmit={submitViolation} style={{ ...styles.formPanel, flex: 1 }} className="glass">
+                  <h3>Báo Cáo Vi Phạm</h3>
+                  <div className="form-group">
+                    <label>Chọn ngựa vi phạm</label>
+                    <select className="input-field" required
+                      value={violationForm.race_participant_id} onChange={(e) => setViolationForm({ ...violationForm, race_participant_id: e.target.value })}>
+                      <option value="">-- Chọn ngựa đua --</option>
+                      {selectedRace.participants.map(p => <option key={p.id} value={p.id}>{p.horse_name}</option>)}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Mô tả vi phạm</label>
+                    <textarea className="input-field" placeholder="Ví dụ: Chạy lấn làn của ngựa khác..." required
+                      value={violationForm.description} onChange={(e) => setViolationForm({ ...violationForm, description: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label>Hình thức phạt</label>
+                    <input type="text" className="input-field" placeholder="Warning, Ban 1 match..." required
+                      value={violationForm.penalty} onChange={(e) => setViolationForm({ ...violationForm, penalty: e.target.value })} />
+                  </div>
+                  <div className="form-group">
+                    <label>Số tiền phạt ($)</label>
+                    <input type="number" className="input-field" required
+                      value={violationForm.fine_amount} onChange={(e) => setViolationForm({ ...violationForm, fine_amount: e.target.value })} />
+                  </div>
+                  <button type="submit" className="btn-primary" style={{ backgroundColor: "var(--danger)" }}>Báo cáo vi phạm</button>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
