@@ -102,6 +102,9 @@ export default function Dashboard() {
               <button style={activeTab === "races" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("races")}>
                 🏁 Lập lịch Trận đua
               </button>
+              <button style={activeTab === "users" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("users")}>
+                  Quản lý Người dùng
+              </button>              
             </>
           )}
 
@@ -159,12 +162,18 @@ export default function Dashboard() {
 
         {/* Work Area */}
         <main style={styles.workspace} className="glass">
+          {activeTab === "leaderboard" ? (
+            <Leaderboard/>  
+          ) : (
+            <>
+          
           {user.role_name === "ADMIN" && <AdminPanel user={user} activeTab={activeTab} showMsg={showMsg} />}
           {user.role_name === "OWNER" && <OwnerPanel user={user} activeTab={activeTab} showMsg={showMsg} />}
           {user.role_name === "JOCKEY" && <JockeyPanel user={user} activeTab={activeTab} showMsg={showMsg} />}
           {user.role_name === "REFEREE" && <RefereePanel user={user} activeTab={activeTab} showMsg={showMsg} />}
           {user.role_name === "SPECTATOR" && <SpectatorPanel user={user} activeTab={activeTab} showMsg={showMsg} />}
-          {activeTab === "leaderboard" && <Leaderboard />}
+            </>
+          )}
         </main>
       </div>
     </div>
