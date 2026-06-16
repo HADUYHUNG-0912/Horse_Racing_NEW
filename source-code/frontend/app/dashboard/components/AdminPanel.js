@@ -53,6 +53,13 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const tournamentMap = useMemo(() => {
+  return new Map(tournaments.map(t => [t.id, t]));
+}, [tournaments]);
+
+const approvedRegistrations = useMemo(() => {
+  return registrations.filter(r => r.status === "APPROVED");
+}, [registrations]);
 
   const createTournament = async (e) => {
     e.preventDefault();
@@ -72,7 +79,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
     try {
       await api.post(`/tournaments/${newRound.tournament_id}/rounds`, {
         name: newRound.name,
-        sequence: parseInt(newRound.sequence)
+        sequence: parseInt(newRound.sequence, 10)
       });
       showMsg("Tạo vòng đấu thành công!");
       setNewRound({ tournament_id: "", name: "", sequence: "1" });
@@ -90,8 +97,8 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
         name: newRace.name,
         race_time: newRace.race_time,
         track_condition: newRace.track_condition,
-        distance: parseInt(newRace.distance),
-        referee_id: newRace.referee_id ? parseInt(newRace.referee_id) : null
+        distance: parseInt(newRace.distance, 10),
+        referee_id: newRace.referee_id ? parseInt(newRace.referee_id, 10) : null
       });
       showMsg("Tạo trận đua thành công!");
       setNewRace({ round_id: "", name: "", race_time: "", track_condition: "Good", distance: "1200", referee_id: "" });
@@ -106,8 +113,8 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
     if (!newParticipant.race_id || !newParticipant.registration_id) return showMsg("Vui lòng nhập đầy đủ thông tin", "error");
     try {
       await api.post(`/races/${newParticipant.race_id}/participants`, {
-        registration_id: parseInt(newParticipant.registration_id),
-        lane_number: parseInt(newParticipant.lane_number)
+        registration_id: parseInt(newParticipant.registration_id, 10),
+        lane_number: parseInt(newParticipant.lane_number, 10)
       });
       showMsg("Thêm ngựa vào đường đua thành công!");
       setNewParticipant({ race_id: "", registration_id: "", lane_number: "" });
@@ -218,7 +225,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
                       <td style={{ fontWeight: "700" }}>{t.name}</td>
                       <td>{t.location}</td>
                       <td>{t.start_date} đến {t.end_date}</td>
-                      <td>{t.rounds.length} vòng</td>
+                      <td>{t.rounds ? t.rounds.length : 0} vòng</td>                      
                       <td><span className="badge badge-info">{t.status}</span></td>
                     </tr>
                   ))}
@@ -249,7 +256,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
                   <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa có đăng ký nào</td></tr>
                 ) : (
                   registrations.map(r => {
-                    const t = tournaments.find(t => t.id === r.tournament_id);
+                    const t = tournamentMap.get(r.tournament_id);
                     return (
                       <tr key={r.id}>
                         <td>{t ? t.name : `Giải #${r.tournament_id}`}</td>
@@ -293,12 +300,13 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
                 <select className="input-field" required
                   value={newRace.round_id} onChange={(e) => setNewRace({ ...newRace, round_id: e.target.value })}>
                   <option value="">-- Chọn vòng đấu --</option>
-                  {tournaments.map(t => (
-                    t.rounds.map(r => (
+                  {tournaments.map(t => 
+                    (t.rounds || []).map(r => (
                       <option key={r.id} value={r.id}>{t.name} - {r.name}</option>
                     ))
-                  ))}
-                </select>
+                  )}
+              </select>
+                   
               </div>
               <div className="form-group">
                 <label>Tên trận đua</label>
@@ -349,8 +357,8 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
                 <select className="input-field" required
                   value={newParticipant.registration_id} onChange={(e) => setNewParticipant({ ...newParticipant, registration_id: e.target.value })}>
                   <option value="">-- Chọn đăng ký --</option>
-                  {registrations.filter(r => r.status === "APPROVED").map(r => {
-                    const t = tournaments.find(t => t.id === r.tournament_id);
+                  {approvedRegistrations.map(r => {
+                    const t = tournamentMap.get(r.tournament_id);
                     return (
                       <option key={r.id} value={r.id}>{t ? t.name : `Giải #${r.tournament_id}`}: {r.horse_name} (Jockey: {r.jockey_name})</option>
                     );
