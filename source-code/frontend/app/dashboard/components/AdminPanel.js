@@ -474,7 +474,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 <td style={{ fontWeight: "700" }}>{u.username}</td>
                 <td>{u.email}</td>
                 <td>
-                  <span className="badge badge-info">{u.role}</span>
+                  <span className="badge badge-info">{u.role_name}</span>
                 </td>
                 <td>
                   {u.is_active ? (
