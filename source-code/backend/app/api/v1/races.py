@@ -1,4 +1,5 @@
 from typing import List
+from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -113,7 +114,38 @@ def schedule_race(
     if race_update.name is not None:
         race.name = race_update.name
     if race_update.race_time is not None:
-        race.race_time = race_update.race_time
+        new_time = race_update.race_time
+        # Check conflicts for all participants
+        for p in race.participants:
+            horse_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(
+                Registration.horse_id == p.registration.horse_id,
+                Race.id != id,
+                Race.race_time >= new_time - timedelta(hours=2),
+                Race.race_time <= new_time + timedelta(hours=2)
+            ).first()
+            if horse_conflicts:
+                raise HTTPException(status_code=400, detail=f"Horse {p.registration.horse.name} has a conflicting schedule")
+                
+            jockey_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(
+                Registration.jockey_id == p.registration.jockey_id,
+                Race.id != id,
+                Race.race_time >= new_time - timedelta(hours=2),
+                Race.race_time <= new_time + timedelta(hours=2)
+            ).first()
+            if jockey_conflicts:
+                raise HTTPException(status_code=400, detail=f"Jockey {p.registration.jockey.user.full_name} has a conflicting schedule")
+        
+        if race.referee_id:
+            ref_conflict = db.query(Race).filter(
+                Race.referee_id == race.referee_id,
+                Race.id != id,
+                Race.race_time >= new_time - timedelta(hours=2),
+                Race.race_time <= new_time + timedelta(hours=2)
+            ).first()
+            if ref_conflict:
+                raise HTTPException(status_code=400, detail="Current referee has a conflicting schedule at this new time")
+                
+        race.race_time = new_time
     if race_update.track_condition is not None:
         race.track_condition = race_update.track_condition
     if race_update.distance is not None:
@@ -142,8 +174,31 @@ def assign_referee(
     if not ref:
         raise HTTPException(status_code=404, detail="Referee not found")
         
+    ref_conflict = db.query(Race).filter(
+        Race.referee_id == referee_id,
+        Race.id != id,
+        Race.race_time >= race.race_time - timedelta(hours=2),
+        Race.race_time <= race.race_time + timedelta(hours=2)
+    ).first()
+    if ref_conflict:
+        raise HTTPException(status_code=400, detail="Referee has a conflicting schedule")
+        
     race.referee_id = referee_id
     db.commit()
     db.refresh(race)
     race.referee_name = ref.user.full_name
     return race
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_race(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["ADMIN"]))
+):
+    race = db.query(Race).filter(Race.id == id).first()
+    if not race:
+        raise HTTPException(status_code=404, detail="Race not found")
+        
+    db.delete(race)
+    db.commit()
+    return None

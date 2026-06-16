@@ -43,7 +43,8 @@ CREATE TABLE Users (
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     full_name VARCHAR(100) NOT NULL,
-    role_id INT NOT NULL FOREIGN KEY REFERENCES Roles(id)
+    role_id INT NOT NULL FOREIGN KEY REFERENCES Roles(id),
+    is_active BIT DEFAULT 1
 );
 
 -- 3. JockeyProfiles table

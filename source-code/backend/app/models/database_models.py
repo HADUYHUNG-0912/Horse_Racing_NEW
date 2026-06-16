@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Numeric, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Numeric, Text, Boolean
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -20,6 +20,7 @@ class User(Base):
     email = Column(String(100), nullable=False, unique=True)
     full_name = Column(String(100), nullable=False)
     role_id = Column(Integer, ForeignKey('Roles.id'), nullable=False)
+    is_active = Column(Boolean, default=True)
     
     role = relationship("Role", back_populates="users")
     
