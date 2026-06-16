@@ -127,3 +127,45 @@ def update_registration_status(
     reg.horse_name = reg.horse.name
     reg.jockey_name = reg.jockey.user.full_name
     return reg
+
+@router.put("/{id}", response_model=TournamentOut)
+def update_tournament(
+    id: int,
+    tournament_update: TournamentUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["ADMIN"]))
+):
+    tournament = db.query(Tournament).filter(Tournament.id == id).first()
+    if not tournament:
+        raise HTTPException(status_code=404, detail="Tournament not found")
+        
+    if tournament_update.name is not None:
+        tournament.name = tournament_update.name
+    if tournament_update.description is not None:
+        tournament.description = tournament_update.description
+    if tournament_update.start_date is not None:
+        tournament.start_date = tournament_update.start_date
+    if tournament_update.end_date is not None:
+        tournament.end_date = tournament_update.end_date
+    if tournament_update.location is not None:
+        tournament.location = tournament_update.location
+    if tournament_update.status is not None:
+        tournament.status = tournament_update.status
+        
+    db.commit()
+    db.refresh(tournament)
+    return tournament
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_tournament(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["ADMIN"]))
+):
+    tournament = db.query(Tournament).filter(Tournament.id == id).first()
+    if not tournament:
+        raise HTTPException(status_code=404, detail="Tournament not found")
+        
+    db.delete(tournament)
+    db.commit()
+    return None

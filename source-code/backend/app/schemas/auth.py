@@ -50,6 +50,7 @@ class RefereeProfileCreate(RefereeProfileBase):
 class RefereeProfileOut(RefereeProfileBase):
     id: int
     user_id: int
+    full_name: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -90,10 +91,17 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     password: Optional[str] = None
 
+class UserStatusUpdate(BaseModel):
+    is_active: bool
+
+class UserRoleUpdate(BaseModel):
+    role_id: int
+
 class UserOut(UserBase):
     id: int
     role_id: int
     role_name: Optional[str] = None
+    is_active: bool
     
     jockey_profile: Optional[JockeyProfileOut] = None
     owner_profile: Optional[OwnerProfileOut] = None
