@@ -11,6 +11,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
   const [referees, setReferees] = useState([]);
   const [jockeys, setJockeys] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
 
   // Form states
   const [newTournament, setNewTournament] = useState({ name: "", description: "", start_date: "", end_date: "", location: "" });
@@ -28,11 +29,13 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
 
       const listJockeys = await api.get("/jockeys");
       setJockeys(listJockeys);
-
-      setReferees([
-        { id: 1, name: "John Referee" },
-        { id: 2, name: "David Referee" }
-      ]);
+      try {
+        const listReferees = await api.get("/referees");
+        setReferees(listReferees || []);
+      } catch (e) {
+        console.error("Lỗi lấy danh sách trọng tài:", e);
+        setReferees([]);
+      }    
 
       const allRegs = [];
       for (const t of tours) {
@@ -41,7 +44,16 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
           regs.forEach(r => allRegs.push({ ...r, tournament_id: t.id }));
         } catch (e) { /* ignore per-tournament errors */ }
       }
+      
       setRegistrations(allRegs);
+      try {
+      const allUsers = await api.get("/admin/users");
+      setUsers(allUsers);
+    } catch (e) {      
+      setUsers([       
+      ]);
+      console.error("Lỗi lấy danh sách thành viên từ API:", e);
+    }
     } catch (err) {
       showMsg(err.message, "error");
     } finally {
@@ -61,10 +73,24 @@ const approvedRegistrations = useMemo(() => {
   return registrations.filter(r => r.status === "APPROVED");
 }, [registrations]);
 
+const handleToggleUserStatus = async (userId, currentStatus) => {
+  const nextStatus = !currentStatus;
+  try {
+    await api.put(`/admin/users/${userId}/status`, { is_active: nextStatus })
+    showMsg("Cập nhật trạng thái người dùng thành công!");
+    loadData(); 
+  } catch (err) {
+    setUsers(prevUsers =>
+      prevUsers.map(u => u.id === userId ? { ...u, is_active: !u.is_active } : u)
+    );
+    showMsg("Đang cập nhật trạng thái ở chế độ Local!", "info");
+  }
+};
+
   const createTournament = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/tournaments/", newTournament);
+      await api.post("/tournaments", newTournament);
       showMsg("Tạo giải đấu thành công!");
       setNewTournament({ name: "", description: "", start_date: "", end_date: "", location: "" });
       loadData();
@@ -104,7 +130,11 @@ const approvedRegistrations = useMemo(() => {
       setNewRace({ round_id: "", name: "", race_time: "", track_condition: "Good", distance: "1200", referee_id: "" });
       loadData();
     } catch (err) {
-      showMsg(err.message, "error");
+      if (err.status === 400 || (err.response && err.response.status === 400)) {
+        showMsg("Lỗi trùng lịch: Trọng tài đã có lịch đua khác trong khoảng ±2 giờ!", "error");
+      } else {
+        showMsg(err.message, "error");
+      }    
     }
   };
 
@@ -305,9 +335,8 @@ const approvedRegistrations = useMemo(() => {
                       <option key={r.id} value={r.id}>{t.name} - {r.name}</option>
                     ))
                   )}
-              </select>
-                   
-              </div>
+                </select> 
+              </div>   
               <div className="form-group">
                 <label>Tên trận đua</label>
                 <input type="text" className="input-field" placeholder="Ví dụ: Heat 1, Chung kết chính thức" required
@@ -335,7 +364,11 @@ const approvedRegistrations = useMemo(() => {
                 <select className="input-field"
                   value={newRace.referee_id} onChange={(e) => setNewRace({ ...newRace, referee_id: e.target.value })}>
                   <option value="">-- Không phân công / Phân công sau --</option>
-                  {referees.map(ref => <option key={ref.id} value={ref.id}>{ref.name}</option>)}
+                  {(referees || []).map(ref => (
+                    <option key={ref.id} value={ref.id}>
+                      {ref.full_name || `Trọng tài #${ref.id}`}
+                    </option>
+                  ))}
                 </select>
               </div>
               <button type="submit" className="btn-primary">Tạo Trận Đua</button>
@@ -398,7 +431,7 @@ const approvedRegistrations = useMemo(() => {
                       <td>{rc.distance}m</td>
                       <td>{rc.track_condition}</td>
                       <td>{rc.referee_name || "Chưa phân công"}</td>
-                      <td>{rc.participants.length} cặp</td>
+                     <td>{rc.participants?.length || 0} cặp</td>
                       <td>
                         <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : "badge-pending"}`}>
                           {rc.status}
@@ -412,6 +445,65 @@ const approvedRegistrations = useMemo(() => {
           </div>
         </div>
       )}
+      {activeTab === "users" && (
+  <div style={styles.tabContent}>
+    <h2> Quản lý Thành viên hệ thống</h2>
+    <div style={styles.tableWrapper}>
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tên tài khoản</th>
+            <th>Email</th>
+            <th>Vai trò (Role)</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.length === 0 ? (
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>
+                Chưa có dữ liệu thành viên
+              </td>
+            </tr>
+          ) : (
+            users.map((u) => (
+              <tr key={u.id}>
+                <td>{u.id}</td>
+                <td style={{ fontWeight: "700" }}>{u.username}</td>
+                <td>{u.email}</td>
+                <td>
+                  <span className="badge badge-info">{u.role_name}</span>
+                </td>
+                <td>
+                  {u.is_active ? (
+                    <span className="badge badge-approved">Đang hoạt động</span>
+                  ) : (
+                    <span className="badge badge-rejected">Đã khóa</span>
+                  )}
+                </td>
+                <td>
+                  <button
+                    className={u.is_active ? "btn-secondary" : "btn-primary"}
+                    style={{
+                      padding: "6px 12px",
+                      fontSize: "12px",
+                      color: u.is_active ? "var(--danger)" : "#fff",
+                    }}
+                    onClick={() => handleToggleUserStatus(u.id, u.is_active)}
+                  >
+                    {u.is_active ? " Khóa tài khoản" : " Mở khóa"}
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
     </>
   );
 }
