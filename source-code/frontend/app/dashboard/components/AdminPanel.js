@@ -31,9 +31,10 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
       setJockeys(listJockeys);
       try {
         const listReferees = await api.get("/referees");
-        setReferees(listReferees); 
+        setReferees(listReferees || []);
       } catch (e) {
         console.error("Lỗi lấy danh sách trọng tài:", e);
+        setReferees([]);
       }    
 
       const allRegs = [];
@@ -129,7 +130,11 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       setNewRace({ round_id: "", name: "", race_time: "", track_condition: "Good", distance: "1200", referee_id: "" });
       loadData();
     } catch (err) {
-      showMsg(err.message, "error");
+      if (err.status === 400 || (err.response && err.response.status === 400)) {
+        showMsg("Lỗi trùng lịch: Trọng tài đã có lịch đua khác trong khoảng ±2 giờ!", "error");
+      } else {
+        showMsg(err.message, "error");
+      }    
     }
   };
 
@@ -359,7 +364,11 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 <select className="input-field"
                   value={newRace.referee_id} onChange={(e) => setNewRace({ ...newRace, referee_id: e.target.value })}>
                   <option value="">-- Không phân công / Phân công sau --</option>
-                  {referees.map(ref => <option key={ref.id} value={ref.id}>{ref.full_name || `Trọng tài #${ref.id}`}</option>)}
+                  {(referees || []).map(ref => (
+                    <option key={ref.id} value={ref.id}>
+                      {ref.full_name || `Trọng tài #${ref.id}`}
+                    </option>
+                  ))}
                 </select>
               </div>
               <button type="submit" className="btn-primary">Tạo Trận Đua</button>
