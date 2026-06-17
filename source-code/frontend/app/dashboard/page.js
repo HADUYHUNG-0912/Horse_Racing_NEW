@@ -120,6 +120,9 @@ export default function Dashboard() {
               <button style={activeTab === "register-tournament" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("register-tournament")}>
                 🏆 Đăng ký Giải đấu
               </button>
+              <button style={activeTab === "my-registrations" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("my-registrations")}>
+                📋 Giải đấu đã đăng ký
+              </button>
             </>
           )}
 
