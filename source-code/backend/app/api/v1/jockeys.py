@@ -11,8 +11,11 @@ router = APIRouter()
 
 @router.get("/", response_model=List[JockeyProfileOut])
 def read_jockeys(db: Session = Depends(get_db)):
-    # Fetch all jockey profiles
     jockeys = db.query(JockeyProfile).all()
+    for jockey in jockeys:
+        jockey.username = jockey.user.username if jockey.user else None
+        jockey.full_name = jockey.user.full_name if jockey.user else None
+        jockey.email = jockey.user.email if jockey.user else None
     return jockeys
 
 @router.post("/invite", response_model=JockeyInvitationOut, status_code=status.HTTP_201_CREATED)
