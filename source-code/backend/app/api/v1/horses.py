@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
 from app.models.database_models import Horse, HorseOwnerProfile
-from app.schemas.horse import HorseCreate, HorseOut
+from app.schemas.horse import HorseCreate, HorseOut, HorseUpdate
 
 router = APIRouter()
 
@@ -46,3 +46,48 @@ def create_horse(
     db.commit()
     db.refresh(horse)
     return horse
+
+@router.put("/{id}", response_model=HorseOut)
+def update_horse(
+    id: int,
+    horse_in: HorseUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["OWNER"]))
+):
+    owner_profile = db.query(HorseOwnerProfile).filter(HorseOwnerProfile.user_id == current_user.id).first()
+    if not owner_profile:
+        raise HTTPException(status_code=400, detail="Owner profile not found")
+    
+    horse = db.query(Horse).filter(Horse.id == id, Horse.owner_id == owner_profile.id).first()
+    if not horse:
+        raise HTTPException(status_code=404, detail="Horse not found or you don't have permission")
+    
+    if horse_in.name is not None:
+        horse.name = horse_in.name
+    if horse_in.age is not None:
+        horse.age = horse_in.age
+    if horse_in.breed is not None:
+        horse.breed = horse_in.breed
+    if horse_in.gender is not None:
+        horse.gender = horse_in.gender
+    
+    db.commit()
+    db.refresh(horse)
+    return horse
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_horse(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["OWNER"]))
+):
+    owner_profile = db.query(HorseOwnerProfile).filter(HorseOwnerProfile.user_id == current_user.id).first()
+    if not owner_profile:
+        raise HTTPException(status_code=400, detail="Owner profile not found")
+    
+    horse = db.query(Horse).filter(Horse.id == id, Horse.owner_id == owner_profile.id).first()
+    if not horse:
+        raise HTTPException(status_code=404, detail="Horse not found or you don't have permission")
+    
+    db.delete(horse)
+    db.commit()
