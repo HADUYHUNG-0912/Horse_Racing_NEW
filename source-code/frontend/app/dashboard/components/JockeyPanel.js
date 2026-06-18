@@ -1,8 +1,14 @@
 "use client";
-import { jockeyApi } from '../../api';
+
 import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
+
+// FIX: import { jockeyApi } từ "../../api" gây lỗi
+// "Cannot read properties of undefined (reading 'respondToInvitation')"
+// vì jockeyApi bị undefined hoặc không có method respondToInvitation.
+// Thay vào đó, gọi trực tiếp qua "api" (object đã chắc chắn hoạt động vì
+// api.get đang được dùng thành công ở loadData) để không bị crash.
 
 export default function JockeyPanel({ user, activeTab, showMsg }) {
   const [invitations, setInvitations] = useState([]);
@@ -12,9 +18,13 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   // State quản lý thông tin hồ sơ - Để trống hoàn toàn để tự nhập từ đầu
   const [profile, setProfile] = useState(() => {
     if (typeof window !== "undefined") {
-      const savedProfile = localStorage.getItem(`jockey_profile_${user?.id || 'default'}`);
-      if (savedProfile) {
-        return JSON.parse(savedProfile);
+      try {
+        const savedProfile = localStorage.getItem(`jockey_profile_${user?.id || 'default'}`);
+        if (savedProfile) {
+          return JSON.parse(savedProfile);
+        }
+      } catch (e) {
+        // Nếu dữ liệu lưu trong localStorage bị hỏng/không parse được, bỏ qua và dùng giá trị mặc định
       }
     }
     return {
@@ -24,13 +34,15 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
       email: user?.email || "" // Lấy email đăng nhập hoặc để trống
     };
   });
+
   const loadData = async () => {
     try {
       const invites = await api.get("/jockeys/invitations");
-      setInvitations(invites);
+      // FIX: đảm bảo luôn là array, tránh crash nếu API trả về dạng khác (object lỗi, null...)
+      setInvitations(Array.isArray(invites) ? invites : []);
 
       const allRaces = await api.get("/races");
-      setRaces(allRaces);
+      setRaces(Array.isArray(allRaces) ? allRaces : []);
     } catch (err) {
       showMsg(err.message, "error");
     } finally {
@@ -49,16 +61,17 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
 
     try {
-      await jockeyApi.respondToInvitation(id, status);
-      setInvitations(prevInvites => 
+      // FIX: gọi qua api.put trực tiếp thay vì jockeyApi.respondToInvitation
+      // (jockeyApi/method đó không tồn tại -> gây lỗi "Cannot read properties of undefined")
+      await api.put(`/jockeys/invitations/${id}`, { status });
+      setInvitations(prevInvites =>
         prevInvites.map(inv => inv.id === id ? { ...inv, status: status } : inv)
       );
       showMsg(status === "ACCEPTED" ? "Đã chấp nhận lời mời!" : "Đã từ chối lời mời.");
     } catch (err) {
-      setInvitations(prevInvites => 
-        prevInvites.map(inv => inv.id === id ? { ...inv, status: status } : inv)
-      );
-      showMsg(status === "ACCEPTED" ? "Đã chấp nhận lời mời!" : "Đã từ chối lời mời.");
+      // FIX: trước đây catch vẫn cập nhật state thành công và hiện message thành công
+      // dù request thất bại -> dữ liệu UI sai lệch với server. Giờ chỉ báo lỗi thật.
+      showMsg(err?.message || "Không thể xử lý lời mời. Vui lòng thử lại!", "error");
     }
   };
 
@@ -76,6 +89,13 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Jockey...</div>;
   }
+
+  // FIX: tính trước danh sách race của jockey hiện tại, dùng optional chaining
+  // để tránh crash khi participants bị thiếu/null hoặc user chưa có full_name
+  const myRaces = races.filter(r =>
+    Array.isArray(r?.participants) &&
+    r.participants.some(p => p.jockey_name === user?.full_name)
+  );
 
   return (
     <>
@@ -146,11 +166,11 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                 </tr>
               </thead>
               <tbody>
-                {races.filter(r => r.participants.some(p => p.jockey_name === user.full_name)).length === 0 ? (
+                {myRaces.length === 0 ? (
                   <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
                 ) : (
-                  races.filter(r => r.participants.some(p => p.jockey_name === user.full_name)).map(rc => {
-                    const myParticipation = rc.participants.find(p => p.jockey_name === user.full_name);
+                  myRaces.map(rc => {
+                    const myParticipation = rc.participants.find(p => p.jockey_name === user?.full_name);
                     return (
                       <tr key={rc.id}>
                         <td style={{ fontWeight: "700" }}>{rc.name}</td>
@@ -180,7 +200,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
         <div style={styles.tabContent}>
           <h2>👤 Hồ sơ cá nhân Jockey: {user?.full_name}</h2>
           <form onSubmit={handleSaveProfile} style={{ maxWidth: "500px", marginTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <label style={{ fontWeight: "600", color: "#94a3b8" }}>Cân nặng (kg):</label>
               <input type="number" value={profile.weight} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
@@ -205,7 +225,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                 onChange={(e) => setProfile({ ...profile, experience: e.target.value })} required />
             </div>
 
-           <button type="submit" className="btn-primary" style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "10px" }}>
+            <button type="submit" className="btn-primary" style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "10px" }}>
               Lưu thay đổi hồ sơ
             </button>
           </form>
