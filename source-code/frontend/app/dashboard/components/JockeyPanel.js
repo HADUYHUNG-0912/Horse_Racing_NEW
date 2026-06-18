@@ -9,6 +9,21 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // State quản lý thông tin hồ sơ - Để trống hoàn toàn để tự nhập từ đầu
+  const [profile, setProfile] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedProfile = localStorage.getItem(`jockey_profile_${user?.id || 'default'}`);
+      if (savedProfile) {
+        return JSON.parse(savedProfile);
+      }
+    }
+    return {
+      weight: "",      // Để trống hoàn toàn
+      experience: "",  // Để trống hoàn toàn
+      phone: "",       // Để trống hoàn toàn
+      email: user?.email || "" // Lấy email đăng nhập hoặc để trống
+    };
+  });
   const loadData = async () => {
     try {
       const invites = await api.get("/jockeys/invitations");
@@ -44,6 +59,17 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
         prevInvites.map(inv => inv.id === id ? { ...inv, status: status } : inv)
       );
       showMsg(status === "ACCEPTED" ? "Đã chấp nhận lời mời!" : "Đã từ chối lời mời.");
+    }
+  };
+
+  // Hàm xử lý lưu hồ sơ (Task 4)
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+    try {
+      localStorage.setItem(`jockey_profile_${user?.id || 'default'}`, JSON.stringify(profile));
+      showMsg("Cập nhật thông tin hồ sơ Jockey thành công!");
+    } catch (err) {
+      showMsg("Không thể lưu dữ liệu!", "error");
     }
   };
 
@@ -146,6 +172,43 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* TASK 4: TAB CẬP NHẬT HỒ SƠ CÁ NHÂN */}
+      {activeTab === "profile" && (
+        <div style={styles.tabContent}>
+          <h2>👤 Hồ sơ cá nhân Jockey: {user?.full_name}</h2>
+          <form onSubmit={handleSaveProfile} style={{ maxWidth: "500px", marginTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Cân nặng (kg):</label>
+              <input type="number" value={profile.weight} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
+                onChange={(e) => setProfile({ ...profile, weight: e.target.value })} required />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Số điện thoại liên hệ:</label>
+              <input type="text" value={profile.phone} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
+                onChange={(e) => setProfile({ ...profile, phone: e.target.value })} required />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Địa chỉ Email:</label>
+              <input type="email" value={profile.email} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
+                onChange={(e) => setProfile({ ...profile, email: e.target.value })} required />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Kinh nghiệm thi đấu:</label>
+              <textarea rows="4" value={profile.experience} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff", resize: "none" }}
+                onChange={(e) => setProfile({ ...profile, experience: e.target.value })} required />
+            </div>
+
+           <button type="submit" className="btn-primary" style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "10px" }}>
+              Lưu thay đổi hồ sơ
+            </button>
+          </form>
         </div>
       )}
     </>
