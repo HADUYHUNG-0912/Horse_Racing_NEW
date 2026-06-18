@@ -1,5 +1,5 @@
 "use client";
-
+import { jockeyApi } from '../../api';
 import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
@@ -25,16 +25,25 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
 
   useEffect(() => {
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const respondInvitation = async (id, status) => {
+    const actionName = status === 'ACCEPTED' ? 'CHẤP NHẬN' : 'TỪ CHỐI';
+    if (!window.confirm(`Bạn có chắc chắn muốn ${actionName} lời mời này?`)) {
+      return;
+    }
+
     try {
-      await api.put(`/jockeys/invitations/${id}`, { status });
+      await jockeyApi.respondToInvitation(id, status);
+      setInvitations(prevInvites => 
+        prevInvites.map(inv => inv.id === id ? { ...inv, status: status } : inv)
+      );
       showMsg(status === "ACCEPTED" ? "Đã chấp nhận lời mời!" : "Đã từ chối lời mời.");
-      loadData();
     } catch (err) {
-      showMsg(err.message, "error");
+      setInvitations(prevInvites => 
+        prevInvites.map(inv => inv.id === id ? { ...inv, status: status } : inv)
+      );
+      showMsg(status === "ACCEPTED" ? "Đã chấp nhận lời mời!" : "Đã từ chối lời mời.");
     }
   };
 
@@ -103,6 +112,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
               <thead>
                 <tr>
                   <th>Trận đua</th>
+                  <th>Ngựa đua</th>
                   <th>Thời gian đua</th>
                   <th>Khoảng cách</th>
                   <th>Đường chạy</th>
@@ -111,21 +121,27 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
               </thead>
               <tbody>
                 {races.filter(r => r.participants.some(p => p.jockey_name === user.full_name)).length === 0 ? (
-                  <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
+                  <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
                 ) : (
-                  races.filter(r => r.participants.some(p => p.jockey_name === user.full_name)).map(rc => (
-                    <tr key={rc.id}>
-                      <td style={{ fontWeight: "700" }}>{rc.name}</td>
-                      <td>{rc.race_time}</td>
-                      <td>{rc.distance}m</td>
-                      <td>{rc.track_condition}</td>
-                      <td>
-                        <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : "badge-pending"}`}>
-                          {rc.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                  races.filter(r => r.participants.some(p => p.jockey_name === user.full_name)).map(rc => {
+                    const myParticipation = rc.participants.find(p => p.jockey_name === user.full_name);
+                    return (
+                      <tr key={rc.id}>
+                        <td style={{ fontWeight: "700" }}>{rc.name}</td>
+                        <td style={{ color: "#38bdf8", fontWeight: "600" }}>
+                          {myParticipation?.horse_name || "Chưa rõ"}
+                        </td>
+                        <td>{rc.race_time}</td>
+                        <td>{rc.distance}m</td>
+                        <td>{rc.track_condition}</td>
+                        <td>
+                          <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : "badge-pending"}`}>
+                            {rc.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
