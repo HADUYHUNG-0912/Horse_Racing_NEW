@@ -19,6 +19,7 @@ export const api = {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET",
       headers: getHeaders(),
+      cache: "no-store",
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: "Request failed" }));
