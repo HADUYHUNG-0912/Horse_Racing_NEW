@@ -15,25 +15,19 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State quản lý thông tin hồ sơ - Để trống hoàn toàn để tự nhập từ đầu
-  const [profile, setProfile] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const savedProfile = localStorage.getItem(`jockey_profile_${user?.id || 'default'}`);
-        if (savedProfile) {
-          return JSON.parse(savedProfile);
-        }
-      } catch (e) {
-        // Nếu dữ liệu lưu trong localStorage bị hỏng/không parse được, bỏ qua và dùng giá trị mặc định
-      }
-    }
-    return {
-      weight: "",      // Để trống hoàn toàn
-      experience: "",  // Để trống hoàn toàn
-      phone: "",       // Để trống hoàn toàn
-      email: user?.email || "" // Lấy email đăng nhập hoặc để trống
-    };
+  // FIX (Task 4): KHÔNG còn dùng localStorage. Hồ sơ được nạp từ API
+  // (GET /jockeys/profile) khi component mount, và lưu xuống Database
+  // qua API (PUT /jockeys/profile) khi submit form.
+  // - Bỏ field "phone" vì cột này chưa tồn tại trong bảng JockeyProfiles.
+  // - "experience" (text tự do) đổi thành "experience_years" (số nguyên)
+  //   để khớp đúng cột experience_years (INT) trong Database.
+  const [profile, setProfile] = useState({
+    weight: "",
+    experience_years: "",
+    email: user?.email || "",
   });
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   const loadData = async () => {
     try {
@@ -50,8 +44,25 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
   };
 
+  // FIX (Task 4): nạp hồ sơ thật từ Database thay vì đọc localStorage
+  const loadProfile = async () => {
+    try {
+      const data = await api.get("/jockeys/profile");
+      setProfile({
+        weight: data?.weight ?? "",
+        experience_years: data?.experience_years ?? "",
+        email: data?.email ?? user?.email ?? "",
+      });
+    } catch (err) {
+      showMsg(err?.message || "Không thể tải hồ sơ cá nhân!", "error");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadData();
+    loadProfile();
   }, []);
 
   const respondInvitation = async (id, status) => {
@@ -75,14 +86,30 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
   };
 
-  // Hàm xử lý lưu hồ sơ (Task 4)
-  const handleSaveProfile = (e) => {
+  // FIX (Task 4): lưu hồ sơ xuống Database qua API thay vì localStorage.
+  // localStorage chỉ tồn tại trên máy của từng người dùng -> Chủ ngựa/Admin
+  // không thể xem được hồ sơ, và gây lỗi Hydration Mismatch của Next.js
+  // (vì localStorage không tồn tại khi server render).
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
+    setSavingProfile(true);
     try {
-      localStorage.setItem(`jockey_profile_${user?.id || 'default'}`, JSON.stringify(profile));
+      const payload = {
+        weight: profile.weight === "" ? null : Number(profile.weight),
+        experience_years: profile.experience_years === "" ? null : Number(profile.experience_years),
+        email: profile.email,
+      };
+      const updated = await api.put("/jockeys/profile", payload);
+      setProfile({
+        weight: updated?.weight ?? "",
+        experience_years: updated?.experience_years ?? "",
+        email: updated?.email ?? profile.email,
+      });
       showMsg("Cập nhật thông tin hồ sơ Jockey thành công!");
     } catch (err) {
-      showMsg("Không thể lưu dữ liệu!", "error");
+      showMsg(err?.message || "Không thể lưu hồ sơ. Vui lòng thử lại!", "error");
+    } finally {
+      setSavingProfile(false);
     }
   };
 
@@ -199,36 +226,34 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
       {activeTab === "profile" && (
         <div style={styles.tabContent}>
           <h2>👤 Hồ sơ cá nhân Jockey: {user?.full_name}</h2>
-          <form onSubmit={handleSaveProfile} style={{ maxWidth: "500px", marginTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+          {profileLoading ? (
+            <div style={styles.loading}>Đang tải hồ sơ...</div>
+          ) : (
+            <form onSubmit={handleSaveProfile} style={{ maxWidth: "500px", marginTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Cân nặng (kg):</label>
-              <input type="number" value={profile.weight} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
-                onChange={(e) => setProfile({ ...profile, weight: e.target.value })} required />
-            </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Cân nặng (kg):</label>
+                <input type="number" value={profile.weight} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => setProfile({ ...profile, weight: e.target.value })} required />
+              </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Số điện thoại liên hệ:</label>
-              <input type="text" value={profile.phone} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })} required />
-            </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Địa chỉ Email:</label>
+                <input type="email" value={profile.email} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => setProfile({ ...profile, email: e.target.value })} required />
+              </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Địa chỉ Email:</label>
-              <input type="email" value={profile.email} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
-                onChange={(e) => setProfile({ ...profile, email: e.target.value })} required />
-            </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Số năm kinh nghiệm thi đấu:</label>
+                <input type="number" min="0" value={profile.experience_years} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => setProfile({ ...profile, experience_years: e.target.value })} required />
+              </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <label style={{ fontWeight: "600", color: "#94a3b8" }}>Kinh nghiệm thi đấu:</label>
-              <textarea rows="4" value={profile.experience} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff", resize: "none" }}
-                onChange={(e) => setProfile({ ...profile, experience: e.target.value })} required />
-            </div>
-
-            <button type="submit" className="btn-primary" style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "10px" }}>
-              Lưu thay đổi hồ sơ
-            </button>
-          </form>
+              <button type="submit" className="btn-primary" style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "10px" }} disabled={savingProfile}>
+                {savingProfile ? "Đang lưu..." : "Lưu thay đổi hồ sơ"}
+              </button>
+            </form>
+          )}
         </div>
       )}
     </>
