@@ -23,6 +23,7 @@ class RaceParticipantOut(RaceParticipantBase):
     status: str
     horse_name: Optional[str] = None
     jockey_name: Optional[str] = None
+    horse_id: Optional[int] = None
 
     class Config:
         from_attributes = True
