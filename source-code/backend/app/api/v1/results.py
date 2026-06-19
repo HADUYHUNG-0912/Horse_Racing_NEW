@@ -26,6 +26,24 @@ def evaluate_predictions_for_completed_race(db: Session, race_id: int):
             else:
                 pred.status = "Lost"
 
+@router.get("/{race_id}/results", response_model=List[ResultOut])
+def get_race_results(
+    race_id: int,
+    db: Session = Depends(get_db)
+):
+    race = db.query(Race).filter(Race.id == race_id).first()
+    if not race:
+        raise HTTPException(status_code=404, detail="Race not found")
+    
+    results = db.query(Result).join(RaceParticipant).filter(
+        RaceParticipant.race_id == race_id
+    ).order_by(Result.rank).all()
+    
+    for r in results:
+        r.horse_name = r.participant.registration.horse.name
+        r.jockey_name = r.participant.registration.jockey.user.full_name
+    return results
+
 @router.post("/{race_id}/results", response_model=List[ResultOut])
 def record_results(
     race_id: int,
