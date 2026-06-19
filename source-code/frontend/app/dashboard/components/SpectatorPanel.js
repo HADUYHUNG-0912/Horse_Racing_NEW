@@ -103,7 +103,28 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
 
             {/* Predictions History */}
             <div style={{ flex: 1.3 }}>
-              <h3>Lịch sử dự đoán của bạn</h3>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "12px"
+              }}>
+                <h3 style={{ margin: 0 }}>Lịch sử dự đoán của bạn</h3>
+                <div style={{
+                  background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                  borderRadius: "12px",
+                  padding: "8px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  boxShadow: "0 2px 8px rgba(245,158,11,0.3)"
+                }}>
+                  <span style={{ fontSize: "18px" }}>⭐</span>
+                  <span style={{ color: "#fff", fontWeight: "700", fontSize: "14px" }}>
+                    Điểm thưởng tích lũy: {user?.spectator_profile?.reward_points ?? 0} điểm
+                  </span>
+                </div>
+              </div>
               <div style={styles.tableWrapper}>
                 <table style={styles.table}>
                   <thead>
@@ -124,8 +145,12 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                           <td style={{ fontWeight: "700" }}>{p.horse_name}</td>
                           <td>Hạng {p.predicted_rank}</td>
                           <td>
-                            <span className={`badge ${p.status === "CORRECT" ? "badge-approved" : p.status === "INCORRECT" ? "badge-rejected" : "badge-pending"}`}>
-                              {p.status}
+                            <span className={`badge ${
+                              p.status === "Won" ? "badge-approved" 
+                              : p.status === "Lost" ? "badge-rejected" 
+                              : "badge-pending"
+                            }`}>
+                              {p.status === "Won" ? "✅ Đúng" : p.status === "Lost" ? "❌ Sai" : "⏳ Chờ kết quả"}
                             </span>
                           </td>
                         </tr>
