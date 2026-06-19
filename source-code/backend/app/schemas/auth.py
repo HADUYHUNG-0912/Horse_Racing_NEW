@@ -60,6 +60,7 @@ class RefereeProfileOut(RefereeProfileBase):
 
 class SpectatorProfileBase(BaseModel):
     favorite_horse_breed: Optional[str] = None
+    reward_points: int = 0
 
 class SpectatorProfileCreate(SpectatorProfileBase):
     pass

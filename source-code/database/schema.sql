@@ -75,7 +75,8 @@ CREATE TABLE RefereeProfiles (
 CREATE TABLE SpectatorProfiles (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(id) ON DELETE CASCADE,
-    favorite_horse_breed NVARCHAR(50) NULL
+    favorite_horse_breed NVARCHAR(50) NULL,
+    reward_points INT NOT NULL DEFAULT 0
 );
 
 -- 7. Horses table
