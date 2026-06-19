@@ -10,7 +10,7 @@ class Settings:
     
     # SQLEXPRESS connection string
     # We use mssql+pyodbc with SQL Server driver
-    SQL_SERVER_HOST: str = os.getenv("SQL_SERVER_HOST", r"localhost\SQLEXPRESS")
+    SQL_SERVER_HOST: str = os.getenv("SQL_SERVER_HOST", "localhost")
     SQL_SERVER_DB: str = os.getenv("SQL_SERVER_DB", "HorseRacing")
     
     @property
