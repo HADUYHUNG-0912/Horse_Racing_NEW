@@ -4,11 +4,45 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import Race, RaceParticipant, Result, Violation, Ranking, Horse, JockeyProfile
+from app.models.database_models import Race, RaceParticipant, Result, Violation, Ranking, Horse, JockeyProfile, Prediction, SpectatorProfile
 from app.schemas.result import ResultCreate, ResultOut, ViolationCreate, ViolationOut, RankingOut
 
 router = APIRouter()
 
+def evaluate_predictions_for_completed_race(db: Session, race_id: int):
+    predictions = db.query(Prediction).join(RaceParticipant).filter(
+        RaceParticipant.race_id == race_id
+    ).all()
+    
+    for pred in predictions:
+        part = pred.participant
+        result = db.query(Result).filter(Result.race_participant_id == part.id).first()
+        if result:
+            if pred.predicted_rank == result.rank:
+                pred.status = "Won"
+                spectator = db.query(SpectatorProfile).filter(SpectatorProfile.user_id == pred.user_id).first()
+                if spectator:
+                    spectator.earnRewardPoints(10)
+            else:
+                pred.status = "Lost"
+
+@router.get("/{race_id}/results", response_model=List[ResultOut])
+def get_race_results(
+    race_id: int,
+    db: Session = Depends(get_db)
+):
+    race = db.query(Race).filter(Race.id == race_id).first()
+    if not race:
+        raise HTTPException(status_code=404, detail="Race not found")
+    
+    results = db.query(Result).join(RaceParticipant).filter(
+        RaceParticipant.race_id == race_id
+    ).order_by(Result.rank).all()
+    
+    for r in results:
+        r.horse_name = r.participant.registration.horse.name
+        r.jockey_name = r.participant.registration.jockey.user.full_name
+    return results
 @router.post("/{race_id}/results", response_model=List[ResultOut])
 def record_results(
     race_id: int,
