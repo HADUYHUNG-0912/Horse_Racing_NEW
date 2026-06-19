@@ -54,6 +54,19 @@ export const api = {
     return res.json();
   },
 
+  async delete(endpoint) {
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: "Request failed" }));
+      throw new Error(err.detail || "Request failed");
+    }
+    // DELETE trả về 204 No Content, không có body
+    return res.status === 204 ? null : res.json().catch(() => null);
+  },
+
   // Auth methods
   async login(username, password) {
     const formData = new URLSearchParams();
