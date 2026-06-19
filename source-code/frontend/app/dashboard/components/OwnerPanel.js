@@ -15,19 +15,28 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [newHorse, setNewHorse] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
   const [newInvitation, setNewInvitation] = useState({ jockey_id: "", horse_id: "", tournament_id: "", message: "" });
 
+  const asArray = (data) => Array.isArray(data) ? data : data?.items || data?.data || [];
+  const getJockeyLabel = (jockey) => {
+    const name = jockey.full_name || jockey.username || `Jockey #${jockey.id}`;
+    const experience = Number.isFinite(Number(jockey.experience_years))
+      ? ` - Kinh nghiệm: ${jockey.experience_years} năm`
+      : "";
+    return `${name}${experience}`;
+  };
+
   const loadData = async () => {
     try {
       const myHorses = await api.get("/horses");
-      setHorses(myHorses);
+      setHorses(asArray(myHorses));
 
       const listJockeys = await api.get("/jockeys");
-      setJockeys(listJockeys);
+      setJockeys(asArray(listJockeys));
 
       const invites = await api.get("/jockeys/invitations");
-      setInvitations(invites);
+      setInvitations(asArray(invites));
 
       const tours = await api.get("/tournaments");
-      setTournaments(tours);
+      setTournaments(asArray(tours));
     } catch (err) {
       showMsg(err.message, "error");
     } finally {
@@ -174,8 +183,11 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                 <select className="input-field" required
                   value={newInvitation.jockey_id} onChange={(e) => setNewInvitation({ ...newInvitation, jockey_id: e.target.value })}>
                   <option value="">-- Chọn Jockey --</option>
+                  {jockeys.length === 0 && (
+                    <option value="" disabled>Chưa có Jockey nào trong hệ thống</option>
+                  )}
                   {jockeys.map(j => (
-                    <option key={j.id} value={j.id}>{j.user_id} - Kinh nghiệm: {j.experience_years} năm</option>
+                    <option key={j.id} value={j.id}>{getJockeyLabel(j)}</option>
                   ))}
                 </select>
               </div>

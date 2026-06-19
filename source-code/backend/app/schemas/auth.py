@@ -24,6 +24,9 @@ class JockeyProfileUpdate(JockeyProfileBase):
 class JockeyProfileOut(JockeyProfileBase):
     id: int
     user_id: int
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
 
     class Config:
         from_attributes = True
