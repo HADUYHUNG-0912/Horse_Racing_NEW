@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import Prediction, RaceParticipant, Result, Race
+from app.models.database_models import Prediction, RaceParticipant, Result, Race, Registration
 from app.schemas.prediction import PredictionCreate, PredictionOut
 
 router = APIRouter()
@@ -14,10 +14,13 @@ def make_prediction(
     db: Session = Depends(get_db),
     current_user = Depends(RoleChecker(["SPECTATOR"]))
 ):
-    # Verify participant exists
-    part = db.query(RaceParticipant).filter(RaceParticipant.id == pred_in.race_participant_id).first()
+    # Verify participant exists by joining with Registration
+    part = db.query(RaceParticipant).join(Registration).filter(
+        RaceParticipant.race_id == pred_in.race_id,
+        Registration.horse_id == pred_in.horse_id
+    ).first()
     if not part:
-        raise HTTPException(status_code=404, detail="Race participant not found")
+        raise HTTPException(status_code=404, detail="Race participant not found for specified race and horse")
         
     # Check if participant's race is already completed (cannot predict completed races)
     if part.race.status == "COMPLETED":
@@ -26,14 +29,14 @@ def make_prediction(
     # Check if spectator has already made a prediction on this participant
     dup = db.query(Prediction).filter(
         Prediction.user_id == current_user.id,
-        Prediction.race_participant_id == pred_in.race_participant_id
+        Prediction.race_participant_id == part.id
     ).first()
     if dup:
         raise HTTPException(status_code=400, detail="You have already made a prediction for this participant")
         
     prediction = Prediction(
         user_id=current_user.id,
-        race_participant_id=pred_in.race_participant_id,
+        race_participant_id=part.id,
         predicted_rank=pred_in.predicted_rank,
         status="PENDING"
     )
@@ -41,6 +44,8 @@ def make_prediction(
     db.commit()
     db.refresh(prediction)
     
+    prediction.race_id = part.race_id
+    prediction.horse_id = part.registration.horse_id
     prediction.horse_name = part.registration.horse.name
     prediction.jockey_name = part.registration.jockey.user.full_name
     prediction.race_name = part.race.name
@@ -56,6 +61,8 @@ def read_predictions(
     # Process prediction outcomes dynamically based on results
     for p in preds:
         part = p.participant
+        p.race_id = part.race_id
+        p.horse_id = part.registration.horse_id
         p.horse_name = part.registration.horse.name
         p.jockey_name = part.registration.jockey.user.full_name
         p.race_name = part.race.name

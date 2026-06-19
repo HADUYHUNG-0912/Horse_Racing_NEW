@@ -19,6 +19,7 @@ def read_races(db: Session = Depends(get_db)):
         for p in race.participants:
             p.horse_name = p.registration.horse.name
             p.jockey_name = p.registration.jockey.user.full_name
+            p.horse_id = p.registration.horse_id
     return races
 
 @router.post("/rounds/{round_id}/races", response_model=RaceOut, status_code=status.HTTP_201_CREATED)
