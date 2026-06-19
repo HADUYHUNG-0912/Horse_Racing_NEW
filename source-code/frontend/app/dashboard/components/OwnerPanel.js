@@ -9,6 +9,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [jockeys, setJockeys] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [tournaments, setTournaments] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Form states
@@ -37,6 +38,21 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
 
       const tours = await api.get("/tournaments");
       setTournaments(asArray(tours));
+
+      // Fetch registrations for each tournament (Task 3 - Thuỳ Anh)
+      const allRegistrations = [];
+      for (const tournament of asArray(tours)) {
+        try {
+          const tournamentRegs = await api.get(`/tournaments/${tournament.id}/registrations`);
+          const regsArray = Array.isArray(tournamentRegs) ? tournamentRegs : tournamentRegs?.items || tournamentRegs?.data || [];
+          regsArray.forEach(reg => {
+            allRegistrations.push({ ...reg, tournament_name: tournament.name });
+          });
+        } catch (e) {
+          console.error("Không tải được danh sách đăng ký của giải", tournament.id, e);
+        }
+      }
+      setRegistrations(allRegistrations);
     } catch (err) {
       showMsg(err.message, "error");
     } finally {
@@ -309,6 +325,52 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       </tr>
                     );
                   })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Danh sách giải đấu đã đăng ký (Owner) */}
+      {activeTab === "my-registrations" && (
+        <div style={styles.tabContent}>
+          <h2>📋 Danh sách giải đấu đã đăng ký</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>Xem trạng thái duyệt hồ sơ đăng ký của bạn từ Admin (PENDING: Chờ duyệt, APPROVED: Đã chấp nhận, REJECTED: Bị từ chối)</p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Tên giải đấu</th>
+                  <th>Ngựa</th>
+                  <th>Jockey</th>
+                  <th>Ngày đăng ký</th>
+                  <th>Trạng thái duyệt</th>
+                </tr>
+              </thead>
+              <tbody>
+                {registrations.length === 0 ? (
+                  <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa đăng ký giải đấu nào</td></tr>
+                ) : (
+                  registrations.map(reg => (
+                    <tr key={reg.id}>
+                      <td style={{ fontWeight: "700" }}>{reg.tournament_name}</td>
+                      <td>{reg.horse_name || `Ngựa #${reg.horse_id}`}</td>
+                      <td>{reg.jockey_name || `Jockey #${reg.jockey_id}`}</td>
+                      <td>{new Date(reg.registration_date).toLocaleDateString("vi-VN")}</td>
+                      <td>
+                        <span className={`badge ${
+                          reg.status === "APPROVED" ? "badge-approved" :
+                          reg.status === "PENDING" ? "badge-pending" :
+                          "badge-rejected"
+                        }`}>
+                          {reg.status === "APPROVED" ? "✓ Đã chấp nhận" :
+                           reg.status === "PENDING" ? "⏳ Chờ duyệt" :
+                           "✗ Bị từ chối"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
