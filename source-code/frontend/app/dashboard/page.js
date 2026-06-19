@@ -132,6 +132,9 @@ export default function Dashboard() {
               <button style={activeTab === "jockey-races" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("jockey-races")}>
                 🏁 Lịch trình Đua
               </button>
+              <button style={activeTab === "profile" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("profile")}>
+  👤 Hồ sơ cá nhân
+</button>
             </>
           )}
 
