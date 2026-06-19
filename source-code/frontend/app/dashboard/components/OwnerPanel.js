@@ -15,6 +15,8 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   // Form states
   const [newHorse, setNewHorse] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
   const [newInvitation, setNewInvitation] = useState({ jockey_id: "", horse_id: "", tournament_id: "", message: "" });
+  const [editingHorse, setEditingHorse] = useState(null);
+  const [editHorseForm, setEditHorseForm] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
 
   const asArray = (data) => Array.isArray(data) ? data : data?.items || data?.data || [];
   const getJockeyLabel = (jockey) => {
@@ -67,6 +69,10 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
 
   const createHorse = async (e) => {
     e.preventDefault();
+    if (parseInt(newHorse.age) < 2 || parseInt(newHorse.age) > 10) {
+      showMsg("Tuổi ngựa phải từ 2 đến 10 năm!", "error");
+      return;
+    }
     try {
       await api.post("/horses/", {
         ...newHorse,
@@ -78,6 +84,56 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     } catch (err) {
       showMsg(err.message, "error");
     }
+  };
+
+  const updateHorse = async (e) => {
+    e.preventDefault();
+    if (parseInt(editHorseForm.age) < 2 || parseInt(editHorseForm.age) > 10) {
+      showMsg("Tuổi ngựa phải từ 2 đến 10 năm!", "error");
+      return;
+    }
+    try {
+      await api.put(`/horses/${editingHorse.id}`, {
+        name: editHorseForm.name,
+        age: parseInt(editHorseForm.age),
+        breed: editHorseForm.breed,
+        gender: editHorseForm.gender
+      });
+      showMsg("Cập nhật ngựa thành công!");
+      setEditingHorse(null);
+      setEditHorseForm({ name: "", age: "", breed: "", gender: "Stallion" });
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  const deleteHorse = async (horseId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa ngựa này?")) {
+      return;
+    }
+    try {
+      await api.delete(`/horses/${horseId}`);
+      showMsg("Xóa ngựa thành công!");
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  const startEditHorse = (horse) => {
+    setEditingHorse(horse);
+    setEditHorseForm({
+      name: horse.name,
+      age: horse.age.toString(),
+      breed: horse.breed,
+      gender: horse.gender
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingHorse(null);
+    setEditHorseForm({ name: "", age: "", breed: "", gender: "Stallion" });
   };
 
   const sendJockeyInvitation = async (e) => {
@@ -122,34 +178,43 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
         <div style={styles.tabContent}>
           <h2>🐎 Quản lý danh sách ngựa đua của bạn</h2>
           <div style={styles.splitLayout}>
-            {/* Create Horse */}
-            <form onSubmit={createHorse} style={styles.formPanel} className="glass">
-              <h3>Đăng Ký Ngựa Mới</h3>
+            {/* Edit or Create Horse */}
+            <form onSubmit={editingHorse ? updateHorse : createHorse} style={styles.formPanel} className="glass">
+              <h3>{editingHorse ? "✏️ Chỉnh sửa Ngựa" : "Đăng Ký Ngựa Mới"}</h3>
               <div className="form-group">
                 <label>Tên ngựa đua</label>
                 <input type="text" className="input-field" placeholder="Ví dụ: Thunderbolt II" required
-                  value={newHorse.name} onChange={(e) => setNewHorse({ ...newHorse, name: e.target.value })} />
+                  value={editingHorse ? editHorseForm.name : newHorse.name} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, name: e.target.value }) : setNewHorse({ ...newHorse, name: e.target.value })} />
               </div>
               <div className="form-group">
-                <label>Tuổi</label>
-                <input type="number" className="input-field" placeholder="Ví dụ: 4" required
-                  value={newHorse.age} onChange={(e) => setNewHorse({ ...newHorse, age: e.target.value })} />
+                <label>Tuổi (2-10 năm)</label>
+                <input type="number" className="input-field" placeholder="Ví dụ: 4" required min="2" max="10"
+                  value={editingHorse ? editHorseForm.age : newHorse.age} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, age: e.target.value }) : setNewHorse({ ...newHorse, age: e.target.value })} />
               </div>
               <div className="form-group">
                 <label>Giống ngựa</label>
                 <input type="text" className="input-field" placeholder="Thoroughbred, Arabian..." required
-                  value={newHorse.breed} onChange={(e) => setNewHorse({ ...newHorse, breed: e.target.value })} />
+                  value={editingHorse ? editHorseForm.breed : newHorse.breed} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
               </div>
               <div className="form-group">
                 <label>Giới tính</label>
                 <select className="input-field"
-                  value={newHorse.gender} onChange={(e) => setNewHorse({ ...newHorse, gender: e.target.value })}>
+                  value={editingHorse ? editHorseForm.gender : newHorse.gender} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, gender: e.target.value }) : setNewHorse({ ...newHorse, gender: e.target.value })}>
                   <option value="Stallion">Stallion (Ngựa đực)</option>
                   <option value="Mare">Mare (Ngựa cái)</option>
                   <option value="Gelding">Gelding (Ngựa thiến)</option>
                 </select>
               </div>
-              <button type="submit" className="btn-primary">Đăng ký Ngựa</button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1 }}>{editingHorse ? "Lưu Thay đổi" : "Đăng ký Ngựa"}</button>
+                {editingHorse && (
+                  <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={cancelEdit}>Hủy</button>
+                )}
+              </div>
             </form>
 
             {/* Horse List */}
@@ -163,11 +228,12 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       <th>Tuổi</th>
                       <th>Giống</th>
                       <th>Giới tính</th>
+                      <th>Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     {horses.length === 0 ? (
-                      <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Chưa có ngựa đua nào được đăng ký</td></tr>
+                      <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa có ngựa đua nào được đăng ký</td></tr>
                     ) : (
                       horses.map(h => (
                         <tr key={h.id}>
@@ -175,6 +241,10 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                           <td>{h.age} tuổi</td>
                           <td>{h.breed}</td>
                           <td>{h.gender}</td>
+                          <td style={{ display: "flex", gap: "6px" }}>
+                            <button className="btn-primary" style={{ padding: "4px 8px", fontSize: "11px" }} onClick={() => startEditHorse(h)}>✏️ Sửa</button>
+                            <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "11px", backgroundColor: "#ef4444" }} onClick={() => deleteHorse(h.id)}>🗑️ Xóa</button>
+                          </td>
                         </tr>
                       ))
                     )}
