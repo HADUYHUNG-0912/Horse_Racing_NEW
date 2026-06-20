@@ -26,7 +26,7 @@ def make_prediction(
     if part.race.status == "COMPLETED":
         raise HTTPException(status_code=400, detail="Cannot make prediction on a completed race")
         
-    # Check if spectator has already made a prediction on this participant
+    # Check if spectator has already made a prediction for this race
     dup = db.query(Prediction).join(RaceParticipant).filter(
         Prediction.user_id == current_user.id,
         RaceParticipant.race_id == part.race_id
