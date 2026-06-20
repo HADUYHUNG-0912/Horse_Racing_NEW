@@ -10,7 +10,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const [loading, setLoading] = useState(true);
 
   // Form states
-  const [predictionForm, setPredictionForm] = useState({ race_id: "", horse_id: "", predicted_rank: "1" });
+  const [predictionForm, setPredictionForm] = useState({ race_participant_id: "", predicted_rank: "1" });
 
   const loadData = async () => {
     try {
@@ -35,12 +35,11 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
     e.preventDefault();
     try {
       await api.post("/spectators/predictions", {
-        race_id: parseInt(predictionForm.race_id),
-        horse_id: parseInt(predictionForm.horse_id),
+        race_participant_id: parseInt(predictionForm.race_participant_id),
         predicted_rank: parseInt(predictionForm.predicted_rank)
       });
       showMsg("Dự đoán thành công!");
-      setPredictionForm({ race_id: "", horse_id: "", predicted_rank: "1" });
+      setPredictionForm({ race_participant_id: "", predicted_rank: "1" });
       loadData();
     } catch (err) {
       showMsg(err.message, "error");
@@ -62,30 +61,15 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
             <form onSubmit={makePrediction} style={styles.formPanel} className="glass">
               <h3>Tạo dự đoán mới</h3>
               <div className="form-group">
-                <label>Chọn Trận đua</label>
+                <label>Chọn Trận đua & Ngựa</label>
                 <select className="input-field" required
-                  value={predictionForm.race_id} 
-                  onChange={(e) => setPredictionForm({ ...predictionForm, race_id: e.target.value, horse_id: "" })}>
-                  <option value="">-- Chọn trận đua --</option>
-                  {races.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING").map(rc => (
-                    <option key={rc.id} value={rc.id}>{rc.name} ({rc.track_condition} - {rc.distance}m)</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Chọn Ngựa đua</label>
-                <select className="input-field" required
-                  value={predictionForm.horse_id} 
-                  disabled={!predictionForm.race_id}
-                  onChange={(e) => setPredictionForm({ ...predictionForm, horse_id: e.target.value })}>
+                  value={predictionForm.race_participant_id} onChange={(e) => setPredictionForm({ ...predictionForm, race_participant_id: e.target.value })}>
                   <option value="">-- Chọn ngựa đua --</option>
-                  {(() => {
-                    const selectedRace = races.find(rc => rc.id === parseInt(predictionForm.race_id));
-                    if (!selectedRace) return null;
-                    return selectedRace.participants.map(p => (
-                      <option key={p.horse_id} value={p.horse_id}>{p.horse_name} (Làn {p.lane_number})</option>
-                    ));
-                  })()}
+                  {races.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING").map(rc => (
+                    rc.participants.map(p => (
+                      <option key={p.id} value={p.id}>{rc.name} - Ngựa: {p.horse_name} (Làn {p.lane_number})</option>
+                    ))
+                  ))}
                 </select>
               </div>
               <div className="form-group">
