@@ -71,14 +71,8 @@ class SpectatorProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
     favorite_horse_breed = Column(String(50), nullable=True)
-    reward_points = Column(Integer, default=0, nullable=False)
     
     user = relationship("User", back_populates="spectator_profile")
-
-    def earnRewardPoints(self, points: int = 10):
-        if self.reward_points is None:
-            self.reward_points = 0
-        self.reward_points += points
 
 class Horse(Base):
     __tablename__ = 'Horses'

@@ -4,27 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import Race, RaceParticipant, Result, Violation, Ranking, Horse, JockeyProfile, Prediction, SpectatorProfile
+from app.models.database_models import Race, RaceParticipant, Result, Violation, Ranking, Horse, JockeyProfile
 from app.schemas.result import ResultCreate, ResultOut, ViolationCreate, ViolationOut, RankingOut
 
 router = APIRouter()
-
-def evaluate_predictions_for_completed_race(db: Session, race_id: int):
-    predictions = db.query(Prediction).join(RaceParticipant).filter(
-        RaceParticipant.race_id == race_id
-    ).all()
-    
-    for pred in predictions:
-        part = pred.participant
-        result = db.query(Result).filter(Result.race_participant_id == part.id).first()
-        if result:
-            if pred.predicted_rank == result.rank:
-                pred.status = "Won"
-                spectator = db.query(SpectatorProfile).filter(SpectatorProfile.user_id == pred.user_id).first()
-                if spectator:
-                    spectator.earnRewardPoints(10)
-            else:
-                pred.status = "Lost"
 
 @router.post("/{race_id}/results", response_model=List[ResultOut])
 def record_results(
@@ -72,7 +55,6 @@ def record_results(
         created_results.append(res)
         
     race.status = "COMPLETED"
-    evaluate_predictions_for_completed_race(db, race_id)
     db.commit()
     
     # Refresh and recalculate global rankings based on cumulative points
