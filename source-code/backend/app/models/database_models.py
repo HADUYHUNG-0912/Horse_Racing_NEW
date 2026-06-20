@@ -226,7 +226,7 @@ class Prediction(Base):
     race_participant_id = Column(Integer, ForeignKey('RaceParticipants.id'), nullable=False)
     predicted_rank = Column(Integer, nullable=False)
     prediction_date = Column(DateTime, default=datetime.datetime.utcnow)
-    status = Column(String(50), default="PENDING") # PENDING, CORRECT, INCORRECT
+    status = Column(String(50), default="PENDING") # PENDING, Won, Lost
     
     user = relationship("User", back_populates="predictions")
     participant = relationship("RaceParticipant", back_populates="predictions")
