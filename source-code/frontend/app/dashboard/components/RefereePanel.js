@@ -12,6 +12,9 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
   const [resultsForm, setResultsForm] = useState([]); // Array of { race_participant_id, rank, points, notes }
   const [violationForm, setViolationForm] = useState({ race_participant_id: "", description: "", penalty: "Warning", fine_amount: "0" });
 
+  const [selectedRaceForInspection, setSelectedRaceForInspection] = useState(null);
+  const [inspectionForm, setInspectionForm] = useState({ weather: "", track_condition: "", horse_health: "" });
+
   const loadData = async () => {
     try {
       const allRaces = await api.get("/races");
@@ -30,6 +33,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
 
   const initResultsForm = (race) => {
     setSelectedRace(race);
+    setSelectedRaceForInspection(null);
     setResultsForm(
       race.participants.map((p) => ({
         race_participant_id: p.id,
@@ -65,6 +69,32 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
     try {
       await api.post(`/results/${raceId}/results/confirm`);
       showMsg("Xác nhận kết quả chính thức thành công!");
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  const initInspectionForm = (race) => {
+    setSelectedRaceForInspection(race);
+    setSelectedRace(null);
+    setInspectionForm({
+      weather: "Sunny",
+      track_condition: race.track_condition || "Good",
+      horse_health: "All horses are healthy and fit to race."
+    });
+  };
+
+  const submitInspection = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post(`/races/${selectedRaceForInspection.id}/inspection`, {
+        weather: inspectionForm.weather,
+        track_condition: inspectionForm.track_condition,
+        horse_health: inspectionForm.horse_health
+      });
+      showMsg("Ghi nhận kiểm tra đường đua thành công!");
+      setSelectedRaceForInspection(null);
       loadData();
     } catch (err) {
       showMsg(err.message, "error");
@@ -127,6 +157,12 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                         </span>
                       </td>
                       <td>
+                        {rc.status === "SCHEDULED" && (
+                          <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", marginRight: "8px", backgroundColor: "#3b82f6" }}
+                            onClick={() => initInspectionForm(rc)}>
+                            Kiểm tra đường đua
+                          </button>
+                        )}
                         <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", marginRight: "8px" }}
                           onClick={() => initResultsForm(rc)}>
                           {rc.status === "COMPLETED" ? "Sửa kết quả" : "Nhập kết quả"}
@@ -224,6 +260,34 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                   <button type="submit" className="btn-primary" style={{ backgroundColor: "var(--danger)" }}>Báo cáo vi phạm</button>
                 </form>
               </div>
+            </div>
+          )}
+
+          {selectedRaceForInspection && (
+            <div style={{ marginTop: "32px", borderTop: "1px solid var(--card-border)", paddingTop: "24px" }}>
+              <h2>🔍 Kiểm tra trước trận đấu: <span style={{ color: "var(--primary)" }}>{selectedRaceForInspection.name}</span></h2>
+              
+              <form onSubmit={submitInspection} style={{ ...styles.formPanel, maxWidth: "600px" }} className="glass">
+                <div className="form-group">
+                  <label>Thời tiết</label>
+                  <input type="text" className="input-field" required placeholder="Ví dụ: Sunny, Rainy, Cloudy..."
+                    value={inspectionForm.weather} onChange={(e) => setInspectionForm({ ...inspectionForm, weather: e.target.value })} />
+                </div>
+                <div className="form-group">
+                  <label>Tình trạng đường chạy</label>
+                  <input type="text" className="input-field" required placeholder="Ví dụ: Dry, Good, Wet, Muddy..."
+                    value={inspectionForm.track_condition} onChange={(e) => setInspectionForm({ ...inspectionForm, track_condition: e.target.value })} />
+                </div>
+                <div className="form-group">
+                  <label>Đánh giá sức khỏe ngựa</label>
+                  <textarea className="input-field" required placeholder="Ví dụ: Tất cả ngựa tham gia đều đủ điều kiện sức khỏe..."
+                    value={inspectionForm.horse_health} onChange={(e) => setInspectionForm({ ...inspectionForm, horse_health: e.target.value })} />
+                </div>
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <button type="submit" className="btn-primary">Gửi báo cáo kiểm tra</button>
+                  <button type="button" onClick={() => setSelectedRaceForInspection(null)} className="btn-secondary">Hủy</button>
+                </div>
+              </form>
             </div>
           )}
         </div>

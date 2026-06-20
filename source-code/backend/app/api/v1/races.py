@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import Race, Round, RaceParticipant, Registration, RefereeProfile
-from app.schemas.race import RaceCreate, RaceOut, RaceUpdate, RaceParticipantCreate, RaceParticipantOut
+from app.models.database_models import Race, Round, RaceParticipant, Registration, RefereeProfile, RaceInspection
+from app.schemas.race import RaceCreate, RaceOut, RaceUpdate, RaceParticipantCreate, RaceParticipantOut, RaceInspectionCreate, RaceInspectionOut
 
 router = APIRouter()
 
@@ -202,3 +202,48 @@ def delete_race(
     db.delete(race)
     db.commit()
     return None
+
+@router.post("/{race_id}/inspection", response_model=RaceInspectionOut, status_code=status.HTTP_201_CREATED)
+def record_inspection(
+    race_id: int,
+    inspection_in: RaceInspectionCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["REFEREE", "ADMIN"]))
+):
+    race = db.query(Race).filter(Race.id == race_id).first()
+    if not race:
+        raise HTTPException(status_code=404, detail="Race not found")
+        
+    # Verify referee assignment if role is REFEREE
+    if current_user.role.name == "REFEREE":
+        ref_profile = current_user.referee_profile
+        if not ref_profile or race.referee_id != ref_profile.id:
+            raise HTTPException(status_code=403, detail="You are not assigned as the referee for this race")
+            
+    # Verify race status is SCHEDULED
+    if race.status != "SCHEDULED":
+        raise HTTPException(status_code=400, detail="Can only perform inspections on scheduled races")
+        
+    # Check if inspection already exists
+    existing = db.query(RaceInspection).filter(RaceInspection.race_id == race_id).first()
+    if existing:
+        existing.weather = inspection_in.weather
+        existing.track_condition = inspection_in.track_condition
+        existing.horse_health = inspection_in.horse_health
+        inspection = existing
+    else:
+        inspection = RaceInspection(
+            race_id=race_id,
+            weather=inspection_in.weather,
+            track_condition=inspection_in.track_condition,
+            horse_health=inspection_in.horse_health
+        )
+        db.add(inspection)
+        
+    # Automatically sync the race track_condition with the inspected track condition if provided
+    if inspection_in.track_condition:
+        race.track_condition = inspection_in.track_condition
+        
+    db.commit()
+    db.refresh(inspection)
+    return inspection

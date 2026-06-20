@@ -1,6 +1,7 @@
 from typing import List
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
@@ -149,25 +150,25 @@ def read_rankings(db: Session = Depends(get_db)):
 
 def recalculate_rankings(db: Session):
     # Fetch all points grouped by Horse
-    cursor = db.execute("""
+    cursor = db.execute(text("""
         SELECT reg.horse_id, SUM(res.points) as total_points
         FROM Results res
         JOIN RaceParticipants rp ON res.race_participant_id = rp.id
         JOIN Registrations reg ON rp.registration_id = reg.id
         GROUP BY reg.horse_id
         ORDER BY total_points DESC
-    """)
+    """))
     horse_points = cursor.fetchall()
     
     # Fetch all points grouped by Jockey
-    cursor = db.execute("""
+    cursor = db.execute(text("""
         SELECT reg.jockey_id, SUM(res.points) as total_points
         FROM Results res
         JOIN RaceParticipants rp ON res.race_participant_id = rp.id
         JOIN Registrations reg ON rp.registration_id = reg.id
         GROUP BY reg.jockey_id
         ORDER BY total_points DESC
-    """)
+    """))
     jockey_points = cursor.fetchall()
     
     # Delete current rankings

@@ -55,3 +55,21 @@ class RaceOut(RaceBase):
 
     class Config:
         from_attributes = True
+
+# Race Inspection schemas
+class RaceInspectionBase(BaseModel):
+    weather: Optional[str] = None
+    track_condition: Optional[str] = None
+    horse_health: Optional[str] = None
+
+class RaceInspectionCreate(RaceInspectionBase):
+    pass
+
+class RaceInspectionOut(RaceInspectionBase):
+    id: int
+    race_id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+

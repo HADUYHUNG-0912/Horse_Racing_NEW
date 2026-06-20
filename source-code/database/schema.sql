@@ -175,6 +175,16 @@ CREATE TABLE Violations (
     violation_date DATETIME DEFAULT GETDATE()
 );
 
+-- 15.5. RaceInspections table
+CREATE TABLE RaceInspections (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    race_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Races(id) ON DELETE CASCADE,
+    weather NVARCHAR(255) NULL,
+    track_condition NVARCHAR(255) NULL,
+    horse_health NVARCHAR(MAX) NULL,
+    created_at DATETIME DEFAULT GETDATE()
+);
+
 -- 16. Rankings table
 CREATE TABLE Rankings (
     id INT IDENTITY(1,1) PRIMARY KEY,
