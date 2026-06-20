@@ -4,20 +4,17 @@ from pydantic import BaseModel
 
 # Prediction schemas
 class PredictionBase(BaseModel):
+    race_participant_id: int
     predicted_rank: int
 
 class PredictionCreate(PredictionBase):
-    race_id: int
-    horse_id: int
+    pass
 
 class PredictionOut(PredictionBase):
     id: int
     user_id: int
-    race_participant_id: int
     prediction_date: datetime
     status: str # PENDING, CORRECT, INCORRECT
-    race_id: Optional[int] = None
-    horse_id: Optional[int] = None
     horse_name: Optional[str] = None
     jockey_name: Optional[str] = None
     race_name: Optional[str] = None
