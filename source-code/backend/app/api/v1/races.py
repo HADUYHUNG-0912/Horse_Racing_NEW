@@ -21,6 +21,32 @@ def read_races(db: Session = Depends(get_db)):
             p.jockey_name = p.registration.jockey.user.full_name
     return races
 
+@router.get("/assigned-to-me", response_model=List[RaceOut])
+def read_assigned_races(
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["REFEREE", "ADMIN"]))
+):
+    if current_user.role.name == "REFEREE":
+        ref_profile = current_user.referee_profile
+        if not ref_profile:
+            raise HTTPException(status_code=404, detail="Referee profile not found for this user")
+        races = db.query(Race).filter(Race.referee_id == ref_profile.id).all()
+    else:
+        ref_profile = current_user.referee_profile
+        if ref_profile:
+            races = db.query(Race).filter(Race.referee_id == ref_profile.id).all()
+        else:
+            races = db.query(Race).all()
+            
+    # Populate extra fields for response schemas
+    for race in races:
+        if race.referee:
+            race.referee_name = race.referee.user.full_name
+        for p in race.participants:
+            p.horse_name = p.registration.horse.name
+            p.jockey_name = p.registration.jockey.user.full_name
+    return races
+
 @router.post("/rounds/{round_id}/races", response_model=RaceOut, status_code=status.HTTP_201_CREATED)
 def create_race(
     round_id: int,

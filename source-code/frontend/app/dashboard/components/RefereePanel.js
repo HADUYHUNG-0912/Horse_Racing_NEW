@@ -17,8 +17,8 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
 
   const loadData = async () => {
     try {
-      const allRaces = await api.get("/races");
-      setRaces(allRaces);
+      const assignedRaces = await api.get("/races/assigned-to-me");
+      setRaces(assignedRaces);
     } catch (err) {
       showMsg(err.message, "error");
     } finally {
@@ -141,10 +141,10 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                 </tr>
               </thead>
               <tbody>
-                {races.filter(rc => rc.referee_name === user.full_name).length === 0 ? (
+                {races.length === 0 ? (
                   <tr><td colSpan="7" style={{ textAlign: "center", color: "#64748b" }}>Chưa được phân công trận đua nào</td></tr>
                 ) : (
-                  races.filter(rc => rc.referee_name === user.full_name).map(rc => (
+                  races.map(rc => (
                     <tr key={rc.id}>
                       <td style={{ fontWeight: "700" }}>{rc.name}</td>
                       <td>{rc.race_time}</td>
