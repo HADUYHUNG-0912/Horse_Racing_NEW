@@ -11,6 +11,7 @@ USE HorseRacing;
 GO
 
 -- Drop tables if they exist to allow clean recreations
+IF OBJECT_ID('RaceInspections', 'U') IS NOT NULL DROP TABLE RaceInspections;
 IF OBJECT_ID('Predictions', 'U') IS NOT NULL DROP TABLE Predictions;
 IF OBJECT_ID('Rankings', 'U') IS NOT NULL DROP TABLE Rankings;
 IF OBJECT_ID('Violations', 'U') IS NOT NULL DROP TABLE Violations;

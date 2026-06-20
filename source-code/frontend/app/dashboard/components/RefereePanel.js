@@ -58,6 +58,19 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
     }
   };
 
+  const handleConfirmResults = async (raceId) => {
+    if (!confirm("Bạn có chắc chắn muốn xác nhận kết quả chính thức cho trận đấu này? Trạng thái sẽ chuyển thành COMPLETED và bảng xếp hạng sẽ được cập nhật.")) {
+      return;
+    }
+    try {
+      await api.post(`/results/${raceId}/results/confirm`);
+      showMsg("Xác nhận kết quả chính thức thành công!");
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
   const submitViolation = async (e) => {
     e.preventDefault();
     try {
@@ -109,15 +122,21 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                       <td>{rc.track_condition}</td>
                       <td>{rc.participants.length}</td>
                       <td>
-                        <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : rc.status === "PENDING" ? "badge-pending" : "badge-results-entered" ? "badge-info" : "badge-pending"}`}>
+                        <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : rc.status === "RESULTS_ENTERED" ? "badge-info" : "badge-pending"}`}>
                           {rc.status}
                         </span>
                       </td>
                       <td>
-                        <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px" }}
+                        <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", marginRight: "8px" }}
                           onClick={() => initResultsForm(rc)}>
                           {rc.status === "COMPLETED" ? "Sửa kết quả" : "Nhập kết quả"}
                         </button>
+                        {rc.status === "RESULTS_ENTERED" && (
+                          <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", backgroundColor: "var(--success)" }}
+                            onClick={() => handleConfirmResults(rc.id)}>
+                            Xác nhận kết quả chính thức
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
