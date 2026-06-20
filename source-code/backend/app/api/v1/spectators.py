@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import Prediction, RaceParticipant, Result, Race, Registration
+from app.models.database_models import Prediction, RaceParticipant, Result, Race, Registration, SpectatorProfile
 from app.schemas.prediction import PredictionCreate, PredictionOut
 
 router = APIRouter()
@@ -27,12 +27,12 @@ def make_prediction(
         raise HTTPException(status_code=400, detail="Cannot make prediction on a completed race")
         
     # Check if spectator has already made a prediction on this participant
-    dup = db.query(Prediction).filter(
+    dup = db.query(Prediction).join(RaceParticipant).filter(
         Prediction.user_id == current_user.id,
-        Prediction.race_participant_id == part.id
+        RaceParticipant.race_id == part.race_id
     ).first()
     if dup:
-        raise HTTPException(status_code=400, detail="You have already made a prediction for this participant")
+        raise HTTPException(status_code=400, detail="You have already made a prediction for this race")
         
     prediction = Prediction(
         user_id=current_user.id,
@@ -72,9 +72,12 @@ def read_predictions(
             result = db.query(Result).filter(Result.race_participant_id == part.id).first()
             if result:
                 if result.rank == p.predicted_rank:
-                    p.status = "CORRECT"
+                    p.status = "Won"
+                    spectator = db.query(SpectatorProfile).filter(SpectatorProfile.user_id == p.user_id).first()
+                    if spectator:
+                        spectator.earnRewardPoints(10)
                 else:
-                    p.status = "INCORRECT"
+                    p.status = "Lost"
                 db.commit() # Save evaluated status
                 
     return preds
