@@ -135,6 +135,7 @@ class Race(Base):
     round = relationship("Round", back_populates="races")
     referee = relationship("RefereeProfile", back_populates="races")
     participants = relationship("RaceParticipant", back_populates="race", cascade="all, delete-orphan")
+    inspection = relationship("RaceInspection", uselist=False, back_populates="race", cascade="all, delete-orphan")
 
 class Registration(Base):
     __tablename__ = 'Registrations'
@@ -230,3 +231,15 @@ class Prediction(Base):
     
     user = relationship("User", back_populates="predictions")
     participant = relationship("RaceParticipant", back_populates="predictions")
+
+class RaceInspection(Base):
+    __tablename__ = 'RaceInspections'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    race_id = Column(Integer, ForeignKey('Races.id', ondelete="CASCADE"), nullable=False, unique=True)
+    weather = Column(String(255), nullable=True)
+    track_condition = Column(String(255), nullable=True)
+    horse_health = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    race = relationship("Race", back_populates="inspection")

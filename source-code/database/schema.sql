@@ -11,6 +11,7 @@ USE HorseRacing;
 GO
 
 -- Drop tables if they exist to allow clean recreations
+IF OBJECT_ID('RaceInspections', 'U') IS NOT NULL DROP TABLE RaceInspections;
 IF OBJECT_ID('Predictions', 'U') IS NOT NULL DROP TABLE Predictions;
 IF OBJECT_ID('Rankings', 'U') IS NOT NULL DROP TABLE Rankings;
 IF OBJECT_ID('Violations', 'U') IS NOT NULL DROP TABLE Violations;
@@ -173,6 +174,16 @@ CREATE TABLE Violations (
     penalty NVARCHAR(100),
     fine_amount DECIMAL(10,2) DEFAULT 0.00,
     violation_date DATETIME DEFAULT GETDATE()
+);
+
+-- 15.5. RaceInspections table
+CREATE TABLE RaceInspections (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    race_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Races(id) ON DELETE CASCADE,
+    weather NVARCHAR(255) NULL,
+    track_condition NVARCHAR(255) NULL,
+    horse_health NVARCHAR(MAX) NULL,
+    created_at DATETIME DEFAULT GETDATE()
 );
 
 -- 16. Rankings table

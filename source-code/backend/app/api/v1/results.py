@@ -1,6 +1,7 @@
 from typing import List
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
@@ -89,12 +90,8 @@ def record_results(
         part.status = "FINISHED"
         created_results.append(res)
         
-    race.status = "COMPLETED"
-    evaluate_predictions_for_completed_race(db, race_id)
+    race.status = "RESULTS_ENTERED"
     db.commit()
-    
-    # Refresh and recalculate global rankings based on cumulative points
-    recalculate_rankings(db)
     
     # Populate extra fields for output
     for r in created_results:
@@ -103,6 +100,38 @@ def record_results(
         r.jockey_name = r.participant.registration.jockey.user.full_name
         
     return created_results
+
+@router.post("/{race_id}/results/confirm")
+def confirm_results(
+    race_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["REFEREE", "ADMIN"]))
+):
+    race = db.query(Race).filter(Race.id == race_id).first()
+    if not race:
+        raise HTTPException(status_code=404, detail="Race not found")
+        
+    # Verify referee assignment if role is REFEREE
+    if current_user.role.name == "REFEREE":
+        ref_profile = current_user.referee_profile
+        if not ref_profile or race.referee_id != ref_profile.id:
+            raise HTTPException(status_code=403, detail="You are not assigned as the referee for this race")
+            
+    # Check if race results have been entered
+    if race.status != "RESULTS_ENTERED":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Race results have not been entered yet or race is already completed"
+        )
+        
+    race.status = "COMPLETED"
+    evaluate_predictions_for_completed_race(db, race_id)
+    db.commit()
+    
+    # Recalculate global rankings based on cumulative points
+    recalculate_rankings(db)
+    
+    return {"message": "Results confirmed successfully", "race_id": race_id, "status": "COMPLETED"}
 
 @router.post("/{race_id}/violations", response_model=ViolationOut, status_code=status.HTTP_201_CREATED)
 def record_violation(
@@ -157,25 +186,25 @@ def read_rankings(db: Session = Depends(get_db)):
 
 def recalculate_rankings(db: Session):
     # Fetch all points grouped by Horse
-    cursor = db.execute("""
+    cursor = db.execute(text("""
         SELECT reg.horse_id, SUM(res.points) as total_points
         FROM Results res
         JOIN RaceParticipants rp ON res.race_participant_id = rp.id
         JOIN Registrations reg ON rp.registration_id = reg.id
         GROUP BY reg.horse_id
         ORDER BY total_points DESC
-    """)
+    """))
     horse_points = cursor.fetchall()
     
     # Fetch all points grouped by Jockey
-    cursor = db.execute("""
+    cursor = db.execute(text("""
         SELECT reg.jockey_id, SUM(res.points) as total_points
         FROM Results res
         JOIN RaceParticipants rp ON res.race_participant_id = rp.id
         JOIN Registrations reg ON rp.registration_id = reg.id
         GROUP BY reg.jockey_id
         ORDER BY total_points DESC
-    """)
+    """))
     jockey_points = cursor.fetchall()
     
     # Delete current rankings
