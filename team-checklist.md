@@ -45,24 +45,24 @@ Nhánh chính để merge: `dev-GiaHuy`
 ---
 
 ## 🏁 Phân hệ RACE REFEREE - Bùi Huy
-- [ ] **Xác nhận kết quả 2 bước:**
-  - [ ] Sửa Backend: Khi nhập kết quả (`POST /results/{race_id}/results`), đổi trạng thái trận đấu thành `RESULTS_ENTERED`.
-  - [ ] Viết API mới: `POST /results/{race_id}/results/confirm` để chuyển trạng thái trận đấu thành `COMPLETED` và tính toán lại bảng xếp hạng (`recalculate_rankings`).
-  - [ ] Sửa Frontend: Thêm nút "Xác nhận kết quả chính thức" trên UI của Referee.
-- [ ] **Giám sát trận đua (Race Inspection):**
-  - [ ] Tạo bảng `RaceInspections` trong DB và API `POST /races/{race_id}/inspection` ghi chép tình trạng đường chạy, thời tiết, sức khỏe ngựa.
-  - [ ] Xây dựng UI để Referee ghi chép thông tin này trước giờ đua.
-- [ ] **Tối ưu danh sách trận đấu:** Viết API `/races/assigned-to-me` lấy danh sách trận đua theo ID của Referee hiện tại để FE hiển thị đúng dữ liệu (không lọc thủ công ở client side).
+- [x] **Xác nhận kết quả 2 bước:**
+  - [x] Sửa Backend: Khi nhập kết quả (`POST /results/{race_id}/results`), đổi trạng thái trận đấu thành `RESULTS_ENTERED`.
+  - [x] Viết API mới: `POST /results/{race_id}/results/confirm` để chuyển trạng thái trận đấu thành `COMPLETED` và tính toán lại bảng xếp hạng (`recalculate_rankings`).
+  - [x] Sửa Frontend: Thêm nút "Xác nhận kết quả chính thức" trên UI của Referee.
+- [x] **Giám sát trận đua (Race Inspection):**
+  - [x] Tạo bảng `RaceInspections` trong DB và API `POST /races/{race_id}/inspection` ghi chép tình trạng đường chạy, thời tiết, sức khỏe ngựa.
+  - [x] Xây dựng UI để Referee ghi chép thông tin này trước giờ đua.
+- [x] **Tối ưu danh sách trận đấu:** Viết API `/races/assigned-to-me` lấy danh sách trận đua theo ID của Referee hiện tại để FE hiển thị đúng dữ liệu (không lọc thủ công ở client side).
 
 ---
 
 ## 🔮 Phân hệ SPECTATOR - Thu Mây
-- [ ] **Liên kết Dự đoán với Trận đấu cụ thể:**
-  - [ ] Sửa giao diện Form dự đoán: Thêm dropdown chọn Giải đấu và Trận đấu. Danh sách ngựa tự động lọc theo trận đấu đã chọn.
-  - [ ] Lưu dự đoán vào bảng `Prediction` kết nối với `User_ID`, `Race_ID`, và `Horse_ID`.
-- [ ] **Tự động đối chiếu dự đoán & Điểm thưởng:**
-  - [ ] Viết logic Backend tự động so sánh kết quả dự đoán với kết quả thực tế của trận đấu khi trận đấu chuyển sang `COMPLETED`.
-  - [ ] Cập nhật trạng thái dự đoán thành `Won` hoặc `Lost`, cộng điểm thưởng (`rewardPoints`) cho tài khoản khán giả khi đoán đúng.
-- [ ] **Xem Lịch đấu & Kết quả công khai:**
-  - [ ] Thiết kế màn hình xem Lịch thi đấu sắp diễn ra và kết quả các trận đấu đã kết thúc cho Spectator.
-  - [ ] Hiển thị điểm thưởng của Spectator lên thanh Header.
+- [x] **Liên kết Dự đoán với Trận đấu cụ thể:**
+  - [x] Sửa giao diện Form dự đoán: Thêm dropdown chọn Giải đấu và Trận đấu. Danh sách ngựa tự động lọc theo trận đấu đã chọn.
+  - [x] Lưu dự đoán vào bảng `Prediction` kết nối với `User_ID`, `Race_ID`, và `Horse_ID`.
+- [x] **Tự động đối chiếu dự đoán & Điểm thưởng:**
+  - [x] Viết logic Backend tự động so sánh kết quả dự đoán với kết quả thực tế của trận đấu khi trận đấu chuyển sang `COMPLETED`.
+  - [x] Cập nhật trạng thái dự đoán thành `Won` hoặc `Lost`, cộng điểm thưởng (`rewardPoints`) cho tài khoản khán giả khi đoán đúng.
+- [x] **Xem Lịch đấu & Kết quả công khai:**
+  - [x] Thiết kế màn hình xem Lịch thi đấu sắp diễn ra và kết quả các trận đấu đã kết thúc cho Spectator.
+  - [x] Hiển thị điểm thưởng của Spectator lên thanh Header.
