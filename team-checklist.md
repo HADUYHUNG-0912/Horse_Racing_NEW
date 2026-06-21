@@ -8,6 +8,13 @@ Nhánh chính để merge: `dev-GiaHuy`
 - [x] Tách file `frontend/app/dashboard/page.js` lớn thành các component nhỏ tại `frontend/app/dashboard/components/` để tránh xung đột Git.
 - [x] Hỗ trợ các thành viên cài đặt Database và môi trường chạy local.
 - [x] Review code và phê duyệt Pull Request từ các nhánh `feature/*` vào `dev-GiaHuy`.
+- [x] **Fix Bug Step 9 & 10 (21/06/2026):** Điều tra và sửa 2 lỗi được báo cáo sau khi test Phase 1+2:
+  - **Encoding tiếng Việt:** Đổi các cột `String`→`Unicode`, `Text`→`UnicodeText` trong `database_models.py` để tên tiếng Việt không bị lưu thành `?`.
+  - **Step 9 (Jockey - Lịch trình Đua):** Sửa `jockeys.py` (backend populate `horse_name`, `jockey_name`, `owner_name`, `tournament_name`) + `JockeyPanel.js` (hiển thị tên thật thay vì ID).
+  - **Step 10 (Owner - Giải đấu đã đăng ký):** Sửa `OwnerPanel.js` hiển thị `horse_name`/`jockey_name` thật và badge trạng thái `✓ Đã chấp nhận` / `⏳ Chờ duyệt` / `✗ Bị từ chối`.
+  - **Date format:** Thêm `formatDate`/`formatDateTime` helper vào `JockeyPanel.js`, `OwnerPanel.js`, `RefereePanel.js`, `AdminPanel.js`.
+  - Cập nhật `test_guide_phase1_2.md` bổ sung bước 8.5 (phân công làn đua).
+  - Commit & push lên `dev-GiaHuy` (commit `2fae573`).
 
 ---
 
@@ -54,6 +61,8 @@ Nhánh chính để merge: `dev-GiaHuy`
   - [x] Xây dựng UI để Referee ghi chép thông tin này trước giờ đua.
 - [x] **Tối ưu danh sách trận đấu:** Viết API `/races/assigned-to-me` lấy danh sách trận đua theo ID của Referee hiện tại để FE hiển thị đúng dữ liệu (không lọc thủ công ở client side).
 
+> ✅ **Toàn bộ tasks Phase 3 - Bùi Huy: Đã hoàn thành & merged vào `dev-GiaHuy`** _(21/06/2026)_
+
 ---
 
 ## 🔮 Phân hệ SPECTATOR - Thu Mây
@@ -66,3 +75,19 @@ Nhánh chính để merge: `dev-GiaHuy`
 - [x] **Xem Lịch đấu & Kết quả công khai:**
   - [x] Thiết kế màn hình xem Lịch thi đấu sắp diễn ra và kết quả các trận đấu đã kết thúc cho Spectator.
   - [x] Hiển thị điểm thưởng của Spectator lên thanh Header.
+
+> ✅ **Toàn bộ tasks Phase 3 - Thu Mây: Đã hoàn thành & merged vào `dev-GiaHuy`** _(21/06/2026)_
+
+---
+
+## 🐛 Bug Fix Log (Sau kiểm thử)
+
+### 21/06/2026 — Team Leader fix lỗi báo cáo sau test Phase 1+2
+
+| Lỗi | File sửa | Mô tả |
+|-----|----------|-------|
+| Encoding tiếng Việt (?) | `database_models.py` | String→Unicode, Text→UnicodeText |
+| Step 9: Jockey thấy ID ngựa thay vì tên | `jockeys.py` + `JockeyPanel.js` | Populate `horse_name` từ backend |
+| Step 10: Owner thấy ID thay vì tên + badge sai | `horse.py` + `OwnerPanel.js` | Schema + UI hiển thị tên và badge |
+| Ngày giờ hiển thị dạng ISO raw | `*Panel.js` (4 file) | Thêm `formatDate`/`formatDateTime` |
+| Test guide thiếu bước lane assignment | `test_guide_phase1_2.md` | Thêm bước 8.5 |

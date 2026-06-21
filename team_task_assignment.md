@@ -6,6 +6,12 @@
 *   **[x] Task 1 (Cấu trúc lại thư mục UI):** Chủ động hỗ trợ nhóm tách file `frontend/app/dashboard/page.js` lớn thành các component con riêng biệt (ví dụ: thư mục `frontend/app/dashboard/components/`). Việc này giúp **Huệ, Thuỳ Anh, Thái Châu, Bùi Huy, Thu Mây** có thể code các tab giao diện của mình độc lập mà không bị xung đột Git.
 *   **[x] Task 2 (Quản trị Git & Code Review):** Nhận PR (Pull Request) từ các nhánh tính năng của mọi người, kiểm tra lỗi và merge vào nhánh `dev-GiaHuy`.
 *   **[x] Task 3 (Hỗ trợ Database & Config):** Giải quyết các lỗi kết nối SQL Server Express hoặc SQLAlchemy khi các thành viên cài đặt môi trường.
+*   **[x] Task 4 — Fix Bug Step 9 & 10 (21/06/2026):** Điều tra và vá 2 lỗi được báo cáo sau khi kiểm thử Phase 1+2:
+    *   **Encoding tiếng Việt:** `database_models.py` — đổi `String`→`Unicode`, `Text`→`UnicodeText` trên các cột lưu tên tiếng Việt.
+    *   **Step 9 (Jockey - Lịch trình Đua):** `jockeys.py` populate `horse_name`, `owner_name`, `tournament_name` + `JockeyPanel.js` hiển thị tên thật.
+    *   **Step 10 (Owner - Giải đấu đã đăng ký):** `horse.py` (schema) + `OwnerPanel.js` hiển thị `horse_name`/`jockey_name` + badge `✓/⏳/✗`.
+    *   **Date format:** Thêm `formatDate`/`formatDateTime` vào cả 4 Panel (Jockey, Owner, Referee, Admin).
+    *   Cập nhật `test_guide_phase1_2.md` bổ sung bước 8.5 (phân công làn đua). Commit `2fae573` push lên `dev-GiaHuy`.
 
 ---
 
@@ -57,6 +63,8 @@
     *   Xây dựng màn hình UI cho phép Referee nhập các ghi chú kiểm tra này trước khi trận đua bắt đầu.
 *   **Task 3 (Tối ưu danh sách trận đấu được phân công):** Viết API chuyên biệt `/races/assigned-to-me` lấy danh sách trận đua theo ID của Referee hiện tại để FE hiển thị đúng dữ liệu (không lọc thủ công ở client side).
 
+> ✅ **Đã hoàn thành & merged vào `dev-GiaHuy`** _(21/06/2026)_
+
 ---
 
 ## 🔮 6. Phân hệ SPECTATOR — Thu Mây
@@ -72,11 +80,13 @@
     *   Xây dựng màn hình xem Lịch thi đấu sắp diễn ra và kết quả các trận đấu đã kết thúc cho Spectator tra cứu.
     *   Hiển thị Điểm thưởng tích lũy (`rewardPoints`) lên thanh Header cạnh tên tài khoản Spectator.
 
+> ✅ **Đã hoàn thành & merged vào `dev-GiaHuy`** _(21/06/2026)_
+
 ---
 
 # 📅 Kế hoạch triển khai mẫu đề xuất (Timeline)
 
 *   **Ngày 1-2 (Phase 1 — ✅ Hoàn thành 16/06/2026):** **Huệ & Gia Huy** ưu tiên sửa lỗi crash React Hooks của Admin và cung cấp API User/Referee. **Team Leader** hỗ trợ cấu trúc lại các component.
 *   **Ngày 3-4 (Phase 2 — ✅ Hoàn thành 19/06/2026):** **Thuỳ Anh** sửa dropdown mời Jockey, đăng ký giải đấu, xem trạng thái, CRUD ngựa. **Thái Châu** viết nút đồng ý/từ chối lời mời, hiển thị tên ngựa, xây dựng hồ sơ cá nhân. **Team Leader** review, fix lỗi thiếu (`api.delete`, backend PUT/DELETE `/horses`) và giải quyết conflict merge.
-*   **Ngày 5-6 (Phase 3 — ⏳ Đang tiến hành):** **Bùi Huy** làm giao diện/API xác nhận kết quả của Referee. **Thu Mây** xây dựng màn hình xem lịch đấu công khai và form dự đoán.
-*   **Ngày 7 (Phase 4 — Kiểm thử tích hợp):** Cả nhóm cùng chạy thử nghiệm liên hoàn toàn bộ luồng: *Admin tạo giải $\rightarrow$ Owner mời Jockey $\rightarrow$ Jockey đồng ý $\rightarrow$ Owner đăng ký giải $\rightarrow$ Admin duyệt & xếp lịch $\rightarrow$ Referee nhập kết quả $\rightarrow$ Khán giả xem điểm dự đoán*.
+*   **Ngày 5-6 (Phase 3 — ✅ Hoàn thành 21/06/2026):** **Bùi Huy** xây dựng giao diện/API giám sát và xác nhận kết quả của Referee. **Thu Mây** xây dựng màn hình xem lịch đấu công khai và form dự đoán. **Team Leader** fix bug Step 9 & 10 (encoding, tên thật, date format) và push `dev-GiaHuy`.
+*   **Ngày 7 (Phase 4 — Kiểm thử tích hợp — ⏳ Đang tiến hành):** Cả nhóm cùng chạy thử nghiệm liên hoàn toàn bộ luồng: *Admin tạo giải $\rightarrow$ Owner mời Jockey $\rightarrow$ Jockey đồng ý $\rightarrow$ Owner đăng ký giải $\rightarrow$ Admin duyệt & xếp lịch $\rightarrow$ Referee nhập kết quả $\rightarrow$ Khán giả xem điểm dự đoán*.

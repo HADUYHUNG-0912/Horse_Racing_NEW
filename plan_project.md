@@ -70,4 +70,21 @@
     - Thêm route `PUT /horses/{id}` và `DELETE /horses/{id}` vào `backend/api/v1/horses.py` kèm validation tuổi.
     - Giải quyết 2 merge conflict (`OwnerPanel.js`, `horses.py`) khi tích hợp các nhánh.
   - Kiểm thử liên hoàn luồng Owner → Jockey hoạt động chính xác. Sẵn sàng chuyển giao sang Phase 3.
+- **Tiến độ đã hoàn thành (21/06/2026 - Kết thúc Phase 3):**
+  - **Bùi Huy (Referee):** Merge thành công các nhánh PR #17, #18, #19 vào `dev-GiaHuy`.
+    - API xác nhận kết quả 2 bước: `POST /results/{race_id}/results` (→ RESULTS_ENTERED) + `POST /results/{race_id}/results/confirm` (→ COMPLETED + recalculate_rankings).
+    - Bảng `RaceInspections` + API `POST /races/{race_id}/inspection` + UI nhập thông tin giám sát đường đua.
+    - API `/races/assigned-to-me` để FE chỉ tải đúng các trận đua được phân công.
+  - **Thu Mây (Spectator):** Merge thành công PR vào `dev-GiaHuy`.
+    - Form dự đoán liên kết với Race cụ thể, dropdown ngựa tự lọc theo trận đua.
+    - Logic đối chiếu kết quả dự đoán tự động khi trận đấu → COMPLETED, cộng `rewardPoints`.
+    - Màn hình xem lịch thi đấu công khai và kết quả; hiển thị điểm thưởng trên Header.
+  - **Team Leader (fix bug sau test Phase 1+2 - commit `2fae573`):**
+    - `database_models.py`: đổi `String`→`Unicode`, `Text`→`UnicodeText` trên các cột tiếng Việt (fix hiển thị `?`).
+    - `jockeys.py` + `horse.py`: populate `horse_name`, `owner_name`, `jockey_name`, `tournament_name` vào response invitation.
+    - `JockeyPanel.js`: fix Step 9 — hiển thị tên ngựa thật trong tab "Lịch trình Đua".
+    - `OwnerPanel.js`: fix Step 10 — hiển thị tên ngựa/jockey thật + badge trạng thái `✓/⏳/✗` trong tab "Giải đấu đã đăng ký".
+    - `*Panel.js` (4 file): thêm `formatDate`/`formatDateTime` — ngày giờ hiển thị dạng dd/mm/yyyy HH:MM.
+    - `test_guide_phase1_2.md`: bổ sung bước 8.5 (phân công làn đua - lane assignment).
+  - Kiểm thử API-level xác nhận các fix Step 9 & 10 hoạt động chính xác. Sẵn sàng kiểm thử tích hợp toàn luồng Phase 4.
 
