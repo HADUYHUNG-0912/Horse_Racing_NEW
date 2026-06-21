@@ -167,9 +167,32 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     }
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric"
+    });
+  };
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  };
+
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Owner...</div>;
   }
+
+  const horseMap = new Map(horses.map(h => [h.id, h.name]));
+  const jockeyMap = new Map(jockeys.map(j => [j.id, j.full_name || j.username]));
+  const tournamentMap = new Map(tournaments.map(t => [t.id, t.name]));
 
   return (
     <>
@@ -320,9 +343,9 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                     ) : (
                       invitations.map(i => (
                         <tr key={i.id}>
-                          <td>Jockey #{i.jockey_id}</td>
-                          <td style={{ fontWeight: "700" }}>Ngựa #{i.horse_id}</td>
-                          <td>Giải đấu #{i.tournament_id}</td>
+                          <td>{i.jockey_name || `Jockey #${i.jockey_id}`}</td>
+                          <td style={{ fontWeight: "700" }}>{i.horse_name || `Ngựa #${i.horse_id}`}</td>
+                          <td>{i.tournament_name || `Giải đấu #${i.tournament_id}`}</td>
                           <td>
                             <span className={`badge ${i.status === "ACCEPTED" ? "badge-approved" : i.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
                               {i.status}
@@ -366,7 +389,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       <tr key={t.id}>
                         <td style={{ fontWeight: "700" }}>{t.name}</td>
                         <td>{t.location}</td>
-                        <td>{t.start_date} đến {t.end_date}</td>
+                        <td>{formatDate(t.start_date)} đến {formatDate(t.end_date)}</td>
                         <td>
                           {acceptedInvites.length === 0 ? (
                             <span style={{ color: "#64748b", fontSize: "13px" }}>Cần mời và được Jockey đồng ý trước</span>
@@ -374,23 +397,32 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                               {acceptedInvites.map(inv => (
                                 <div key={inv.id} style={{ fontSize: "13px" }}>
-                                  🏇 Ngựa #{inv.horse_id} & Jockey #{inv.jockey_id}
+                                  🏇 {inv.horse_name || `Ngựa #${inv.horse_id}`} & {inv.jockey_name || `Jockey #${inv.jockey_id}`}
                                 </div>
                               ))}
                             </div>
                           )}
                         </td>
                         <td>
-                          {acceptedInvites.map(inv => (
-                            <button
-                              key={inv.id}
-                              className="btn-primary"
-                              style={{ padding: "6px 12px", fontSize: "12px", marginBottom: "4px", display: "block" }}
-                              onClick={() => registerForTournament(t.id, inv.horse_id, inv.jockey_id)}
-                            >
-                              Đăng ký cặp #{inv.horse_id}
-                            </button>
-                          ))}
+                          {acceptedInvites.map(inv => {
+                            const isRegistered = registrations.some(
+                              reg => reg.tournament_id === t.id && reg.horse_id === inv.horse_id
+                            );
+                            return isRegistered ? (
+                              <span key={inv.id} className="badge badge-approved" style={{ display: "block", marginBottom: "4px", padding: "6px 12px", textAlign: "center", fontSize: "12px" }}>
+                                ✓ Đã đăng ký
+                              </span>
+                            ) : (
+                              <button
+                                key={inv.id}
+                                className="btn-primary"
+                                style={{ padding: "6px 12px", fontSize: "12px", marginBottom: "4px", display: "block", width: "100%" }}
+                                onClick={() => registerForTournament(t.id, inv.horse_id, inv.jockey_id)}
+                              >
+                                Đăng ký: {inv.horse_name || `#${inv.horse_id}`}
+                              </button>
+                            );
+                          })}
                         </td>
                       </tr>
                     );
@@ -427,7 +459,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       <td style={{ fontWeight: "700" }}>{reg.tournament_name}</td>
                       <td>{reg.horse_name || `Ngựa #${reg.horse_id}`}</td>
                       <td>{reg.jockey_name || `Jockey #${reg.jockey_id}`}</td>
-                      <td>{new Date(reg.registration_date).toLocaleDateString("vi-VN")}</td>
+                      <td>{formatDate(reg.registration_date)}</td>
                       <td>
                         <span className={`badge ${
                           reg.status === "APPROVED" ? "badge-approved" :

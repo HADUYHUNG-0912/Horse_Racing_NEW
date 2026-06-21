@@ -164,6 +164,16 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     }
   };
 
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  };
+
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Admin...</div>;
   }
@@ -382,7 +392,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 <select className="input-field" required
                   value={newParticipant.race_id} onChange={(e) => setNewParticipant({ ...newParticipant, race_id: e.target.value })}>
                   <option value="">-- Chọn trận đua --</option>
-                  {races.map(rc => <option key={rc.id} value={rc.id}>{rc.name} ({rc.race_time})</option>)}
+                  {races.map(rc => <option key={rc.id} value={rc.id}>{rc.name} ({formatDateTime(rc.race_time)})</option>)}
                 </select>
               </div>
               <div className="form-group">
@@ -427,7 +437,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   {races.map(rc => (
                     <tr key={rc.id}>
                       <td style={{ fontWeight: "700" }}>{rc.name}</td>
-                      <td>{rc.race_time}</td>
+                      <td>{formatDateTime(rc.race_time)}</td>
                       <td>{rc.distance}m</td>
                       <td>{rc.track_condition}</td>
                       <td>{rc.referee_name || "Chưa phân công"}</td>

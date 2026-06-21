@@ -113,6 +113,16 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
   };
 
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  };
+
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Jockey...</div>;
   }
@@ -148,9 +158,9 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                 ) : (
                   invitations.map(inv => (
                     <tr key={inv.id}>
-                      <td>Chủ ngựa #{inv.owner_id}</td>
-                      <td style={{ fontWeight: "700" }}>Ngựa #{inv.horse_id}</td>
-                      <td>Giải đấu #{inv.tournament_id}</td>
+                      <td>{inv.owner_name || `Chủ ngựa #${inv.owner_id}`}</td>
+                      <td style={{ fontWeight: "700" }}>{inv.horse_name || `Ngựa #${inv.horse_id}`}</td>
+                      <td>{inv.tournament_name || `Giải đấu #${inv.tournament_id}`}</td>
                       <td>{inv.message || "-"}</td>
                       <td>
                         <span className={`badge ${inv.status === "ACCEPTED" ? "badge-approved" : inv.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
@@ -204,7 +214,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                         <td style={{ color: "#38bdf8", fontWeight: "600" }}>
                           {myParticipation?.horse_name || "Chưa rõ"}
                         </td>
-                        <td>{rc.race_time}</td>
+                        <td>{formatDateTime(rc.race_time)}</td>
                         <td>{rc.distance}m</td>
                         <td>{rc.track_condition}</td>
                         <td>

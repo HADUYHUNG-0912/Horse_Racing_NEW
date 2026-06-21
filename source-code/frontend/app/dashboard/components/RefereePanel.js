@@ -117,6 +117,16 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
     }
   };
 
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  };
+
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Referee...</div>;
   }
@@ -147,7 +157,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                   races.map(rc => (
                     <tr key={rc.id}>
                       <td style={{ fontWeight: "700" }}>{rc.name}</td>
-                      <td>{rc.race_time}</td>
+                      <td>{formatDateTime(rc.race_time)}</td>
                       <td>{rc.distance}m</td>
                       <td>{rc.track_condition}</td>
                       <td>{rc.participants.length}</td>

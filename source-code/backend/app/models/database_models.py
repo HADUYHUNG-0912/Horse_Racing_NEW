@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Numeric, Text, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Numeric, Text, Boolean, Unicode, UnicodeText
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -18,7 +18,7 @@ class User(Base):
     username = Column(String(50), nullable=False, unique=True)
     password_hash = Column(String(255), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    full_name = Column(String(100), nullable=False)
+    full_name = Column(Unicode(100), nullable=False)
     role_id = Column(Integer, ForeignKey('Roles.id'), nullable=False)
     is_active = Column(Boolean, default=True)
     
@@ -35,7 +35,7 @@ class JockeyProfile(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
-    bio = Column(Text, nullable=True)
+    bio = Column(UnicodeText, nullable=True)
     weight = Column(Numeric(5, 2), nullable=True)
     height = Column(Numeric(5, 2), nullable=True)
     experience_years = Column(Integer, default=0)
@@ -49,7 +49,7 @@ class HorseOwnerProfile(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
-    company_name = Column(String(100), nullable=True)
+    company_name = Column(Unicode(100), nullable=True)
     
     user = relationship("User", back_populates="owner_profile")
     horses = relationship("Horse", back_populates="owner", cascade="all, delete-orphan")
@@ -60,7 +60,7 @@ class RefereeProfile(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
-    certification_level = Column(String(50), nullable=True)
+    certification_level = Column(Unicode(50), nullable=True)
     
     user = relationship("User", back_populates="referee_profile")
     races = relationship("Race", back_populates="referee")
@@ -70,7 +70,7 @@ class SpectatorProfile(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
-    favorite_horse_breed = Column(String(50), nullable=True)
+    favorite_horse_breed = Column(Unicode(50), nullable=True)
     reward_points = Column(Integer, default=0, nullable=False)
     
     user = relationship("User", back_populates="spectator_profile")
@@ -84,9 +84,9 @@ class Horse(Base):
     __tablename__ = 'Horses'
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
+    name = Column(Unicode(100), nullable=False)
     age = Column(Integer, nullable=False)
-    breed = Column(String(100), nullable=False)
+    breed = Column(Unicode(100), nullable=False)
     gender = Column(String(10), nullable=False)
     owner_id = Column(Integer, ForeignKey('HorseOwnerProfiles.id', ondelete="CASCADE"), nullable=False)
     
@@ -98,11 +98,11 @@ class Tournament(Base):
     __tablename__ = 'Tournaments'
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(150), nullable=False)
-    description = Column(Text, nullable=True)
+    name = Column(Unicode(150), nullable=False)
+    description = Column(UnicodeText, nullable=True)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
-    location = Column(String(150), nullable=True)
+    location = Column(Unicode(150), nullable=True)
     status = Column(String(50), default="UPCOMING") # UPCOMING, ACTIVE, COMPLETED
     
     rounds = relationship("Round", back_populates="tournament", cascade="all, delete-orphan")
@@ -114,7 +114,7 @@ class Round(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     tournament_id = Column(Integer, ForeignKey('Tournaments.id', ondelete="CASCADE"), nullable=False)
-    name = Column(String(100), nullable=False)
+    name = Column(Unicode(100), nullable=False)
     sequence = Column(Integer, nullable=False)
     
     tournament = relationship("Tournament", back_populates="rounds")
@@ -125,9 +125,9 @@ class Race(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     round_id = Column(Integer, ForeignKey('Rounds.id', ondelete="CASCADE"), nullable=False)
-    name = Column(String(100), nullable=False)
+    name = Column(Unicode(100), nullable=False)
     race_time = Column(DateTime, nullable=False)
-    track_condition = Column(String(100), nullable=True)
+    track_condition = Column(Unicode(100), nullable=True)
     distance = Column(Integer, nullable=False) # in meters
     referee_id = Column(Integer, ForeignKey('RefereeProfiles.id', ondelete="SET NULL"), nullable=True)
     status = Column(String(50), default="SCHEDULED") # SCHEDULED, RUNNING, COMPLETED
@@ -160,7 +160,7 @@ class JockeyInvitation(Base):
     jockey_id = Column(Integer, ForeignKey('JockeyProfiles.id'), nullable=False)
     horse_id = Column(Integer, ForeignKey('Horses.id'), nullable=False)
     tournament_id = Column(Integer, ForeignKey('Tournaments.id'), nullable=False)
-    message = Column(Text, nullable=True)
+    message = Column(UnicodeText, nullable=True)
     status = Column(String(50), default="PENDING") # PENDING, ACCEPTED, REJECTED
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
@@ -193,7 +193,7 @@ class Result(Base):
     race_participant_id = Column(Integer, ForeignKey('RaceParticipants.id', ondelete="CASCADE"), nullable=False, unique=True)
     rank = Column(Integer, nullable=False)
     points = Column(Integer, nullable=False, default=0)
-    notes = Column(Text, nullable=True)
+    notes = Column(UnicodeText, nullable=True)
     
     participant = relationship("RaceParticipant", back_populates="result")
 
@@ -202,8 +202,8 @@ class Violation(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     race_participant_id = Column(Integer, ForeignKey('RaceParticipants.id', ondelete="CASCADE"), nullable=False)
-    description = Column(Text, nullable=False)
-    penalty = Column(String(100), nullable=True)
+    description = Column(UnicodeText, nullable=False)
+    penalty = Column(Unicode(100), nullable=True)
     fine_amount = Column(Numeric(10, 2), default=0.00)
     violation_date = Column(DateTime, default=datetime.datetime.utcnow)
     
@@ -237,9 +237,9 @@ class RaceInspection(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     race_id = Column(Integer, ForeignKey('Races.id', ondelete="CASCADE"), nullable=False, unique=True)
-    weather = Column(String(255), nullable=True)
-    track_condition = Column(String(255), nullable=True)
-    horse_health = Column(Text, nullable=True)
+    weather = Column(Unicode(255), nullable=True)
+    track_condition = Column(Unicode(255), nullable=True)
+    horse_health = Column(UnicodeText, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     
     race = relationship("Race", back_populates="inspection")

@@ -118,6 +118,10 @@ def invite_jockey(
     db.add(invitation)
     db.commit()
     db.refresh(invitation)
+    invitation.owner_name = invitation.owner.user.full_name if invitation.owner and invitation.owner.user else f"Chủ #{invitation.owner_id}"
+    invitation.horse_name = invitation.horse.name if invitation.horse else f"Ngựa #{invitation.horse_id}"
+    invitation.tournament_name = invitation.tournament.name if invitation.tournament else f"Giải #{invitation.tournament_id}"
+    invitation.jockey_name = invitation.jockey.user.full_name if invitation.jockey and invitation.jockey.user else f"Jockey #{invitation.jockey_id}"
     return invitation
 
 @router.get("/invitations", response_model=List[JockeyInvitationOut])
@@ -129,14 +133,21 @@ def read_invitations(
         owner = db.query(HorseOwnerProfile).filter(HorseOwnerProfile.user_id == current_user.id).first()
         if not owner:
             return []
-        return db.query(JockeyInvitation).filter(JockeyInvitation.owner_id == owner.id).all()
+        invs = db.query(JockeyInvitation).filter(JockeyInvitation.owner_id == owner.id).all()
     elif current_user.role.name == "JOCKEY":
         jockey = db.query(JockeyProfile).filter(JockeyProfile.user_id == current_user.id).first()
         if not jockey:
             return []
-        return db.query(JockeyInvitation).filter(JockeyInvitation.jockey_id == jockey.id).all()
+        invs = db.query(JockeyInvitation).filter(JockeyInvitation.jockey_id == jockey.id).all()
     else:
         raise HTTPException(status_code=403, detail="Not authorized to view invitations")
+
+    for i in invs:
+        i.owner_name = i.owner.user.full_name if i.owner and i.owner.user else f"Chủ #{i.owner_id}"
+        i.horse_name = i.horse.name if i.horse else f"Ngựa #{i.horse_id}"
+        i.tournament_name = i.tournament.name if i.tournament else f"Giải #{i.tournament_id}"
+        i.jockey_name = i.jockey.user.full_name if i.jockey and i.jockey.user else f"Jockey #{i.jockey_id}"
+    return invs
 
 @router.put("/invitations/{id}", response_model=JockeyInvitationOut)
 def update_invitation(
@@ -156,4 +167,8 @@ def update_invitation(
     invitation.status = invite_in.status.upper()
     db.commit()
     db.refresh(invitation)
+    invitation.owner_name = invitation.owner.user.full_name if invitation.owner and invitation.owner.user else f"Chủ #{invitation.owner_id}"
+    invitation.horse_name = invitation.horse.name if invitation.horse else f"Ngựa #{invitation.horse_id}"
+    invitation.tournament_name = invitation.tournament.name if invitation.tournament else f"Giải #{invitation.tournament_id}"
+    invitation.jockey_name = invitation.jockey.user.full_name if invitation.jockey and invitation.jockey.user else f"Jockey #{invitation.jockey_id}"
     return invitation

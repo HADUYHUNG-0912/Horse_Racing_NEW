@@ -43,6 +43,10 @@ class JockeyInvitationOut(JockeyInvitationBase):
     owner_id: int
     status: str
     created_at: datetime
+    owner_name: Optional[str] = None
+    horse_name: Optional[str] = None
+    tournament_name: Optional[str] = None
+    jockey_name: Optional[str] = None
 
     class Config:
         from_attributes = True
