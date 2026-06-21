@@ -15,7 +15,7 @@ class PredictionOut(PredictionBase):
     user_id: int
     race_participant_id: int
     prediction_date: datetime
-    status: str # PENDING, CORRECT, INCORRECT
+    status: str # PENDING, Won, Lost
     race_id: Optional[int] = None
     horse_id: Optional[int] = None
     horse_name: Optional[str] = None
