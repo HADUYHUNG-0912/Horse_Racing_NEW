@@ -18,17 +18,17 @@ def read_jockeys(db: Session = Depends(get_db)):
 
 
 # FIX (Task 4 - Lưu hồ sơ cá nhân): bổ sung response schema mở rộng để trả thêm
-# email (thuộc bảng Users, không thuộc JockeyProfiles) cùng các field của profile.
-# JockeyProfileOut gốc không có email nên không dùng được trực tiếp cho route này.
+# email và full_name (thuộc bảng Users, không thuộc JockeyProfiles).
 class JockeyProfileWithEmailOut(JockeyProfileOut):
     email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
 
 
-# FIX: schema payload riêng cho việc lưu hồ sơ, gồm field của JockeyProfiles
-# (weight, experience_years, bio) + email (sẽ được dùng để update bảng Users).
-# Không có "phone" vì cột này chưa tồn tại trong JockeyProfiles.
+# Schema payload cho việc lưu hồ sơ: gồm field của JockeyProfiles
+# (weight, height, experience_years, bio) + email và full_name từ bảng Users.
 class JockeyProfileSaveIn(JockeyProfileUpdate):
     email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
 
 
 @router.get("/profile", response_model=JockeyProfileWithEmailOut)
@@ -41,9 +41,9 @@ def read_my_profile(
     if not jockey:
         raise HTTPException(status_code=404, detail="Jockey profile not found")
 
-    # Gộp thêm email từ bảng Users vào response trả về cho frontend
     result = JockeyProfileWithEmailOut.model_validate(jockey)
     result.email = current_user.email
+    result.full_name = current_user.full_name
     return result
 
 
@@ -55,24 +55,32 @@ def update_my_profile(
 ):
     """
     Cập nhật hồ sơ cá nhân của Jockey hiện tại (Task 4).
-    FIX: route này thay thế hoàn toàn việc dùng localStorage ở frontend.
-    Ghi xuống Database thật (bảng JockeyProfiles + Users) để Chủ ngựa/Admin
-    có thể xem được hồ sơ, và tránh lỗi Hydration Mismatch của Next.js.
+    Ghi xuống Database thật (bảng JockeyProfiles + Users).
+    Các field thuộc JockeyProfiles: weight, height, experience_years, bio.
+    Các field thuộc Users: email, full_name.
     """
     jockey = db.query(JockeyProfile).filter(JockeyProfile.user_id == current_user.id).first()
     if not jockey:
         raise HTTPException(status_code=404, detail="Jockey profile not found")
 
-    update_data = profile_in.model_dump(exclude_unset=True, exclude={"email"})
+    # Cập nhật các field thuộc bảng JockeyProfiles
+    update_data = profile_in.model_dump(
+        exclude_unset=True,
+        exclude={"email", "full_name"}  # 2 field này thuộc bảng Users, xử lý riêng bên dưới
+    )
     for field, value in update_data.items():
         setattr(jockey, field, value)
 
-    # Email thuộc bảng Users, cập nhật riêng nếu có gửi lên
+    # Cập nhật email nếu có thay đổi, kiểm tra trùng với tài khoản khác
     if profile_in.email is not None:
         existing = db.query(User).filter(User.email == profile_in.email, User.id != current_user.id).first()
         if existing:
             raise HTTPException(status_code=400, detail="Email đã được sử dụng bởi tài khoản khác")
         current_user.email = profile_in.email
+
+    # Cập nhật full_name nếu có
+    if profile_in.full_name is not None and profile_in.full_name.strip():
+        current_user.full_name = profile_in.full_name.strip()
 
     db.commit()
     db.refresh(jockey)
@@ -80,6 +88,7 @@ def update_my_profile(
 
     result = JockeyProfileWithEmailOut.model_validate(jockey)
     result.email = current_user.email
+    result.full_name = current_user.full_name
     return result
 
 
@@ -153,4 +162,8 @@ def update_invitation(
     invitation.status = invite_in.status.upper()
     db.commit()
     db.refresh(invitation)
+<<<<<<< Updated upstream
     return invitation
+=======
+    return invitation
+>>>>>>> Stashed changes
