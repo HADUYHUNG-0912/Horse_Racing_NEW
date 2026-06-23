@@ -15,6 +15,12 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Tab Giải thưởng
+  const [rankings, setRankings] = useState([]);
+  const [tournaments, setTournaments] = useState([]);
+  const [selectedTournament, setSelectedTournament] = useState("all");
+  const [rankingsLoading, setRankingsLoading] = useState(true);
+
   // FIX (Task 4): KHÔNG còn dùng localStorage. Hồ sơ được nạp từ API
   // (GET /jockeys/profile) khi component mount, và lưu xuống Database
   // qua API (PUT /jockeys/profile) khi submit form.
@@ -67,9 +73,25 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
   };
 
+  const loadRankings = async () => {
+    try {
+      const [rankData, tourData] = await Promise.all([
+        api.get("/results/rankings"),
+        api.get("/tournaments"),
+      ]);
+      setRankings(Array.isArray(rankData) ? rankData : []);
+      setTournaments(Array.isArray(tourData) ? tourData : []);
+    } catch (err) {
+      // rankings không critical
+    } finally {
+      setRankingsLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadData();
     loadProfile();
+    loadRankings();
   }, []);
 
   const respondInvitation = async (id, status) => {
@@ -384,6 +406,115 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
               </p>
             </form>
           )}
+        </div>
+      )}
+
+      {/* TAB: Xem giải thưởng (Jockey) */}
+      {activeTab === "jockey-rewards" && (
+        <div style={styles.tabContent}>
+          <h2>🏆 Giải thưởng & Thành tích thi đấu</h2>
+
+          {/* Bộ lọc theo giải đấu */}
+          <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <label style={{ color: "#94a3b8", fontWeight: "600" }}>Lọc theo giải đấu:</label>
+            <select
+              value={selectedTournament}
+              onChange={(e) => setSelectedTournament(e.target.value)}
+              style={{ padding: "8px 14px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff", minWidth: "220px" }}
+            >
+              <option value="all">Tất cả giải đấu</option>
+              {tournaments.map(t => (
+                <option key={t.id} value={String(t.id)}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {rankingsLoading ? (
+            <div style={styles.loading}>Đang tải dữ liệu giải thưởng...</div>
+          ) : (() => {
+            // Lọc chỉ lấy ranking của Jockey hiện tại
+            const myRankings = rankings.filter(r =>
+              r.entity_type === "JOCKEY" &&
+              r.entity_name === user?.full_name &&
+              (selectedTournament === "all" || String(r.tournament_id) === selectedTournament)
+            );
+
+            // Thống kê tổng hợp
+            const totalPoints = myRankings.reduce((sum, r) => sum + (r.points || 0), 0);
+            const bestRank = myRankings.length > 0 ? Math.min(...myRankings.map(r => r.rank)) : null;
+
+            return (
+              <>
+                {/* Thẻ thống kê tổng quan */}
+                <div style={{ display: "flex", gap: "16px", marginBottom: "24px", flexWrap: "wrap" }}>
+                  <div style={{ flex: 1, minWidth: "140px", background: "linear-gradient(135deg, #1e3a5f, #0f2040)", borderRadius: "12px", padding: "16px 20px", border: "1px solid #334155" }}>
+                    <div style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "6px" }}>TỔNG ĐIỂM</div>
+                    <div style={{ color: "var(--primary)", fontSize: "28px", fontWeight: "800" }}>{totalPoints}</div>
+                    <div style={{ color: "#64748b", fontSize: "11px" }}>điểm tích lũy</div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: "140px", background: "linear-gradient(135deg, #3b1f1f, #200f0f)", borderRadius: "12px", padding: "16px 20px", border: "1px solid #334155" }}>
+                    <div style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "6px" }}>HẠNG CAO NHẤT</div>
+                    <div style={{ color: "#f59e0b", fontSize: "28px", fontWeight: "800" }}>
+                      {bestRank ? `#${bestRank}` : "—"}
+                    </div>
+                    <div style={{ color: "#64748b", fontSize: "11px" }}>trong các giải</div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: "140px", background: "linear-gradient(135deg, #1a3320, #0d1f14)", borderRadius: "12px", padding: "16px 20px", border: "1px solid #334155" }}>
+                    <div style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "6px" }}>SỐ GIẢI ĐÃ THAM GIA</div>
+                    <div style={{ color: "#22c55e", fontSize: "28px", fontWeight: "800" }}>{myRankings.length}</div>
+                    <div style={{ color: "#64748b", fontSize: "11px" }}>giải đấu</div>
+                  </div>
+                </div>
+
+                {/* Bảng chi tiết giải thưởng */}
+                <div style={styles.tableWrapper}>
+                  <table style={styles.table}>
+                    <thead>
+                      <tr>
+                        <th>Giải đấu</th>
+                        <th>Hạng</th>
+                        <th>Điểm</th>
+                        <th>Cập nhật lúc</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myRankings.length === 0 ? (
+                        <tr>
+                          <td colSpan="4" style={{ textAlign: "center", color: "#64748b", padding: "32px" }}>
+                            {selectedTournament === "all"
+                              ? "Chưa có thành tích nào được ghi nhận"
+                              : "Không có thành tích trong giải đấu này"}
+                          </td>
+                        </tr>
+                      ) : (
+                        myRankings
+                          .sort((a, b) => a.rank - b.rank)
+                          .map((r, i) => (
+                            <tr key={r.id || i}>
+                              <td style={{ fontWeight: "600" }}>
+                                {tournaments.find(t => t.id === r.tournament_id)?.name || `Giải đấu #${r.tournament_id || "—"}`}
+                              </td>
+                              <td>
+                                <span style={{
+                                  fontWeight: "800", fontSize: "16px",
+                                  color: r.rank === 1 ? "#f59e0b" : r.rank === 2 ? "#94a3b8" : r.rank === 3 ? "#cd7f32" : "var(--primary)"
+                                }}>
+                                  {r.rank === 1 ? "🥇" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : `#${r.rank}`}
+                                </span>
+                              </td>
+                              <td style={{ color: "var(--primary)", fontWeight: "700" }}>{r.points} điểm</td>
+                              <td style={{ color: "#64748b", fontSize: "13px" }}>
+                                {r.updated_at ? new Date(r.updated_at).toLocaleDateString("vi-VN") : "—"}
+                              </td>
+                            </tr>
+                          ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            );
+          })()}
         </div>
       )}
     </>
