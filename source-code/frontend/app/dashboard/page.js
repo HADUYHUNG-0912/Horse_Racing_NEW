@@ -67,6 +67,23 @@ export default function Dashboard() {
             <span style={styles.userName}>{user.full_name}</span>
             <span className="badge badge-info" style={{ fontSize: "10px" }}>{user.role_name}</span>
           </span>
+          {user.role_name === "SPECTATOR" && user.spectator_profile && (
+            <div style={{
+              background: "linear-gradient(135deg, #f59e0b, #d97706)",
+              borderRadius: "20px",
+              padding: "6px 14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              boxShadow: "0 2px 10px rgba(245,158,11,0.35)",
+              animation: "fadeIn 0.5s ease"
+            }}>
+              <span style={{ fontSize: "14px" }}>🏆</span>
+              <span style={{ color: "#fff", fontWeight: "700", fontSize: "13px", whiteSpace: "nowrap" }}>
+                {user.spectator_profile.reward_points ?? 0} pts
+              </span>
+            </div>
+          )}
           <button onClick={handleLogout} className="btn-secondary" style={{ padding: "6px 12px", fontSize: "13px" }}>
             Đăng xuất
           </button>
@@ -120,6 +137,9 @@ export default function Dashboard() {
               <button style={activeTab === "register-tournament" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("register-tournament")}>
                 🏆 Đăng ký Giải đấu
               </button>
+              <button style={activeTab === "my-registrations" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("my-registrations")}>
+                📋 Giải đấu đã đăng ký
+              </button>
             </>
           )}
 
@@ -152,6 +172,9 @@ export default function Dashboard() {
             <>
               <button style={activeTab === "predictions" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("predictions")}>
                 🔮 Dự đoán Trận đua
+              </button>
+              <button style={activeTab === "schedules" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("schedules")}>
+                📅 Lịch & Kết quả
               </button>
             </>
           )}

@@ -9,25 +9,52 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [jockeys, setJockeys] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [tournaments, setTournaments] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Form states
   const [newHorse, setNewHorse] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
   const [newInvitation, setNewInvitation] = useState({ jockey_id: "", horse_id: "", tournament_id: "", message: "" });
+  const [editingHorse, setEditingHorse] = useState(null);
+  const [editHorseForm, setEditHorseForm] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
+
+  const asArray = (data) => Array.isArray(data) ? data : data?.items || data?.data || [];
+  const getJockeyLabel = (jockey) => {
+    const name = jockey.full_name || jockey.username || `Jockey #${jockey.id}`;
+    const experience = Number.isFinite(Number(jockey.experience_years))
+      ? ` - Kinh nghiệm: ${jockey.experience_years} năm`
+      : "";
+    return `${name}${experience}`;
+  };
 
   const loadData = async () => {
     try {
       const myHorses = await api.get("/horses");
-      setHorses(myHorses);
+      setHorses(asArray(myHorses));
 
       const listJockeys = await api.get("/jockeys");
-      setJockeys(listJockeys);
+      setJockeys(asArray(listJockeys));
 
       const invites = await api.get("/jockeys/invitations");
-      setInvitations(invites);
+      setInvitations(asArray(invites));
 
       const tours = await api.get("/tournaments");
-      setTournaments(tours);
+      setTournaments(asArray(tours));
+
+      // Fetch registrations for each tournament (Task 3 - Thuỳ Anh)
+      const allRegistrations = [];
+      for (const tournament of asArray(tours)) {
+        try {
+          const tournamentRegs = await api.get(`/tournaments/${tournament.id}/registrations`);
+          const regsArray = Array.isArray(tournamentRegs) ? tournamentRegs : tournamentRegs?.items || tournamentRegs?.data || [];
+          regsArray.forEach(reg => {
+            allRegistrations.push({ ...reg, tournament_name: tournament.name });
+          });
+        } catch (e) {
+          console.error("Không tải được danh sách đăng ký của giải", tournament.id, e);
+        }
+      }
+      setRegistrations(allRegistrations);
     } catch (err) {
       showMsg(err.message, "error");
     } finally {
@@ -42,6 +69,10 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
 
   const createHorse = async (e) => {
     e.preventDefault();
+    if (parseInt(newHorse.age) < 2 || parseInt(newHorse.age) > 10) {
+      showMsg("Tuổi ngựa phải từ 2 đến 10 năm!", "error");
+      return;
+    }
     try {
       await api.post("/horses/", {
         ...newHorse,
@@ -53,6 +84,56 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     } catch (err) {
       showMsg(err.message, "error");
     }
+  };
+
+  const updateHorse = async (e) => {
+    e.preventDefault();
+    if (parseInt(editHorseForm.age) < 2 || parseInt(editHorseForm.age) > 10) {
+      showMsg("Tuổi ngựa phải từ 2 đến 10 năm!", "error");
+      return;
+    }
+    try {
+      await api.put(`/horses/${editingHorse.id}`, {
+        name: editHorseForm.name,
+        age: parseInt(editHorseForm.age),
+        breed: editHorseForm.breed,
+        gender: editHorseForm.gender
+      });
+      showMsg("Cập nhật ngựa thành công!");
+      setEditingHorse(null);
+      setEditHorseForm({ name: "", age: "", breed: "", gender: "Stallion" });
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  const deleteHorse = async (horseId) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa ngựa này?")) {
+      return;
+    }
+    try {
+      await api.delete(`/horses/${horseId}`);
+      showMsg("Xóa ngựa thành công!");
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  const startEditHorse = (horse) => {
+    setEditingHorse(horse);
+    setEditHorseForm({
+      name: horse.name,
+      age: horse.age.toString(),
+      breed: horse.breed,
+      gender: horse.gender
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingHorse(null);
+    setEditHorseForm({ name: "", age: "", breed: "", gender: "Stallion" });
   };
 
   const sendJockeyInvitation = async (e) => {
@@ -86,9 +167,32 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     }
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric"
+    });
+  };
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  };
+
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Owner...</div>;
   }
+
+  const horseMap = new Map(horses.map(h => [h.id, h.name]));
+  const jockeyMap = new Map(jockeys.map(j => [j.id, j.full_name || j.username]));
+  const tournamentMap = new Map(tournaments.map(t => [t.id, t.name]));
 
   return (
     <>
@@ -97,34 +201,43 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
         <div style={styles.tabContent}>
           <h2>🐎 Quản lý danh sách ngựa đua của bạn</h2>
           <div style={styles.splitLayout}>
-            {/* Create Horse */}
-            <form onSubmit={createHorse} style={styles.formPanel} className="glass">
-              <h3>Đăng Ký Ngựa Mới</h3>
+            {/* Edit or Create Horse */}
+            <form onSubmit={editingHorse ? updateHorse : createHorse} style={styles.formPanel} className="glass">
+              <h3>{editingHorse ? "✏️ Chỉnh sửa Ngựa" : "Đăng Ký Ngựa Mới"}</h3>
               <div className="form-group">
                 <label>Tên ngựa đua</label>
                 <input type="text" className="input-field" placeholder="Ví dụ: Thunderbolt II" required
-                  value={newHorse.name} onChange={(e) => setNewHorse({ ...newHorse, name: e.target.value })} />
+                  value={editingHorse ? editHorseForm.name : newHorse.name} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, name: e.target.value }) : setNewHorse({ ...newHorse, name: e.target.value })} />
               </div>
               <div className="form-group">
-                <label>Tuổi</label>
-                <input type="number" className="input-field" placeholder="Ví dụ: 4" required
-                  value={newHorse.age} onChange={(e) => setNewHorse({ ...newHorse, age: e.target.value })} />
+                <label>Tuổi (2-10 năm)</label>
+                <input type="number" className="input-field" placeholder="Ví dụ: 4" required min="2" max="10"
+                  value={editingHorse ? editHorseForm.age : newHorse.age} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, age: e.target.value }) : setNewHorse({ ...newHorse, age: e.target.value })} />
               </div>
               <div className="form-group">
                 <label>Giống ngựa</label>
                 <input type="text" className="input-field" placeholder="Thoroughbred, Arabian..." required
-                  value={newHorse.breed} onChange={(e) => setNewHorse({ ...newHorse, breed: e.target.value })} />
+                  value={editingHorse ? editHorseForm.breed : newHorse.breed} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
               </div>
               <div className="form-group">
                 <label>Giới tính</label>
                 <select className="input-field"
-                  value={newHorse.gender} onChange={(e) => setNewHorse({ ...newHorse, gender: e.target.value })}>
+                  value={editingHorse ? editHorseForm.gender : newHorse.gender} 
+                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, gender: e.target.value }) : setNewHorse({ ...newHorse, gender: e.target.value })}>
                   <option value="Stallion">Stallion (Ngựa đực)</option>
                   <option value="Mare">Mare (Ngựa cái)</option>
                   <option value="Gelding">Gelding (Ngựa thiến)</option>
                 </select>
               </div>
-              <button type="submit" className="btn-primary">Đăng ký Ngựa</button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1 }}>{editingHorse ? "Lưu Thay đổi" : "Đăng ký Ngựa"}</button>
+                {editingHorse && (
+                  <button type="button" className="btn-secondary" style={{ flex: 1 }} onClick={cancelEdit}>Hủy</button>
+                )}
+              </div>
             </form>
 
             {/* Horse List */}
@@ -138,11 +251,12 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       <th>Tuổi</th>
                       <th>Giống</th>
                       <th>Giới tính</th>
+                      <th>Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     {horses.length === 0 ? (
-                      <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Chưa có ngựa đua nào được đăng ký</td></tr>
+                      <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa có ngựa đua nào được đăng ký</td></tr>
                     ) : (
                       horses.map(h => (
                         <tr key={h.id}>
@@ -150,6 +264,10 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                           <td>{h.age} tuổi</td>
                           <td>{h.breed}</td>
                           <td>{h.gender}</td>
+                          <td style={{ display: "flex", gap: "6px" }}>
+                            <button className="btn-primary" style={{ padding: "4px 8px", fontSize: "11px" }} onClick={() => startEditHorse(h)}>✏️ Sửa</button>
+                            <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "11px", backgroundColor: "#ef4444" }} onClick={() => deleteHorse(h.id)}>🗑️ Xóa</button>
+                          </td>
                         </tr>
                       ))
                     )}
@@ -174,8 +292,11 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                 <select className="input-field" required
                   value={newInvitation.jockey_id} onChange={(e) => setNewInvitation({ ...newInvitation, jockey_id: e.target.value })}>
                   <option value="">-- Chọn Jockey --</option>
+                  {jockeys.length === 0 && (
+                    <option value="" disabled>Chưa có Jockey nào trong hệ thống</option>
+                  )}
                   {jockeys.map(j => (
-                    <option key={j.id} value={j.id}>{j.user_id} - Kinh nghiệm: {j.experience_years} năm</option>
+                    <option key={j.id} value={j.id}>{getJockeyLabel(j)}</option>
                   ))}
                 </select>
               </div>
@@ -222,9 +343,9 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                     ) : (
                       invitations.map(i => (
                         <tr key={i.id}>
-                          <td>Jockey #{i.jockey_id}</td>
-                          <td style={{ fontWeight: "700" }}>Ngựa #{i.horse_id}</td>
-                          <td>Giải đấu #{i.tournament_id}</td>
+                          <td>{i.jockey_name || `Jockey #${i.jockey_id}`}</td>
+                          <td style={{ fontWeight: "700" }}>{i.horse_name || `Ngựa #${i.horse_id}`}</td>
+                          <td>{i.tournament_name || `Giải đấu #${i.tournament_id}`}</td>
                           <td>
                             <span className={`badge ${i.status === "ACCEPTED" ? "badge-approved" : i.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
                               {i.status}
@@ -268,7 +389,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       <tr key={t.id}>
                         <td style={{ fontWeight: "700" }}>{t.name}</td>
                         <td>{t.location}</td>
-                        <td>{t.start_date} đến {t.end_date}</td>
+                        <td>{formatDate(t.start_date)} đến {formatDate(t.end_date)}</td>
                         <td>
                           {acceptedInvites.length === 0 ? (
                             <span style={{ color: "#64748b", fontSize: "13px" }}>Cần mời và được Jockey đồng ý trước</span>
@@ -276,27 +397,82 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                               {acceptedInvites.map(inv => (
                                 <div key={inv.id} style={{ fontSize: "13px" }}>
-                                  🏇 Ngựa #{inv.horse_id} & Jockey #{inv.jockey_id}
+                                  🏇 {inv.horse_name || `Ngựa #${inv.horse_id}`} & {inv.jockey_name || `Jockey #${inv.jockey_id}`}
                                 </div>
                               ))}
                             </div>
                           )}
                         </td>
                         <td>
-                          {acceptedInvites.map(inv => (
-                            <button
-                              key={inv.id}
-                              className="btn-primary"
-                              style={{ padding: "6px 12px", fontSize: "12px", marginBottom: "4px", display: "block" }}
-                              onClick={() => registerForTournament(t.id, inv.horse_id, inv.jockey_id)}
-                            >
-                              Đăng ký cặp #{inv.horse_id}
-                            </button>
-                          ))}
+                          {acceptedInvites.map(inv => {
+                            const isRegistered = registrations.some(
+                              reg => reg.tournament_id === t.id && reg.horse_id === inv.horse_id
+                            );
+                            return isRegistered ? (
+                              <span key={inv.id} className="badge badge-approved" style={{ display: "block", marginBottom: "4px", padding: "6px 12px", textAlign: "center", fontSize: "12px" }}>
+                                ✓ Đã đăng ký
+                              </span>
+                            ) : (
+                              <button
+                                key={inv.id}
+                                className="btn-primary"
+                                style={{ padding: "6px 12px", fontSize: "12px", marginBottom: "4px", display: "block", width: "100%" }}
+                                onClick={() => registerForTournament(t.id, inv.horse_id, inv.jockey_id)}
+                              >
+                                Đăng ký: {inv.horse_name || `#${inv.horse_id}`}
+                              </button>
+                            );
+                          })}
                         </td>
                       </tr>
                     );
                   })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Danh sách giải đấu đã đăng ký (Owner) */}
+      {activeTab === "my-registrations" && (
+        <div style={styles.tabContent}>
+          <h2>📋 Danh sách giải đấu đã đăng ký</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>Xem trạng thái duyệt hồ sơ đăng ký của bạn từ Admin (PENDING: Chờ duyệt, APPROVED: Đã chấp nhận, REJECTED: Bị từ chối)</p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Tên giải đấu</th>
+                  <th>Ngựa</th>
+                  <th>Jockey</th>
+                  <th>Ngày đăng ký</th>
+                  <th>Trạng thái duyệt</th>
+                </tr>
+              </thead>
+              <tbody>
+                {registrations.length === 0 ? (
+                  <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa đăng ký giải đấu nào</td></tr>
+                ) : (
+                  registrations.map(reg => (
+                    <tr key={reg.id}>
+                      <td style={{ fontWeight: "700" }}>{reg.tournament_name}</td>
+                      <td>{reg.horse_name || `Ngựa #${reg.horse_id}`}</td>
+                      <td>{reg.jockey_name || `Jockey #${reg.jockey_id}`}</td>
+                      <td>{formatDate(reg.registration_date)}</td>
+                      <td>
+                        <span className={`badge ${
+                          reg.status === "APPROVED" ? "badge-approved" :
+                          reg.status === "PENDING" ? "badge-pending" :
+                          "badge-rejected"
+                        }`}>
+                          {reg.status === "APPROVED" ? "✓ Đã chấp nhận" :
+                           reg.status === "PENDING" ? "⏳ Chờ duyệt" :
+                           "✗ Bị từ chối"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>

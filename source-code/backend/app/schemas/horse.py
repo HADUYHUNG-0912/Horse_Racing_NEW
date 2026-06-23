@@ -1,11 +1,11 @@
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 
 # Horse schemas
 class HorseBase(BaseModel):
     name: str
-    age: int
+    age: int = Field(..., ge=2, le=10, description="Tuổi ngựa từ 2 đến 10 năm")
     breed: str
     gender: str
 
@@ -14,7 +14,7 @@ class HorseCreate(HorseBase):
 
 class HorseUpdate(BaseModel):
     name: Optional[str] = None
-    age: Optional[int] = None
+    age: Optional[int] = Field(None, ge=2, le=10, description="Tuổi ngựa từ 2 đến 10 năm")
     breed: Optional[str] = None
     gender: Optional[str] = None
 
@@ -43,6 +43,10 @@ class JockeyInvitationOut(JockeyInvitationBase):
     owner_id: int
     status: str
     created_at: datetime
+    owner_name: Optional[str] = None
+    horse_name: Optional[str] = None
+    tournament_name: Optional[str] = None
+    jockey_name: Optional[str] = None
 
     class Config:
         from_attributes = True

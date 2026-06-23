@@ -10,7 +10,12 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const [loading, setLoading] = useState(true);
 
   // Form states
-  const [predictionForm, setPredictionForm] = useState({ race_participant_id: "", predicted_rank: "1" });
+  const [predictionForm, setPredictionForm] = useState({ race_id: "", horse_id: "", predicted_rank: "1" });
+
+  // Schedules tab states
+  const [raceResults, setRaceResults] = useState({});
+  const [expandedRace, setExpandedRace] = useState(null);
+  const [loadingResults, setLoadingResults] = useState({});
 
   const loadData = async () => {
     try {
@@ -35,20 +40,58 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
     e.preventDefault();
     try {
       await api.post("/spectators/predictions", {
-        race_participant_id: parseInt(predictionForm.race_participant_id),
+        race_id: parseInt(predictionForm.race_id),
+        horse_id: parseInt(predictionForm.horse_id),
         predicted_rank: parseInt(predictionForm.predicted_rank)
       });
       showMsg("Dự đoán thành công!");
-      setPredictionForm({ race_participant_id: "", predicted_rank: "1" });
+      setPredictionForm({ race_id: "", horse_id: "", predicted_rank: "1" });
       loadData();
     } catch (err) {
       showMsg(err.message, "error");
     }
   };
 
+  const toggleRaceResults = async (raceId) => {
+    if (expandedRace === raceId) {
+      setExpandedRace(null);
+      return;
+    }
+    setExpandedRace(raceId);
+
+    if (!raceResults[raceId]) {
+      setLoadingResults(prev => ({ ...prev, [raceId]: true }));
+      try {
+        const results = await api.get(`/results/${raceId}/results`);
+        setRaceResults(prev => ({ ...prev, [raceId]: results }));
+      } catch (err) {
+        showMsg("Không thể tải kết quả: " + err.message, "error");
+      } finally {
+        setLoadingResults(prev => ({ ...prev, [raceId]: false }));
+      }
+    }
+  };
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  };
+
+  const getRankBadge = (rank) => {
+    const medals = { 1: "🥇", 2: "🥈", 3: "🥉" };
+    return medals[rank] || `#${rank}`;
+  };
+
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Spectator...</div>;
   }
+
+  const upcomingRaces = races.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING");
+  const completedRaces = races.filter(rc => rc.status === "COMPLETED");
 
   return (
     <>
@@ -61,15 +104,30 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
             <form onSubmit={makePrediction} style={styles.formPanel} className="glass">
               <h3>Tạo dự đoán mới</h3>
               <div className="form-group">
-                <label>Chọn Trận đua & Ngựa</label>
+                <label>Chọn Trận đua</label>
                 <select className="input-field" required
-                  value={predictionForm.race_participant_id} onChange={(e) => setPredictionForm({ ...predictionForm, race_participant_id: e.target.value })}>
-                  <option value="">-- Chọn ngựa đua --</option>
+                  value={predictionForm.race_id} 
+                  onChange={(e) => setPredictionForm({ ...predictionForm, race_id: e.target.value, horse_id: "" })}>
+                  <option value="">-- Chọn trận đua --</option>
                   {races.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING").map(rc => (
-                    rc.participants.map(p => (
-                      <option key={p.id} value={p.id}>{rc.name} - Ngựa: {p.horse_name} (Làn {p.lane_number})</option>
-                    ))
+                    <option key={rc.id} value={rc.id}>{rc.name} ({rc.track_condition} - {rc.distance}m)</option>
                   ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Chọn Ngựa đua</label>
+                <select className="input-field" required
+                  value={predictionForm.horse_id} 
+                  disabled={!predictionForm.race_id}
+                  onChange={(e) => setPredictionForm({ ...predictionForm, horse_id: e.target.value })}>
+                  <option value="">-- Chọn ngựa đua --</option>
+                  {(() => {
+                    const selectedRace = races.find(rc => rc.id === parseInt(predictionForm.race_id));
+                    if (!selectedRace) return null;
+                    return selectedRace.participants.map(p => (
+                      <option key={p.horse_id} value={p.horse_id}>{p.horse_name} (Làn {p.lane_number})</option>
+                    ));
+                  })()}
                 </select>
               </div>
               <div className="form-group">
@@ -87,7 +145,28 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
 
             {/* Predictions History */}
             <div style={{ flex: 1.3 }}>
-              <h3>Lịch sử dự đoán của bạn</h3>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "12px"
+              }}>
+                <h3 style={{ margin: 0 }}>Lịch sử dự đoán của bạn</h3>
+                <div style={{
+                  background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                  borderRadius: "12px",
+                  padding: "8px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  boxShadow: "0 2px 8px rgba(245,158,11,0.3)"
+                }}>
+                  <span style={{ fontSize: "18px" }}>⭐</span>
+                  <span style={{ color: "#fff", fontWeight: "700", fontSize: "14px" }}>
+                    Điểm thưởng tích lũy: {user?.spectator_profile?.reward_points ?? 0} điểm
+                  </span>
+                </div>
+              </div>
               <div style={styles.tableWrapper}>
                 <table style={styles.table}>
                   <thead>
@@ -108,8 +187,12 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                           <td style={{ fontWeight: "700" }}>{p.horse_name}</td>
                           <td>Hạng {p.predicted_rank}</td>
                           <td>
-                            <span className={`badge ${p.status === "CORRECT" ? "badge-approved" : p.status === "INCORRECT" ? "badge-rejected" : "badge-pending"}`}>
-                              {p.status}
+                            <span className={`badge ${
+                              p.status === "Won" ? "badge-approved" 
+                              : p.status === "Lost" ? "badge-rejected" 
+                              : "badge-pending"
+                            }`}>
+                              {p.status === "Won" ? "✅ Đúng" : p.status === "Lost" ? "❌ Sai" : "⏳ Chờ kết quả"}
                             </span>
                           </td>
                         </tr>
@@ -119,6 +202,231 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Lịch thi đấu & Kết quả */}
+      {activeTab === "schedules" && (
+        <div style={styles.tabContent}>
+          {/* --- Section 1: Lịch thi đấu sắp diễn ra --- */}
+          <div>
+            <h2 style={{ marginBottom: "20px" }}>📅 Lịch thi đấu sắp diễn ra</h2>
+            {upcomingRaces.length === 0 ? (
+              <div style={{
+                textAlign: "center",
+                padding: "48px 24px",
+                color: "#64748b",
+                background: "rgba(255,255,255,0.02)",
+                borderRadius: "12px",
+                border: "1px dashed rgba(255,255,255,0.1)"
+              }}>
+                <div style={{ fontSize: "48px", marginBottom: "12px", opacity: 0.5 }}>📭</div>
+                <p style={{ fontSize: "15px" }}>Chưa có trận đấu nào sắp diễn ra</p>
+              </div>
+            ) : (
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+                gap: "16px"
+              }}>
+                {upcomingRaces.map(race => (
+                  <div key={race.id} className="glass-interactive" style={{
+                    padding: "20px",
+                    borderRadius: "12px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px"
+                  }}>
+                    {/* Race header */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                      <div>
+                        <h3 style={{ margin: 0, fontSize: "16px", color: "var(--foreground)" }}>{race.name}</h3>
+                        {race.referee_name && (
+                          <span style={{ fontSize: "12px", color: "#64748b" }}>Trọng tài: {race.referee_name}</span>
+                        )}
+                      </div>
+                      <span className="badge badge-pending" style={{ fontSize: "10px" }}>{race.status}</span>
+                    </div>
+
+                    {/* Race details */}
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "8px",
+                      fontSize: "13px",
+                      color: "#94a3b8"
+                    }}>
+                      <div>🕐 <strong style={{ color: "#cbd5e1" }}>{formatDateTime(race.race_time)}</strong></div>
+                      <div>📏 <strong style={{ color: "#cbd5e1" }}>{race.distance}m</strong></div>
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        🏟️ Đường đua: <strong style={{ color: "#cbd5e1" }}>{race.track_condition || "—"}</strong>
+                      </div>
+                    </div>
+
+                    {/* Participants */}
+                    {race.participants && race.participants.length > 0 && (
+                      <div style={{
+                        borderTop: "1px solid rgba(255,255,255,0.06)",
+                        paddingTop: "10px"
+                      }}>
+                        <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "6px", textTransform: "uppercase", fontWeight: "600" }}>
+                          Danh sách tham gia ({race.participants.length})
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                          {race.participants.map(p => (
+                            <div key={p.id} style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              fontSize: "13px",
+                              padding: "4px 8px",
+                              borderRadius: "6px",
+                              background: "rgba(255,255,255,0.02)"
+                            }}>
+                              <span>
+                                🐎 <strong style={{ color: "var(--primary)" }}>{p.horse_name}</strong>
+                              </span>
+                              <span style={{ color: "#94a3b8", fontSize: "12px" }}>
+                                {p.jockey_name} · Làn {p.lane_number}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", margin: "8px 0" }} />
+
+          {/* --- Section 2: Kết quả các trận đã kết thúc --- */}
+          <div>
+            <h2 style={{ marginBottom: "20px" }}>🏁 Kết quả các trận đã kết thúc</h2>
+            {completedRaces.length === 0 ? (
+              <div style={{
+                textAlign: "center",
+                padding: "48px 24px",
+                color: "#64748b",
+                background: "rgba(255,255,255,0.02)",
+                borderRadius: "12px",
+                border: "1px dashed rgba(255,255,255,0.1)"
+              }}>
+                <div style={{ fontSize: "48px", marginBottom: "12px", opacity: 0.5 }}>🏁</div>
+                <p style={{ fontSize: "15px" }}>Chưa có trận đấu nào hoàn thành</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {completedRaces.map(race => (
+                  <div key={race.id} className="glass" style={{
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                    transition: "all 0.3s ease"
+                  }}>
+                    {/* Clickable race header */}
+                    <div
+                      onClick={() => toggleRaceResults(race.id)}
+                      style={{
+                        padding: "16px 20px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        cursor: "pointer",
+                        transition: "background 0.2s",
+                        background: expandedRace === race.id ? "rgba(249,115,22,0.05)" : "transparent"
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
+                      onMouseLeave={e => e.currentTarget.style.background = expandedRace === race.id ? "rgba(249,115,22,0.05)" : "transparent"}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <span style={{
+                          fontSize: "20px",
+                          transition: "transform 0.3s ease",
+                          transform: expandedRace === race.id ? "rotate(90deg)" : "rotate(0deg)",
+                          display: "inline-block"
+                        }}>▶</span>
+                        <div>
+                          <h3 style={{ margin: 0, fontSize: "15px" }}>{race.name}</h3>
+                          <span style={{ fontSize: "12px", color: "#64748b" }}>
+                            {formatDateTime(race.race_time)} · {race.distance}m · {race.track_condition || "—"}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="badge badge-approved" style={{ fontSize: "10px" }}>HOÀN THÀNH</span>
+                    </div>
+
+                    {/* Expandable results */}
+                    {expandedRace === race.id && (
+                      <div style={{
+                        padding: "0 20px 16px 20px",
+                        borderTop: "1px solid rgba(255,255,255,0.06)"
+                      }}>
+                        {loadingResults[race.id] ? (
+                          <div style={{
+                            textAlign: "center",
+                            padding: "24px",
+                            color: "var(--primary)",
+                            fontSize: "14px"
+                          }}>
+                            ⏳ Đang tải kết quả...
+                          </div>
+                        ) : raceResults[race.id] && raceResults[race.id].length > 0 ? (
+                          <table style={{ ...styles.table, marginTop: "12px" }}>
+                            <thead>
+                              <tr>
+                                <th style={{ width: "60px" }}>Hạng</th>
+                                <th>Ngựa đua</th>
+                                <th>Jockey</th>
+                                <th style={{ width: "80px" }}>Điểm</th>
+                                <th>Ghi chú</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {raceResults[race.id].map(r => (
+                                <tr key={r.id}>
+                                  <td style={{ fontSize: "18px", textAlign: "center" }}>
+                                    {getRankBadge(r.rank)}
+                                  </td>
+                                  <td style={{
+                                    fontWeight: "700",
+                                    color: r.rank === 1 ? "var(--primary)" : "var(--foreground)"
+                                  }}>
+                                    {r.horse_name}
+                                  </td>
+                                  <td>{r.jockey_name}</td>
+                                  <td style={{
+                                    fontWeight: "700",
+                                    color: "var(--secondary)"
+                                  }}>
+                                    {r.points}
+                                  </td>
+                                  <td style={{ color: "#64748b", fontSize: "13px" }}>
+                                    {r.notes || "—"}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        ) : (
+                          <div style={{
+                            textAlign: "center",
+                            padding: "20px",
+                            color: "#64748b",
+                            fontSize: "13px"
+                          }}>
+                            Chưa có kết quả chi tiết cho trận đấu này
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

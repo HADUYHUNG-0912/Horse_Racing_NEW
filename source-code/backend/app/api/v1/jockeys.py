@@ -162,8 +162,4 @@ def update_invitation(
     invitation.status = invite_in.status.upper()
     db.commit()
     db.refresh(invitation)
-<<<<<<< Updated upstream
     return invitation
-=======
-    return invitation
->>>>>>> Stashed changes
