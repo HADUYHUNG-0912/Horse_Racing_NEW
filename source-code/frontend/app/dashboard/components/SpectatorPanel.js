@@ -11,11 +11,29 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
 
   // Form states
   const [predictionForm, setPredictionForm] = useState({ race_id: "", horse_id: "", predicted_rank: "1" });
+  const [editingPredictionId, setEditingPredictionId] = useState(null);
 
   // Schedules tab states
   const [raceResults, setRaceResults] = useState({});
   const [expandedRace, setExpandedRace] = useState(null);
   const [loadingResults, setLoadingResults] = useState({});
+
+  // Profile state
+  const [profileForm, setProfileForm] = useState({
+    full_name: "",
+    phone_number: "",
+    avatar: "",
+    favorite_horse_breed: "",
+    email: "",
+    favorite_jockey: ""
+  });
+
+  const [profileStats, setProfileStats] = useState({
+    current_rank: null,
+    total_predictions: 0,
+    accuracy_rate: 0,
+    reward_points: 0
+  });
 
   const loadData = async () => {
     try {
@@ -24,6 +42,22 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
 
       const allRaces = await api.get("/races");
       setRaces(allRaces);
+
+      const profile = await api.get("/spectators/profile");
+      setProfileForm({
+        full_name: profile.full_name || "",
+        phone_number: profile.phone_number || "",
+        avatar: profile.avatar || "",
+        favorite_horse_breed: profile.favorite_horse_breed || "",
+        email: profile.email || "",
+        favorite_jockey: profile.favorite_jockey || ""
+      });
+      setProfileStats({
+        current_rank: profile.current_rank || "Chưa xếp hạng",
+        total_predictions: profile.total_predictions || 0,
+        accuracy_rate: profile.accuracy_rate || 0,
+        reward_points: profile.reward_points || 0
+      });
     } catch (err) {
       showMsg(err.message, "error");
     } finally {
@@ -39,13 +73,62 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const makePrediction = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/spectators/predictions", {
-        race_id: parseInt(predictionForm.race_id),
-        horse_id: parseInt(predictionForm.horse_id),
-        predicted_rank: parseInt(predictionForm.predicted_rank)
-      });
-      showMsg("Dự đoán thành công!");
+      if (editingPredictionId) {
+        await api.put(`/spectators/predictions/${editingPredictionId}`, {
+          race_id: parseInt(predictionForm.race_id),
+          horse_id: parseInt(predictionForm.horse_id),
+          predicted_rank: parseInt(predictionForm.predicted_rank)
+        });
+        showMsg("Cập nhật dự đoán thành công!");
+      } else {
+        await api.post("/spectators/predictions", {
+          race_id: parseInt(predictionForm.race_id),
+          horse_id: parseInt(predictionForm.horse_id),
+          predicted_rank: parseInt(predictionForm.predicted_rank)
+        });
+        showMsg("Dự đoán thành công!");
+      }
       setPredictionForm({ race_id: "", horse_id: "", predicted_rank: "1" });
+      setEditingPredictionId(null);
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
+  const handleEditClick = (pred) => {
+    setEditingPredictionId(pred.id);
+    setPredictionForm({
+      race_id: pred.race_id || "",
+      horse_id: pred.horse_id || "",
+      predicted_rank: pred.predicted_rank || "1"
+    });
+    // Scroll to form or focus
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setEditingPredictionId(null);
+    setPredictionForm({ race_id: "", horse_id: "", predicted_rank: "1" });
+  };
+
+  const deletePrediction = async (id) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa dự đoán này không?")) return;
+    try {
+      await api.delete(`/spectators/predictions/${id}`);
+      showMsg("Đã xóa dự đoán!");
+      if (editingPredictionId === id) cancelEdit();
+      loadData();
+    } catch (err) {
+      showMsg("Lỗi khi xóa: " + err.message, "error");
+    }
+  };
+
+  const updateProfile = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put("/spectators/profile", profileForm);
+      showMsg("Cập nhật hồ sơ thành công!");
       loadData();
     } catch (err) {
       showMsg(err.message, "error");
@@ -93,6 +176,9 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const upcomingRaces = races.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING");
   const completedRaces = races.filter(rc => rc.status === "COMPLETED");
 
+  const selectedRaceObj = races.find(rc => rc.id === parseInt(predictionForm.race_id));
+  const isLocked = selectedRaceObj ? new Date() > new Date(selectedRaceObj.race_time) : false;
+
   return (
     <>
       {/* TAB: Dự đoán Trận đua (Spectator) */}
@@ -102,7 +188,20 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
           <div style={styles.splitLayout}>
             {/* Make prediction */}
             <form onSubmit={makePrediction} style={styles.formPanel} className="glass">
-              <h3>Tạo dự đoán mới</h3>
+              <h3>{editingPredictionId ? "Sửa dự đoán" : "Tạo dự đoán mới"}</h3>
+              {isLocked && (
+                <div style={{
+                  padding: "10px",
+                  background: "rgba(239, 68, 68, 0.1)",
+                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                  color: "#f87171",
+                  borderRadius: "8px",
+                  marginBottom: "12px",
+                  fontSize: "13px"
+                }}>
+                  ⚠️ Trận đấu đã quá giờ, không thể dự đoán.
+                </div>
+              )}
               <div className="form-group">
                 <label>Chọn Trận đua</label>
                 <select className="input-field" required
@@ -118,7 +217,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                 <label>Chọn Ngựa đua</label>
                 <select className="input-field" required
                   value={predictionForm.horse_id} 
-                  disabled={!predictionForm.race_id}
+                  disabled={!predictionForm.race_id || isLocked}
                   onChange={(e) => setPredictionForm({ ...predictionForm, horse_id: e.target.value })}>
                   <option value="">-- Chọn ngựa đua --</option>
                   {(() => {
@@ -133,6 +232,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
               <div className="form-group">
                 <label>Dự đoán thứ hạng về đích</label>
                 <select className="input-field"
+                  disabled={isLocked}
                   value={predictionForm.predicted_rank} onChange={(e) => setPredictionForm({ ...predictionForm, predicted_rank: e.target.value })}>
                   <option value="1">Hạng 1 (Về nhất)</option>
                   <option value="2">Hạng 2 (Về nhì)</option>
@@ -140,7 +240,16 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                   <option value="4">Hạng 4</option>
                 </select>
               </div>
-              <button type="submit" className="btn-primary">Gửi dự đoán</button>
+              <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1 }} disabled={isLocked || !predictionForm.race_id || !predictionForm.horse_id}>
+                  {editingPredictionId ? "Cập nhật" : "Gửi dự đoán"}
+                </button>
+                {editingPredictionId && (
+                  <button type="button" onClick={cancelEdit} className="btn-secondary" style={{ flex: 1, background: "#334155", color: "#fff" }}>
+                    Hủy sửa
+                  </button>
+                )}
+              </div>
             </form>
 
             {/* Predictions History */}
@@ -175,6 +284,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                       <th>Ngựa đua</th>
                       <th>Hạng dự đoán</th>
                       <th>Kết quả</th>
+                      <th>Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -194,6 +304,16 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                             }`}>
                               {p.status === "Won" ? "✅ Đúng" : p.status === "Lost" ? "❌ Sai" : "⏳ Chờ kết quả"}
                             </span>
+                          </td>
+                          <td>
+                            {p.status !== "Won" && p.status !== "Lost" ? (
+                              <div style={{ display: "flex", gap: "6px" }}>
+                                <button onClick={() => handleEditClick(p)} style={{ background: "#3b82f6", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Sửa</button>
+                                <button onClick={() => deletePrediction(p.id)} style={{ background: "#ef4444", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Xóa</button>
+                              </div>
+                            ) : (
+                              <span style={{ color: "#64748b", fontSize: "12px" }}>Đã khóa</span>
+                            )}
                           </td>
                         </tr>
                       ))
@@ -426,6 +546,140 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Hồ sơ cá nhân */}
+      {activeTab === "profile" && (
+        <div style={styles.tabContent}>
+          <h2 style={{ marginBottom: "20px" }}>👤 Hồ sơ cá nhân</h2>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "20px", alignItems: "start" }}>
+            <form onSubmit={updateProfile} style={{ ...styles.formPanel, margin: 0, maxWidth: "none" }} className="glass">
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                <div className="form-group">
+                  <label>Họ và Tên</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={profileForm.full_name}
+                    onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
+                    placeholder="Nhập họ và tên..."
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    className="input-field"
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                    placeholder="email@example.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Số điện thoại</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={profileForm.phone_number}
+                    onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
+                    placeholder="Nhập số điện thoại..."
+                  />
+                </div>
+                <div className="form-group">
+                  <label>URL Ảnh đại diện</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={profileForm.avatar}
+                    onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
+                    placeholder="https://example.com/avatar.jpg"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Giống ngựa yêu thích</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={profileForm.favorite_horse_breed}
+                    onChange={(e) => setProfileForm({ ...profileForm, favorite_horse_breed: e.target.value })}
+                    placeholder="Ví dụ: Arabian..."
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Nài ngựa yêu thích</label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={profileForm.favorite_jockey}
+                    onChange={(e) => setProfileForm({ ...profileForm, favorite_jockey: e.target.value })}
+                    placeholder="Tên nài ngựa..."
+                  />
+                </div>
+              </div>
+              <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "15px" }}>
+                Cập nhật thông tin
+              </button>
+            </form>
+
+            <div className="glass" style={{ padding: "20px", borderRadius: "12px", border: "1px solid #334155" }}>
+              <h3 style={{ marginBottom: "15px", fontSize: "18px", color: "#f97316" }}>Thống kê & Thành tích</h3>
+              <div style={{ marginBottom: "10px" }}>
+                <span style={{ color: "#94a3b8" }}>Thứ hạng hiện tại:</span>
+                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.current_rank || "Chưa xếp hạng"}</strong>
+              </div>
+              <div style={{ marginBottom: "10px" }}>
+                <span style={{ color: "#94a3b8" }}>Tổng số trận dự đoán:</span>
+                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.total_predictions}</strong>
+              </div>
+              <div style={{ marginBottom: "10px" }}>
+                <span style={{ color: "#94a3b8" }}>Tỷ lệ chính xác:</span>
+                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.accuracy_rate}%</strong>
+              </div>
+              <div>
+                <span style={{ color: "#94a3b8" }}>Điểm thưởng:</span>
+                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.reward_points}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass" style={{ marginTop: "20px", padding: "20px", borderRadius: "12px", border: "1px solid #334155", overflowX: "auto" }}>
+            <h3 style={{ marginBottom: "15px", fontSize: "18px", color: "#f97316" }}>Lịch sử dự đoán gần đây</h3>
+            {predictions.length > 0 ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #334155", color: "#94a3b8" }}>
+                    <th style={{ padding: "12px 8px" }}>Tên trận đua</th>
+                    <th style={{ padding: "12px 8px" }}>Ngựa đã chọn</th>
+                    <th style={{ padding: "12px 8px" }}>Thời gian</th>
+                    <th style={{ padding: "12px 8px" }}>Trạng thái</th>
+                    <th style={{ padding: "12px 8px" }}>Điểm thưởng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {predictions.map(pred => {
+                    let statusColor = "#94a3b8";
+                    let statusText = "Đang chờ";
+                    if (pred.is_correct === true) { statusColor = "#22c55e"; statusText = "Thắng"; }
+                    if (pred.is_correct === false) { statusColor = "#ef4444"; statusText = "Thua"; }
+
+                    return (
+                      <tr key={pred.id} style={{ borderBottom: "1px solid #1e293b" }}>
+                        <td style={{ padding: "12px 8px" }}>{pred.race?.name || `Trận #${pred.race_id}`}</td>
+                        <td style={{ padding: "12px 8px" }}>{pred.horse?.name || `Ngựa #${pred.horse_id}`}</td>
+                        <td style={{ padding: "12px 8px" }}>{new Date(pred.created_at).toLocaleString()}</td>
+                        <td style={{ padding: "12px 8px", color: statusColor, fontWeight: "600" }}>{statusText}</td>
+                        <td style={{ padding: "12px 8px" }}>{pred.points_awarded > 0 ? `+${pred.points_awarded}` : "0"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <p style={{ color: "#94a3b8", fontSize: "14px" }}>Chưa có dự đoán nào.</p>
             )}
           </div>
         </div>

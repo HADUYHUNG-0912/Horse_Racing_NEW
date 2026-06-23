@@ -2,9 +2,11 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from datetime import datetime, timedelta
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import Prediction, RaceParticipant, Result, Race, Registration, SpectatorProfile
-from app.schemas.prediction import PredictionCreate, PredictionOut
+from app.models.database_models import Prediction, RaceParticipant, Result, Race, Registration, SpectatorProfile, User
+from app.schemas.prediction import PredictionCreate, PredictionOut, PredictionUpdate
+from app.schemas.auth import SpectatorProfileUpdate, SpectatorProfileDetailOut
 
 router = APIRouter()
 
@@ -25,6 +27,10 @@ def make_prediction(
     # Check if participant's race is already completed (cannot predict completed races)
     if part.race.status == "COMPLETED":
         raise HTTPException(status_code=400, detail="Cannot make prediction on a completed race")
+        
+    # Check if race has started based on time
+    if datetime.utcnow() > part.race.race_time:
+        raise HTTPException(status_code=400, detail="Trận đấu đã bắt đầu, không thể dự đoán")
         
     # Check if spectator has already made a prediction for this race
     dup = db.query(Prediction).join(RaceParticipant).filter(
@@ -81,3 +87,138 @@ def read_predictions(
                 db.commit() # Save evaluated status
                 
     return preds
+
+@router.get("/rankings", response_model=List[SpectatorProfileDetailOut])
+def get_top_spectators(db: Session = Depends(get_db)):
+    top_spectators = db.query(SpectatorProfile).order_by(SpectatorProfile.reward_points.desc()).limit(10).all()
+    res = []
+    for s in top_spectators:
+        res.append(SpectatorProfileDetailOut(
+            id=s.id,
+            username=s.user.username,
+            email=s.user.email,
+            full_name=s.user.full_name,
+            phone_number=s.user.phone_number,
+            avatar=s.user.avatar,
+            favorite_horse_breed=s.favorite_horse_breed,
+            reward_points=s.reward_points
+        ))
+    return res
+
+@router.put("/predictions/{prediction_id}", response_model=PredictionOut)
+def update_prediction(
+    prediction_id: int,
+    pred_update: PredictionUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["SPECTATOR"]))
+):
+    prediction = db.query(Prediction).filter(
+        Prediction.id == prediction_id,
+        Prediction.user_id == current_user.id
+    ).first()
+    if not prediction:
+        raise HTTPException(status_code=404, detail="Prediction not found")
+        
+    if prediction.status != "PENDING":
+        raise HTTPException(status_code=400, detail="Cannot edit a prediction that is no longer pending")
+        
+    part = prediction.participant
+    if part.race.status != "SCHEDULED":
+        raise HTTPException(status_code=400, detail="Cannot edit prediction after race has started")
+        
+    time_until_race = part.race.race_time - datetime.utcnow()
+    if time_until_race < timedelta(minutes=15):
+        raise HTTPException(status_code=400, detail="Modifications are only allowed up to 15 minutes before the race starts")
+        
+    prediction.predicted_rank = pred_update.predicted_rank
+    db.commit()
+    db.refresh(prediction)
+    
+    prediction.race_id = part.race_id
+    prediction.horse_id = part.registration.horse_id
+    prediction.horse_name = part.registration.horse.name
+    prediction.jockey_name = part.registration.jockey.user.full_name
+    prediction.race_name = part.race.name
+    return prediction
+
+@router.delete("/predictions/{prediction_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_prediction(
+    prediction_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["SPECTATOR"]))
+):
+    prediction = db.query(Prediction).filter(
+        Prediction.id == prediction_id,
+        Prediction.user_id == current_user.id
+    ).first()
+    if not prediction:
+        raise HTTPException(status_code=404, detail="Prediction not found")
+        
+    if prediction.status != "PENDING":
+        raise HTTPException(status_code=400, detail="Cannot delete a prediction that is no longer pending")
+        
+    part = prediction.participant
+    if part.race.status != "SCHEDULED":
+        raise HTTPException(status_code=400, detail="Cannot delete prediction after race has started")
+        
+    time_until_race = part.race.race_time - datetime.utcnow()
+    if time_until_race < timedelta(minutes=15):
+        raise HTTPException(status_code=400, detail="Deletions are only allowed up to 15 minutes before the race starts")
+        
+    db.delete(prediction)
+    db.commit()
+    return None
+
+@router.get("/profile", response_model=SpectatorProfileDetailOut)
+def get_spectator_profile(
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["SPECTATOR"]))
+):
+    spectator = db.query(SpectatorProfile).filter(SpectatorProfile.user_id == current_user.id).first()
+    if not spectator:
+        raise HTTPException(status_code=404, detail="Spectator profile not found")
+        
+    return SpectatorProfileDetailOut(
+        id=spectator.id,
+        username=current_user.username,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        phone_number=current_user.phone_number,
+        avatar=current_user.avatar,
+        favorite_horse_breed=spectator.favorite_horse_breed,
+        reward_points=spectator.reward_points
+    )
+
+@router.put("/profile", response_model=SpectatorProfileDetailOut)
+def update_spectator_profile(
+    profile_update: SpectatorProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["SPECTATOR"]))
+):
+    spectator = db.query(SpectatorProfile).filter(SpectatorProfile.user_id == current_user.id).first()
+    if not spectator:
+        raise HTTPException(status_code=404, detail="Spectator profile not found")
+        
+    if profile_update.full_name is not None:
+        current_user.full_name = profile_update.full_name
+    if profile_update.phone_number is not None:
+        current_user.phone_number = profile_update.phone_number
+    if profile_update.avatar is not None:
+        current_user.avatar = profile_update.avatar
+    if profile_update.favorite_horse_breed is not None:
+        spectator.favorite_horse_breed = profile_update.favorite_horse_breed
+        
+    db.commit()
+    db.refresh(current_user)
+    db.refresh(spectator)
+    
+    return SpectatorProfileDetailOut(
+        id=spectator.id,
+        username=current_user.username,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        phone_number=current_user.phone_number,
+        avatar=current_user.avatar,
+        favorite_horse_breed=spectator.favorite_horse_breed,
+        reward_points=spectator.reward_points
+    )

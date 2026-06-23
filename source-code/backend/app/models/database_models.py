@@ -19,6 +19,8 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
     full_name = Column(Unicode(100), nullable=False)
+    phone_number = Column(String(20), nullable=True)
+    avatar = Column(String(255), nullable=True)
     role_id = Column(Integer, ForeignKey('Roles.id'), nullable=False)
     is_active = Column(Boolean, default=True)
     
@@ -71,6 +73,7 @@ class SpectatorProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
     favorite_horse_breed = Column(Unicode(50), nullable=True)
+    favorite_jockey = Column(Unicode(100), nullable=True)
     reward_points = Column(Integer, default=0, nullable=False)
     
     user = relationship("User", back_populates="spectator_profile")
