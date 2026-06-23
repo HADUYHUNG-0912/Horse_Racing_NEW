@@ -6,22 +6,33 @@ import { styles } from "./styles";
 
 export default function Leaderboard() {
   const [rankings, setRankings] = useState([]);
+  const [tournaments, setTournaments] = useState([]);
+  const [selectedTournament, setSelectedTournament] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchRankings = async () => {
+    const fetchData = async () => {
       try {
-        const data = await api.get("/results/rankings");
-        setRankings(data);
+        const [rankData, tourData] = await Promise.all([
+          api.get("/results/rankings"),
+          api.get("/tournaments"),
+        ]);
+        setRankings(Array.isArray(rankData) ? rankData : []);
+        setTournaments(Array.isArray(tourData) ? tourData : []);
       } catch (err) {
         setError(err.message || "Không thể tải bảng xếp hạng");
       } finally {
         setLoading(false);
       }
     };
-    fetchRankings();
+    fetchData();
   }, []);
+
+  // Lọc ranking theo giải đấu được chọn
+  const filteredRankings = selectedTournament === "all"
+    ? rankings
+    : rankings.filter(r => String(r.tournament_id) === selectedTournament);
 
   if (loading) {
     return <div style={styles.loading}>Đang tải bảng xếp hạng...</div>;
@@ -31,13 +42,57 @@ export default function Leaderboard() {
     return <div style={{ color: "var(--danger)", padding: "24px" }}>Lỗi: {error}</div>;
   }
 
+  const horseRankings = filteredRankings.filter(r => r.entity_type === "HORSE");
+  const jockeyRankings = filteredRankings.filter(r => r.entity_type === "JOCKEY");
+
   return (
     <div style={styles.tabContent}>
       <h2>⭐ Bảng xếp hạng thi đấu chính thức</h2>
+
+      {/* Bộ lọc giải đấu - phối hợp với Spectator */}
+      <div style={{ marginBottom: "24px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+        <label style={{ color: "#94a3b8", fontWeight: "600", whiteSpace: "nowrap" }}>🏆 Lọc theo giải đấu:</label>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <button
+            onClick={() => setSelectedTournament("all")}
+            style={{
+              padding: "7px 16px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: "600", fontSize: "13px",
+              background: selectedTournament === "all" ? "var(--primary)" : "#1e293b",
+              color: selectedTournament === "all" ? "#fff" : "#94a3b8",
+              transition: "all 0.2s"
+            }}
+          >
+            Tất cả
+          </button>
+          {tournaments.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setSelectedTournament(String(t.id))}
+              style={{
+                padding: "7px 16px", borderRadius: "20px", border: "none", cursor: "pointer", fontWeight: "600", fontSize: "13px",
+                background: selectedTournament === String(t.id) ? "var(--primary)" : "#1e293b",
+                color: selectedTournament === String(t.id) ? "#fff" : "#94a3b8",
+                transition: "all 0.2s"
+              }}
+            >
+              {t.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Hiển thị giải đấu đang xem */}
+      {selectedTournament !== "all" && (
+        <div style={{ marginBottom: "16px", padding: "10px 16px", background: "#1e293b", borderRadius: "8px", border: "1px solid #334155", color: "#94a3b8", fontSize: "13px" }}>
+          📋 Đang xem: <strong style={{ color: "#fff" }}>{tournaments.find(t => String(t.id) === selectedTournament)?.name}</strong>
+          {filteredRankings.length === 0 && <span style={{ marginLeft: "12px", color: "#64748b" }}>— Chưa có dữ liệu xếp hạng</span>}
+        </div>
+      )}
+
       <div style={styles.splitLayout}>
         {/* Horse standings */}
         <div style={{ flex: 1 }}>
-          <h3>Xếp hạng Ngựa đua</h3>
+          <h3>🐴 Xếp hạng Ngựa đua</h3>
           <div style={styles.tableWrapper}>
             <table style={styles.table}>
               <thead>
@@ -48,13 +103,19 @@ export default function Leaderboard() {
                 </tr>
               </thead>
               <tbody>
-                {rankings.filter(r => r.entity_type === "HORSE").map((r, i) => (
-                  <tr key={r.id}>
-                    <td style={{ fontWeight: "800", color: "var(--primary)" }}>#{i + 1}</td>
-                    <td style={{ fontWeight: "700" }}>{r.entity_name}</td>
-                    <td>{r.points} điểm</td>
-                  </tr>
-                ))}
+                {horseRankings.length === 0 ? (
+                  <tr><td colSpan="3" style={{ textAlign: "center", color: "#64748b", padding: "24px" }}>Chưa có dữ liệu</td></tr>
+                ) : (
+                  horseRankings.map((r, i) => (
+                    <tr key={r.id}>
+                      <td style={{ fontWeight: "800", color: i === 0 ? "#f59e0b" : i === 1 ? "#94a3b8" : i === 2 ? "#cd7f32" : "var(--primary)" }}>
+                        {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+                      </td>
+                      <td style={{ fontWeight: "700" }}>{r.entity_name}</td>
+                      <td>{r.points} điểm</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -62,7 +123,7 @@ export default function Leaderboard() {
 
         {/* Jockey standings */}
         <div style={{ flex: 1 }}>
-          <h3>Xếp hạng Jockey</h3>
+          <h3>🏇 Xếp hạng Jockey</h3>
           <div style={styles.tableWrapper}>
             <table style={styles.table}>
               <thead>
@@ -73,13 +134,19 @@ export default function Leaderboard() {
                 </tr>
               </thead>
               <tbody>
-                {rankings.filter(r => r.entity_type === "JOCKEY").map((r, i) => (
-                  <tr key={r.id}>
-                    <td style={{ fontWeight: "800", color: "var(--secondary)" }}>#{i + 1}</td>
-                    <td style={{ fontWeight: "700" }}>{r.entity_name}</td>
-                    <td>{r.points} điểm</td>
-                  </tr>
-                ))}
+                {jockeyRankings.length === 0 ? (
+                  <tr><td colSpan="3" style={{ textAlign: "center", color: "#64748b", padding: "24px" }}>Chưa có dữ liệu</td></tr>
+                ) : (
+                  jockeyRankings.map((r, i) => (
+                    <tr key={r.id}>
+                      <td style={{ fontWeight: "800", color: i === 0 ? "#f59e0b" : i === 1 ? "#94a3b8" : i === 2 ? "#cd7f32" : "var(--secondary)" }}>
+                        {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+                      </td>
+                      <td style={{ fontWeight: "700" }}>{r.entity_name}</td>
+                      <td>{r.points} điểm</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
