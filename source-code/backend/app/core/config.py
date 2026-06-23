@@ -8,17 +8,16 @@ class Settings:
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     
-    # SQLEXPRESS connection string
-    # We use mssql+pyodbc with SQL Server driver
-    SQL_SERVER_HOST: str = os.getenv("SQL_SERVER_HOST", "localhost")
+    # SQLEXPRESS connection string cho máy của bạn
+    # Sử dụng dấu gạch chéo xuôi '/' để Python không bao giờ bị lỗi đọc chuỗi (bản chất SQL Server hiểu tốt cả / và \)
+    SQL_SERVER_HOST: str = os.getenv("SQL_SERVER_HOST", r"localhost\SQLEXPRESS")
     SQL_SERVER_DB: str = os.getenv("SQL_SERVER_DB", "HorseRacing")
-    
+   
     @property
     def DATABASE_URL(self) -> str:
         # Standard connection string for SQLAlchemy with pyodbc
-        # We need Encrypt=no and TrustServerCertificate=yes for local SQLEXPRESS development
         connection_uri = (
-            f"mssql+pyodbc://@{self.SQL_SERVER_HOST}/{self.SQL_SERVER_DB}"
+            f"mssql+pyodbc://{self.SQL_SERVER_HOST}/{self.SQL_SERVER_DB}"
             "?driver=ODBC+Driver+17+for+SQL+Server"
             "&trusted_connection=yes"
             "&Encrypt=no"

@@ -98,6 +98,16 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       showMsg(err.message, "error");
     }
   };
+  const deleteTournament = async (id) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa giải đấu này không? Sau khi xóa không thể khôi phục!")) return;
+    try {
+      await api.delete(`/tournaments/${id}`);
+      showMsg("Xóa giải đấu thành công!");
+      loadData(); 
+    } catch (err) {
+      showMsg(err.response?.data?.message || "Không thể xóa giải đấu này!", "error");
+    }
+  };
 
   const createRound = async (e) => {
     e.preventDefault();
@@ -131,7 +141,8 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       loadData();
     } catch (err) {
       if (err.status === 400 || (err.response && err.response.status === 400)) {
-        showMsg("Lỗi trùng lịch: Trọng tài đã có lịch đua khác trong khoảng ±2 giờ!", "error");
+        const backendError = err.response?.data?.detail || "Lỗi trùng lịch thi đấu!";
+        showMsg(backendError, "error");
       } else {
         showMsg(err.message, "error");
       }    
@@ -236,7 +247,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
               </div>
               <div className="form-group">
                 <label>Thứ tự vòng (Sequence)</label>
-                <input type="number" className="input-field" required
+                <input type="number" className="input-field" min="1" required
                   value={newRound.sequence} onChange={(e) => setNewRound({ ...newRound, sequence: e.target.value })} />
               </div>
               <button type="submit" className="btn-primary">Thêm Vòng Đấu</button>
@@ -256,6 +267,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                     <th>Thời gian</th>
                     <th>Số vòng đấu</th>
                     <th>Trạng thái</th>
+                    <th>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -267,6 +279,15 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                       <td>{t.start_date} đến {t.end_date}</td>
                       <td>{t.rounds ? t.rounds.length : 0} vòng</td>                      
                       <td><span className="badge badge-info">{t.status}</span></td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => deleteTournament(t.id)}
+                          style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", fontSize: "13px", textDecoration: "underline", padding: 0 }}
+                        >
+                           Xóa
+                        </button>
+                        </td>                  
                     </tr>
                   ))}
                 </tbody>
@@ -275,7 +296,6 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
           </div>
         </div>
       )}
-
       {/* TAB: Xét duyệt Đăng ký (Admin) */}
       {activeTab === "registrations" && (
         <div style={styles.tabContent}>
@@ -306,14 +326,43 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                           <span className={`badge ${r.status === "APPROVED" ? "badge-approved" : r.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
                             {r.status}
                           </span>
-                        </td>
+                        </td>                        
                         <td>
-                          {r.status === "PENDING" && (
+                          {r.status === "PENDING" ? (
                             <div style={{ display: "flex", gap: "8px" }}>
-                              <button className="btn-primary" style={{ padding: "4px 8px", fontSize: "12px" }}
-                                onClick={() => approveRegistration(r.id, "APPROVED")}>Duyệt</button>
-                              <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)" }}
-                                onClick={() => approveRegistration(r.id, "REJECTED")}>Từ chối</button>
+                              <button
+                                className="btn-primary" 
+                                style={{ padding: "4px 8px", fontSize: "12px", cursor: "pointer" }}
+                                onClick={() => approveRegistration(r.id, "APPROVED")}
+                              >
+                                Duyệt
+                              </button>
+                              <button
+                                className="btn-secondary"
+                                style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)", cursor: "pointer" }}
+                                onClick={() => approveRegistration(r.id, "REJECTED")}
+                              >
+                                Từ chối
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                              <span style={{ fontSize: "12px", color: "#64748b" }}>🔒 Đã xử lý ({r.status})</span>
+                              <button
+                                type="button"
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  color: "#3b82f6",
+                                  textDecoration: "underline",
+                                  fontSize: "11px",
+                                  cursor: "pointer",
+                                  padding: 0
+                                }}
+                                onClick={() => approveRegistration(r.id, "PENDING")}
+                              >
+                                Thay đổi
+                              </button>
                             </div>
                           )}
                         </td>
@@ -325,8 +374,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
             </table>
           </div>
         </div>
-      )}
-
+      )}      
       {/* TAB: Lập lịch Trận đua (Admin) */}
       {activeTab === "races" && (
         <div style={styles.tabContent}>
@@ -340,7 +388,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 <select className="input-field" required
                   value={newRace.round_id} onChange={(e) => setNewRace({ ...newRace, round_id: e.target.value })}>
                   <option value="">-- Chọn vòng đấu --</option>
-                  {tournaments.map(t => 
+                  {tournaments.flatMap(t => 
                     (t.rounds || []).map(r => (
                       <option key={r.id} value={r.id}>{t.name} - {r.name}</option>
                     ))
@@ -365,7 +413,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label>Khoảng cách (mét)</label>
-                  <input type="number" className="input-field" required
+                  <input type="number" className="input-field" min="1" required
                     value={newRace.distance} onChange={(e) => setNewRace({ ...newRace, distance: e.target.value })} />
                 </div>
               </div>
@@ -410,7 +458,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
               </div>
               <div className="form-group">
                 <label>Làn số (Lane Number)</label>
-                <input type="number" className="input-field" placeholder="1-8" required
+                <input type="number" className="input-field" placeholder="1-8" min="1" max="8" required
                   value={newParticipant.lane_number} onChange={(e) => setNewParticipant({ ...newParticipant, lane_number: e.target.value })} />
               </div>
               <button type="submit" className="btn-primary">Xếp vào đường đua</button>
