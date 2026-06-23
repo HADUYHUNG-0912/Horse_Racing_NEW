@@ -10,7 +10,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
 
   const [selectedRace, setSelectedRace] = useState(null);
   const [resultsForm, setResultsForm] = useState([]); // Array of { race_participant_id, rank, points, notes }
-  const [violationForm, setViolationForm] = useState({ race_participant_id: "", description: "", penalty: "Warning", fine_amount: "0" });
+  const [violationForm, setViolationForm] = useState({ race_participant_id: "", description: "", penalty: "Cảnh cáo", fine_amount: "0" });
 
   const [selectedRaceForInspection, setSelectedRaceForInspection] = useState(null);
   const [inspectionForm, setInspectionForm] = useState({ weather: "", track_condition: "", horse_health: "" });
@@ -112,7 +112,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
         fine_amount: fineAmount
       });
       showMsg("Báo cáo vi phạm thành công!");
-      setViolationForm({ race_participant_id: "", description: "", penalty: "Warning", fine_amount: "0" });
+      setViolationForm({ race_participant_id: "", description: "", penalty: "Cảnh cáo", fine_amount: "0" });
     } catch (err) {
       showMsg(err.message, "error");
     }
@@ -260,8 +260,14 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                   </div>
                   <div className="form-group">
                     <label>Hình thức phạt</label>
-                    <input type="text" className="input-field" placeholder="Warning, Ban 1 match..." required
-                      value={violationForm.penalty} onChange={(e) => setViolationForm({ ...violationForm, penalty: e.target.value })} />
+                    <select className="input-field" required
+                      value={violationForm.penalty} onChange={(e) => setViolationForm({ ...violationForm, penalty: e.target.value })}>
+                      <option value="Cảnh cáo">Cảnh cáo</option>
+                      <option value="Huỷ kết quả">Huỷ kết quả</option>
+                      <option value="Cấm thi đấu 1 trận">Cấm thi đấu 1 trận</option>
+                      <option value="Cấm thi đấu vĩnh viễn">Cấm thi đấu vĩnh viễn</option>
+                      <option value="Phạt tiền">Phạt tiền</option>
+                    </select>
                   </div>
                   <div className="form-group">
                     <label>Số tiền phạt ($)</label>
