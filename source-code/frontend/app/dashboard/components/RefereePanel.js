@@ -104,11 +104,12 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
   const submitViolation = async (e) => {
     e.preventDefault();
     try {
+      const fineAmount = Math.max(0, parseInt(violationForm.fine_amount) || 0);
       await api.post(`/results/${selectedRace.id}/violations`, {
         race_participant_id: parseInt(violationForm.race_participant_id),
         description: violationForm.description,
         penalty: violationForm.penalty,
-        fine_amount: parseFloat(violationForm.fine_amount)
+        fine_amount: fineAmount
       });
       showMsg("Báo cáo vi phạm thành công!");
       setViolationForm({ race_participant_id: "", description: "", penalty: "Warning", fine_amount: "0" });
@@ -264,8 +265,17 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                   </div>
                   <div className="form-group">
                     <label>Số tiền phạt ($)</label>
-                    <input type="number" className="input-field" required
-                      value={violationForm.fine_amount} onChange={(e) => setViolationForm({ ...violationForm, fine_amount: e.target.value })} />
+                    <input type="number" min="0" step="1" className="input-field" required
+                      value={violationForm.fine_amount}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        // Nếu người dùng nhập số âm thì reset về 0
+                        if (val !== "" && parseInt(val) < 0) {
+                          setViolationForm({ ...violationForm, fine_amount: "0" });
+                        } else {
+                          setViolationForm({ ...violationForm, fine_amount: val });
+                        }
+                      }} />
                   </div>
                   <button type="submit" className="btn-primary" style={{ backgroundColor: "var(--danger)" }}>Báo cáo vi phạm</button>
                 </form>
