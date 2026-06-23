@@ -1,5 +1,5 @@
 from typing import List
-from datetime import timedelta
+from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -59,11 +59,20 @@ def create_race(
     if not round_obj:
         raise HTTPException(status_code=404, detail="Round not found")
         
-    # Check if referee exists if provided
+    # Check if referee exists if provided and verify no conflicts
     if race_in.referee_id:
         ref = db.query(RefereeProfile).filter(RefereeProfile.id == race_in.referee_id).first()
         if not ref:
             raise HTTPException(status_code=404, detail="Referee profile not found")
+        
+        # Check referee schedule conflict (within 2 hours)
+        ref_conflict = db.query(Race).filter(
+            Race.referee_id == race_in.referee_id,
+            Race.race_time >= race_in.race_time - timedelta(hours=2),
+            Race.race_time <= race_in.race_time + timedelta(hours=2)
+        ).first()
+        if ref_conflict:
+            raise HTTPException(status_code=400, detail="Referee has a conflicting schedule within 2 hours of this race time")
             
     race = Race(
         round_id=round_id,

@@ -2,6 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Numeric, Text, Boolean, Unicode, UnicodeText
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.core.timezone_utils import get_vietnam_now_naive
 
 class Role(Base):
     __tablename__ = 'Roles'
@@ -145,7 +146,7 @@ class Registration(Base):
     horse_id = Column(Integer, ForeignKey('Horses.id'), nullable=False)
     jockey_id = Column(Integer, ForeignKey('JockeyProfiles.id'), nullable=False)
     status = Column(String(50), default="PENDING") # PENDING, APPROVED, REJECTED
-    registration_date = Column(DateTime, default=datetime.datetime.utcnow)
+    registration_date = Column(DateTime, default=get_vietnam_now_naive)
     
     tournament = relationship("Tournament", back_populates="registrations")
     horse = relationship("Horse", back_populates="registrations")
@@ -162,7 +163,7 @@ class JockeyInvitation(Base):
     tournament_id = Column(Integer, ForeignKey('Tournaments.id'), nullable=False)
     message = Column(UnicodeText, nullable=True)
     status = Column(String(50), default="PENDING") # PENDING, ACCEPTED, REJECTED
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=get_vietnam_now_naive)
     
     owner = relationship("HorseOwnerProfile", back_populates="invitations")
     jockey = relationship("JockeyProfile", back_populates="invitations")
@@ -205,7 +206,7 @@ class Violation(Base):
     description = Column(UnicodeText, nullable=False)
     penalty = Column(Unicode(100), nullable=True)
     fine_amount = Column(Numeric(10, 2), default=0.00)
-    violation_date = Column(DateTime, default=datetime.datetime.utcnow)
+    violation_date = Column(DateTime, default=get_vietnam_now_naive)
     
     participant = relationship("RaceParticipant", back_populates="violations")
 
@@ -217,7 +218,7 @@ class Ranking(Base):
     entity_id = Column(Integer, nullable=False)
     points = Column(Integer, nullable=False, default=0)
     rank = Column(Integer, nullable=False)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=get_vietnam_now_naive)
 
 class Prediction(Base):
     __tablename__ = 'Predictions'
@@ -226,7 +227,7 @@ class Prediction(Base):
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False)
     race_participant_id = Column(Integer, ForeignKey('RaceParticipants.id'), nullable=False)
     predicted_rank = Column(Integer, nullable=False)
-    prediction_date = Column(DateTime, default=datetime.datetime.utcnow)
+    prediction_date = Column(DateTime, default=get_vietnam_now_naive)
     status = Column(String(50), default="PENDING") # PENDING, Won, Lost
     
     user = relationship("User", back_populates="predictions")
@@ -240,6 +241,6 @@ class RaceInspection(Base):
     weather = Column(Unicode(255), nullable=True)
     track_condition = Column(Unicode(255), nullable=True)
     horse_health = Column(UnicodeText, nullable=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=get_vietnam_now_naive)
     
     race = relationship("Race", back_populates="inspection")

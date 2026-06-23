@@ -164,6 +164,19 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     }
   };
 
+  const deleteTournament = async (tournamentId, tournamentName) => {
+    if (!window.confirm(`⚠️ Bạn chắc chắn muốn xóa giải đấu "${tournamentName}"? Tất cả vòng đấu, trận đua liên quan sẽ bị xóa!`)) {
+      return;
+    }
+    try {
+      await api.delete(`/tournaments/${tournamentId}`);
+      showMsg("Xóa giải đấu thành công!");
+      loadData();
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
+
   const formatDateTime = (dateStr) => {
     if (!dateStr) return "—";
     const d = new Date(dateStr);
@@ -256,6 +269,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                     <th>Thời gian</th>
                     <th>Số vòng đấu</th>
                     <th>Trạng thái</th>
+                    <th>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -267,6 +281,10 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                       <td>{t.start_date} đến {t.end_date}</td>
                       <td>{t.rounds ? t.rounds.length : 0} vòng</td>                      
                       <td><span className="badge badge-info">{t.status}</span></td>
+                      <td>
+                        <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)" }}
+                          onClick={() => deleteTournament(t.id, t.name)}>Xóa</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

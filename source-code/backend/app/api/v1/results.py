@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db, get_current_user, RoleChecker
 from app.models.database_models import Race, RaceParticipant, Result, Violation, Ranking, Horse, JockeyProfile, Prediction, SpectatorProfile
 from app.schemas.result import ResultCreate, ResultOut, ViolationCreate, ViolationOut, RankingOut
+from app.core.timezone_utils import get_vietnam_now_naive
 
 router = APIRouter()
 
@@ -162,7 +163,7 @@ def record_violation(
         description=violation_in.description,
         penalty=violation_in.penalty,
         fine_amount=violation_in.fine_amount,
-        violation_date=datetime.utcnow()
+        violation_date=get_vietnam_now_naive()
     )
     db.add(violation)
     db.commit()
@@ -217,7 +218,7 @@ def recalculate_rankings(db: Session):
             entity_id=h_id,
             points=pts,
             rank=idx + 1,
-            updated_at=datetime.utcnow()
+            updated_at=get_vietnam_now_naive()
         )
         db.add(rank)
         
@@ -228,7 +229,7 @@ def recalculate_rankings(db: Session):
             entity_id=j_id,
             points=pts,
             rank=idx + 1,
-            updated_at=datetime.utcnow()
+            updated_at=get_vietnam_now_naive()
         )
         db.add(rank)
         
