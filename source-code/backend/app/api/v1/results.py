@@ -1,6 +1,7 @@
 from typing import List
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
+from app.core.timezone_utils import get_vietnam_now_naive
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -162,7 +163,7 @@ def record_violation(
         description=violation_in.description,
         penalty=violation_in.penalty,
         fine_amount=violation_in.fine_amount,
-        violation_date=datetime.utcnow()
+        violation_date=get_vietnam_now_naive()
     )
     db.add(violation)
     db.commit()
@@ -211,7 +212,7 @@ def read_rankings(tournament_id: Optional[int] = None, db: Session = Depends(get
                 "entity_name": horse.name if horse else "Unknown Horse",
                 "points": pts,
                 "rank": idx + 1,
-                "updated_at": datetime.utcnow()
+                "updated_at": get_vietnam_now_naive()
             })
             
         # Populate Jockey rankings
@@ -224,7 +225,7 @@ def read_rankings(tournament_id: Optional[int] = None, db: Session = Depends(get
                 "entity_name": jockey.user.full_name if jockey else "Unknown Jockey",
                 "points": pts,
                 "rank": idx + 1,
-                "updated_at": datetime.utcnow()
+                "updated_at": get_vietnam_now_naive()
             })
         return rankings_out
     else:
@@ -271,7 +272,7 @@ def recalculate_rankings(db: Session):
             entity_id=h_id,
             points=pts,
             rank=idx + 1,
-            updated_at=datetime.utcnow()
+            updated_at=get_vietnam_now_naive()
         )
         db.add(rank)
         
@@ -282,7 +283,7 @@ def recalculate_rankings(db: Session):
             entity_id=j_id,
             points=pts,
             rank=idx + 1,
-            updated_at=datetime.utcnow()
+            updated_at=get_vietnam_now_naive()
         )
         db.add(rank)
         

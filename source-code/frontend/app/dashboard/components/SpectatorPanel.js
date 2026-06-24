@@ -272,7 +272,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                 }}>
                   <span style={{ fontSize: "18px" }}>⭐</span>
                   <span style={{ color: "#fff", fontWeight: "700", fontSize: "14px" }}>
-                    Điểm thưởng tích lũy: {user?.spectator_profile?.reward_points ?? 0} điểm
+                    Điểm thưởng tích lũy: {profileStats.reward_points ?? 0} điểm
                   </span>
                 </div>
               </div>

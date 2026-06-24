@@ -2,7 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from datetime import datetime, timedelta
+from datetime import timedelta
+from app.core.timezone_utils import get_vietnam_now_naive
 from app.api.deps import get_db, get_current_user, RoleChecker
 from app.models.database_models import Prediction, RaceParticipant, Result, Race, Registration, SpectatorProfile, User
 from app.schemas.prediction import PredictionCreate, PredictionOut, PredictionUpdate
@@ -29,7 +30,7 @@ def make_prediction(
         raise HTTPException(status_code=400, detail="Cannot make prediction on a completed race")
         
     # Check if race has started based on time
-    if datetime.utcnow() > part.race.race_time:
+    if get_vietnam_now_naive() > part.race.race_time:
         raise HTTPException(status_code=400, detail="Trận đấu đã bắt đầu, không thể dự đoán")
         
     # Check if spectator has already made a prediction for this race
@@ -101,6 +102,7 @@ def get_top_spectators(db: Session = Depends(get_db)):
             phone_number=s.user.phone_number,
             avatar=s.user.avatar,
             favorite_horse_breed=s.favorite_horse_breed,
+            favorite_jockey=s.favorite_jockey,
             reward_points=s.reward_points
         ))
     return res
@@ -126,7 +128,7 @@ def update_prediction(
     if part.race.status != "SCHEDULED":
         raise HTTPException(status_code=400, detail="Cannot edit prediction after race has started")
         
-    time_until_race = part.race.race_time - datetime.utcnow()
+    time_until_race = part.race.race_time - get_vietnam_now_naive()
     if time_until_race < timedelta(minutes=15):
         raise HTTPException(status_code=400, detail="Modifications are only allowed up to 15 minutes before the race starts")
         
@@ -161,7 +163,7 @@ def delete_prediction(
     if part.race.status != "SCHEDULED":
         raise HTTPException(status_code=400, detail="Cannot delete prediction after race has started")
         
-    time_until_race = part.race.race_time - datetime.utcnow()
+    time_until_race = part.race.race_time - get_vietnam_now_naive()
     if time_until_race < timedelta(minutes=15):
         raise HTTPException(status_code=400, detail="Deletions are only allowed up to 15 minutes before the race starts")
         
@@ -178,6 +180,21 @@ def get_spectator_profile(
     if not spectator:
         raise HTTPException(status_code=404, detail="Spectator profile not found")
         
+    # Calculate stats
+    total_predictions = db.query(Prediction).filter(Prediction.user_id == current_user.id).count()
+    evaluated_preds = db.query(Prediction).filter(
+        Prediction.user_id == current_user.id,
+        Prediction.status.in_(["Won", "Lost"])
+    ).all()
+    correct_preds = sum(1 for p in evaluated_preds if p.status == "Won")
+    accuracy_rate = (correct_preds / len(evaluated_preds) * 100) if evaluated_preds else 0.0
+    
+    # Calculate current rank
+    higher_points_count = db.query(SpectatorProfile).filter(
+        SpectatorProfile.reward_points > spectator.reward_points
+    ).count()
+    current_rank = higher_points_count + 1
+        
     return SpectatorProfileDetailOut(
         id=spectator.id,
         username=current_user.username,
@@ -186,7 +203,11 @@ def get_spectator_profile(
         phone_number=current_user.phone_number,
         avatar=current_user.avatar,
         favorite_horse_breed=spectator.favorite_horse_breed,
-        reward_points=spectator.reward_points
+        favorite_jockey=spectator.favorite_jockey,
+        reward_points=spectator.reward_points,
+        current_rank=current_rank,
+        total_predictions=total_predictions,
+        accuracy_rate=round(accuracy_rate, 1)
     )
 
 @router.put("/profile", response_model=SpectatorProfileDetailOut)
@@ -207,10 +228,27 @@ def update_spectator_profile(
         current_user.avatar = profile_update.avatar
     if profile_update.favorite_horse_breed is not None:
         spectator.favorite_horse_breed = profile_update.favorite_horse_breed
+    if profile_update.favorite_jockey is not None:
+        spectator.favorite_jockey = profile_update.favorite_jockey
         
     db.commit()
     db.refresh(current_user)
     db.refresh(spectator)
+    
+    # Calculate stats
+    total_predictions = db.query(Prediction).filter(Prediction.user_id == current_user.id).count()
+    evaluated_preds = db.query(Prediction).filter(
+        Prediction.user_id == current_user.id,
+        Prediction.status.in_(["Won", "Lost"])
+    ).all()
+    correct_preds = sum(1 for p in evaluated_preds if p.status == "Won")
+    accuracy_rate = (correct_preds / len(evaluated_preds) * 100) if evaluated_preds else 0.0
+    
+    # Calculate current rank
+    higher_points_count = db.query(SpectatorProfile).filter(
+        SpectatorProfile.reward_points > spectator.reward_points
+    ).count()
+    current_rank = higher_points_count + 1
     
     return SpectatorProfileDetailOut(
         id=spectator.id,
@@ -220,5 +258,9 @@ def update_spectator_profile(
         phone_number=current_user.phone_number,
         avatar=current_user.avatar,
         favorite_horse_breed=spectator.favorite_horse_breed,
-        reward_points=spectator.reward_points
+        favorite_jockey=spectator.favorite_jockey,
+        reward_points=spectator.reward_points,
+        current_rank=current_rank,
+        total_predictions=total_predictions,
+        accuracy_rate=round(accuracy_rate, 1)
     )
