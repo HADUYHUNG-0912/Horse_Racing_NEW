@@ -44,6 +44,8 @@ CREATE TABLE Users (
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     full_name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20) NULL,
+    avatar VARCHAR(255) NULL,
     role_id INT NOT NULL FOREIGN KEY REFERENCES Roles(id),
     is_active BIT DEFAULT 1
 );
@@ -77,6 +79,7 @@ CREATE TABLE SpectatorProfiles (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(id) ON DELETE CASCADE,
     favorite_horse_breed NVARCHAR(50) NULL,
+    favorite_jockey NVARCHAR(100) NULL,
     reward_points INT NOT NULL DEFAULT 0
 );
 

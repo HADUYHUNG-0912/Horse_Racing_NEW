@@ -264,8 +264,28 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
               </div>
               <div className="form-group">
                 <label>Thứ tự vòng (Sequence)</label>
-                <input type="number" className="input-field" min="1" required
-                  value={newRound.sequence} onChange={(e) => setNewRound({ ...newRound, sequence: e.target.value })} />
+                <input 
+                  type="number" 
+                  className="input-field" 
+                  min="1" 
+                  required
+                  value={newRound.sequence} 
+                  onKeyDown={(e) => {
+                    if (["e", "E", "-", "+", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    if (val !== "") {
+                      const num = parseInt(val, 10);
+                      if (isNaN(num) || num < 1) {
+                        val = "1";
+                      }
+                    }
+                    setNewRound({ ...newRound, sequence: val });
+                  }} 
+                />
               </div>
               <button type="submit" className="btn-primary">Thêm Vòng Đấu</button>
             </form>
@@ -436,8 +456,28 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label>Khoảng cách (mét)</label>
-                  <input type="number" className="input-field" min="1" required
-                    value={newRace.distance} onChange={(e) => setNewRace({ ...newRace, distance: e.target.value })} />
+                  <input 
+                    type="number" 
+                    className="input-field" 
+                    min="1" 
+                    required
+                    value={newRace.distance} 
+                    onKeyDown={(e) => {
+                      if (["e", "E", "-", "+", "."].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      if (val !== "") {
+                        const num = parseInt(val, 10);
+                        if (isNaN(num) || num < 1) {
+                          val = "1";
+                        }
+                      }
+                      setNewRace({ ...newRace, distance: val });
+                    }} 
+                  />
                 </div>
               </div>
               <div className="form-group">
@@ -481,8 +521,32 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
               </div>
               <div className="form-group">
                 <label>Làn số (Lane Number)</label>
-                <input type="number" className="input-field" placeholder="1-8" min="1" max="8" required
-                  value={newParticipant.lane_number} onChange={(e) => setNewParticipant({ ...newParticipant, lane_number: e.target.value })} />
+                <input 
+                  type="number" 
+                  className="input-field" 
+                  placeholder="1-8" 
+                  min="1" 
+                  max="8" 
+                  required
+                  value={newParticipant.lane_number} 
+                  onKeyDown={(e) => {
+                    if (["e", "E", "-", "+", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    if (val !== "") {
+                      const num = parseInt(val, 10);
+                      if (isNaN(num) || num < 1) {
+                        val = "1";
+                      } else if (num > 8) {
+                        val = "8";
+                      }
+                    }
+                    setNewParticipant({ ...newParticipant, lane_number: val });
+                  }} 
+                />
               </div>
               <button type="submit" className="btn-primary">Xếp vào đường đua</button>
             </form>
