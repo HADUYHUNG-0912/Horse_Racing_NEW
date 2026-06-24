@@ -1,6 +1,7 @@
 from typing import List
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
+from app.core.timezone_utils import get_vietnam_now_naive
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -173,17 +174,71 @@ def record_violation(
     violation.jockey_name = part.registration.jockey.user.full_name
     return violation
 
+from typing import Optional
+
 @router.get("/rankings", response_model=List[RankingOut])
-def read_rankings(db: Session = Depends(get_db)):
-    rankings = db.query(Ranking).order_by(Ranking.entity_type, Ranking.rank).all()
-    for rank in rankings:
-        if rank.entity_type == "HORSE":
-            horse = db.query(Horse).filter(Horse.id == rank.entity_id).first()
-            rank.entity_name = horse.name if horse else "Unknown Horse"
-        elif rank.entity_type == "JOCKEY":
-            jockey = db.query(JockeyProfile).filter(JockeyProfile.id == rank.entity_id).first()
-            rank.entity_name = jockey.user.full_name if jockey else "Unknown Jockey"
-    return rankings
+def read_rankings(tournament_id: Optional[int] = None, db: Session = Depends(get_db)):
+    if tournament_id:
+        # Calculate dynamically for the specific tournament
+        # Horse
+        horse_points = db.execute(text("""
+            SELECT reg.horse_id, SUM(res.points) as total_points
+            FROM Results res
+            JOIN RaceParticipants rp ON res.race_participant_id = rp.id
+            JOIN Registrations reg ON rp.registration_id = reg.id
+            WHERE reg.tournament_id = :tid
+            GROUP BY reg.horse_id
+            ORDER BY total_points DESC
+        """), {"tid": tournament_id}).fetchall()
+        
+        # Jockey
+        jockey_points = db.execute(text("""
+            SELECT reg.jockey_id, SUM(res.points) as total_points
+            FROM Results res
+            JOIN RaceParticipants rp ON res.race_participant_id = rp.id
+            JOIN Registrations reg ON rp.registration_id = reg.id
+            WHERE reg.tournament_id = :tid
+            GROUP BY reg.jockey_id
+            ORDER BY total_points DESC
+        """), {"tid": tournament_id}).fetchall()
+        
+        rankings_out = []
+        # Populate Horse rankings
+        for idx, (h_id, pts) in enumerate(horse_points):
+            horse = db.query(Horse).filter(Horse.id == h_id).first()
+            rankings_out.append({
+                "id": len(rankings_out) + 1,
+                "entity_type": "HORSE",
+                "entity_id": h_id,
+                "entity_name": horse.name if horse else "Unknown Horse",
+                "points": pts,
+                "rank": idx + 1,
+                "updated_at": get_vietnam_now_naive()
+            })
+            
+        # Populate Jockey rankings
+        for idx, (j_id, pts) in enumerate(jockey_points):
+            jockey = db.query(JockeyProfile).filter(JockeyProfile.id == j_id).first()
+            rankings_out.append({
+                "id": len(rankings_out) + 1,
+                "entity_type": "JOCKEY",
+                "entity_id": j_id,
+                "entity_name": jockey.user.full_name if jockey else "Unknown Jockey",
+                "points": pts,
+                "rank": idx + 1,
+                "updated_at": get_vietnam_now_naive()
+            })
+        return rankings_out
+    else:
+        rankings = db.query(Ranking).order_by(Ranking.entity_type, Ranking.rank).all()
+        for rank in rankings:
+            if rank.entity_type == "HORSE":
+                horse = db.query(Horse).filter(Horse.id == rank.entity_id).first()
+                rank.entity_name = horse.name if horse else "Unknown Horse"
+            elif rank.entity_type == "JOCKEY":
+                jockey = db.query(JockeyProfile).filter(JockeyProfile.id == rank.entity_id).first()
+                rank.entity_name = jockey.user.full_name if jockey else "Unknown Jockey"
+        return rankings
 
 def recalculate_rankings(db: Session):
     # Fetch all points grouped by Horse
