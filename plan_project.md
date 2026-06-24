@@ -87,4 +87,13 @@
     - `*Panel.js` (4 file): thêm `formatDate`/`formatDateTime` — ngày giờ hiển thị dạng dd/mm/yyyy HH:MM.
     - `test_guide_phase1_2.md`: bổ sung bước 8.5 (phân công làn đua - lane assignment).
   - Kiểm thử API-level xác nhận các fix Step 9 & 10 hoạt động chính xác. Sẵn sàng kiểm thử tích hợp toàn luồng Phase 4.
+- **Tiến độ đã hoàn thành (24/06/2026 - Kết thúc Phase 4 & Giải quyết xung đột Admin):**
+  - Gộp thành công hai nhánh `feature/be-admin-fix` và `feature/fe-admin-fix` vào nhánh chính `dev-GiaHuy`.
+  - Khắc phục các xung đột gộp mã nguồn (merge conflicts) trong `config.py`, `db_setup.py` và `AdminPanel.js`.
+  - Loại bỏ định nghĩa trùng lặp hàm `deleteTournament` trong `AdminPanel.js` giải quyết dứt điểm lỗi webpack lúc biên dịch dự án Next.js.
+  - Tích hợp múi giờ Việt Nam (`Asia/Ho_Chi_Minh`) cho toàn bộ thời gian ghi nhận đăng ký, mời nài ngựa, vi phạm, dự đoán và bảng xếp hạng.
+  - Bổ sung validate ngày bắt đầu/kết thúc giải đấu (`end_date >= start_date`) và kiểm tra trùng lịch trọng tài trong vòng ±2 tiếng khi xếp lịch đua.
+  - Nâng cấp giao diện quản lý Admin: Định dạng ngày tháng trực quan tiếng Việt, cải tiến UI nút xóa giải đấu nổi bật bằng phong cách Red Secondary, và hỗ trợ quay lại trạng thái đăng ký PENDING từ APPROVED/REJECTED để Admin dễ dàng sửa đổi quyết định.
+  - Chạy kiểm thử Next.js build biên dịch thành công 100%, re-seed database và chạy thử nghiệm thực tế hoạt động hoàn hảo trên trình duyệt.
+  - Đồng bộ và đẩy toàn bộ mã nguồn sạch lên nhánh remote `origin/dev-GiaHuy`.
 
