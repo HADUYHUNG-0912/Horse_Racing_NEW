@@ -2,6 +2,19 @@ import os
 import pyodbc
 import bcrypt
 
+def load_dotenv():
+    for path in [".env", "source-code/backend/.env", "../.env", "../../.env"]:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, val = line.split("=", 1)
+                        os.environ[key.strip()] = val.strip().strip("'\"")
+            break
+
+load_dotenv()
+
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')

@@ -98,16 +98,6 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       showMsg(err.message, "error");
     }
   };
-  const deleteTournament = async (id) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa giải đấu này không? Sau khi xóa không thể khôi phục!")) return;
-    try {
-      await api.delete(`/tournaments/${id}`);
-      showMsg("Xóa giải đấu thành công!");
-      loadData(); 
-    } catch (err) {
-      showMsg(err.response?.data?.message || "Không thể xóa giải đấu này!", "error");
-    }
-  };
 
   const createRound = async (e) => {
     e.preventDefault();
@@ -186,6 +176,15 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     } catch (err) {
       showMsg(err.message, "error");
     }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric"
+    });
   };
 
   const formatDateTime = (dateStr) => {
@@ -289,12 +288,23 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                       <td>{t.id}</td>
                       <td style={{ fontWeight: "700" }}>{t.name}</td>
                       <td>{t.location}</td>
-                      <td>{t.start_date} đến {t.end_date}</td>
+                      <td>{formatDate(t.start_date)} đến {formatDate(t.end_date)}</td>
                       <td>{t.rounds ? t.rounds.length : 0} vòng</td>                      
                       <td><span className="badge badge-info">{t.status}</span></td>
                       <td>
-                        <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)" }}
-                          onClick={() => deleteTournament(t.id, t.name)}>Xóa</button>
+                        <button 
+                          className="btn-secondary" 
+                          style={{ 
+                            padding: "6px 12px", 
+                            fontSize: "12px", 
+                            color: "var(--danger)",
+                            border: "1px solid rgba(239, 68, 68, 0.2)",
+                            background: "rgba(239, 68, 68, 0.05)"
+                          }}
+                          onClick={() => deleteTournament(t.id, t.name)}
+                        >
+                          🗑️ Xóa
+                        </button>
                       </td>
                     </tr>
                   ))}
