@@ -166,14 +166,19 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
   };
 
   const deleteTournament = async (tournamentId, tournamentName) => {
+    console.log("deleteTournament called with:", tournamentId, tournamentName);
     if (!window.confirm(`⚠️ Bạn chắc chắn muốn xóa giải đấu "${tournamentName}"? Tất cả vòng đấu, trận đua liên quan sẽ bị xóa!`)) {
+      console.log("Delete cancelled by user");
       return;
     }
+    console.log("Delete confirmed, calling API for ID:", tournamentId);
     try {
-      await api.delete(`/tournaments/${tournamentId}`);
+      const res = await api.delete(`/tournaments/${tournamentId}`);
+      console.log("API delete response:", res);
       showMsg("Xóa giải đấu thành công!");
       loadData();
     } catch (err) {
+      console.error("API delete error:", err);
       showMsg(err.message, "error");
     }
   };
