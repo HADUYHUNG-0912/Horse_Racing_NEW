@@ -45,6 +45,18 @@ class JockeyProfile(Base):
     registrations = relationship("Registration", back_populates="jockey")
     invitations = relationship("JockeyInvitation", back_populates="jockey")
 
+    @property
+    def username(self):
+        return self.user.username if self.user else None
+
+    @property
+    def full_name(self):
+        return self.user.full_name if self.user else None
+
+    @property
+    def email(self):
+        return self.user.email if self.user else None
+
 class HorseOwnerProfile(Base):
     __tablename__ = 'HorseOwnerProfiles'
     
@@ -169,6 +181,30 @@ class JockeyInvitation(Base):
     jockey = relationship("JockeyProfile", back_populates="invitations")
     horse = relationship("Horse", back_populates="invitations")
     tournament = relationship("Tournament", back_populates="invitations")
+
+    @property
+    def owner_name(self):
+        if self.owner and self.owner.user:
+            return self.owner.user.full_name
+        return f"Chủ #{self.owner_id}"
+
+    @property
+    def horse_name(self):
+        if self.horse:
+            return self.horse.name
+        return f"Ngựa #{self.horse_id}"
+
+    @property
+    def tournament_name(self):
+        if self.tournament:
+            return self.tournament.name
+        return f"Giải #{self.tournament_id}"
+
+    @property
+    def jockey_name(self):
+        if self.jockey and self.jockey.user:
+            return self.jockey.user.full_name
+        return f"Jockey #{self.jockey_id}"
 
 class RaceParticipant(Base):
     __tablename__ = 'RaceParticipants'
