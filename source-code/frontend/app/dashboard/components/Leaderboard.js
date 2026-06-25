@@ -5,23 +5,52 @@ import { api } from "../../api";
 import { styles } from "./styles";
 
 export default function Leaderboard() {
+  const [activeTab, setActiveTab] = useState("horse_jockey"); // horse_jockey | spectators
   const [rankings, setRankings] = useState([]);
+  const [spectatorRankings, setSpectatorRankings] = useState([]);
+  const [tournaments, setTournaments] = useState([]);
+  const [selectedTournament, setSelectedTournament] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const fetchRankings = async (tournamentId = "") => {
+    try {
+      const url = tournamentId ? `/results/rankings?tournament_id=${tournamentId}` : "/results/rankings";
+      const data = await api.get(url);
+      setRankings(data);
+    } catch (err) {
+      setError(err.message || "Không thể tải bảng xếp hạng");
+    }
+  };
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [rankData, specData, tourData] = await Promise.all([
+        api.get("/results/rankings"),
+        api.get("/spectators/rankings"),
+        api.get("/tournaments")
+      ]);
+      setRankings(rankData);
+      setSpectatorRankings(specData);
+      setTournaments(tourData);
+    } catch (err) {
+      setError(err.message || "Lỗi khi tải dữ liệu");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchRankings = async () => {
-      try {
-        const data = await api.get("/results/rankings");
-        setRankings(data);
-      } catch (err) {
-        setError(err.message || "Không thể tải bảng xếp hạng");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRankings();
+    loadData();
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      fetchRankings(selectedTournament);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTournament]);
 
   if (loading) {
     return <div style={styles.loading}>Đang tải bảng xếp hạng...</div>;
@@ -37,7 +66,7 @@ export default function Leaderboard() {
       <div style={styles.splitLayout}>
         {/* Horse standings */}
         <div style={{ flex: 1 }}>
-          <h3 style={{ marginBottom: "12px" }}>Xếp hạng Ngựa đua</h3>
+          <h3>Xếp hạng Ngựa đua</h3>
           <div style={styles.tableWrapper}>
             <table style={styles.table}>
               <thead>
@@ -62,7 +91,7 @@ export default function Leaderboard() {
 
         {/* Jockey standings */}
         <div style={{ flex: 1 }}>
-          <h3 style={{ marginBottom: "12px" }}>Xếp hạng Jockey</h3>
+          <h3>Xếp hạng Jockey</h3>
           <div style={styles.tableWrapper}>
             <table style={styles.table}>
               <thead>
@@ -84,7 +113,7 @@ export default function Leaderboard() {
             </table>
           </div>
         </div>
+      )}
       </div>
-    </div>
-  );
+      );
 }

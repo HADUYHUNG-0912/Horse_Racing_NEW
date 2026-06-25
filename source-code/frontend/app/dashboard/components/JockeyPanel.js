@@ -22,12 +22,16 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   // - "experience" (text tự do) đổi thành "experience_years" (số nguyên)
   //   để khớp đúng cột experience_years (INT) trong Database.
   const [profile, setProfile] = useState({
+    full_name: user?.full_name || "",
     weight: "",
+    height: "",
     experience_years: "",
     email: user?.email || "",
+    bio: "",
   });
   const [profileLoading, setProfileLoading] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [profileErrors, setProfileErrors] = useState({});
 
   const loadData = async () => {
     try {
@@ -49,9 +53,12 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     try {
       const data = await api.get("/jockeys/profile");
       setProfile({
+        full_name: data?.full_name ?? user?.full_name ?? "",
         weight: data?.weight ?? "",
+        height: data?.height ?? "",
         experience_years: data?.experience_years ?? "",
         email: data?.email ?? user?.email ?? "",
+        bio: data?.bio ?? "",
       });
     } catch (err) {
       showMsg(err?.message || "Không thể tải hồ sơ cá nhân!", "error");
@@ -90,21 +97,62 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   // localStorage chỉ tồn tại trên máy của từng người dùng -> Chủ ngựa/Admin
   // không thể xem được hồ sơ, và gây lỗi Hydration Mismatch của Next.js
   // (vì localStorage không tồn tại khi server render).
+  // Validate form profile trước khi gửi API
+  const validateProfile = () => {
+    const errors = {};
+    if (!profile.full_name?.trim()) errors.full_name = "Họ tên không được để trống";
+    if (!profile.email?.trim()) errors.email = "Email không được để trống";
+
+    const weight = Number(profile.weight);
+    if (profile.weight === "" || isNaN(weight)) errors.weight = "Cân nặng không được để trống";
+    else if (weight <= 0) errors.weight = "Cân nặng phải lớn hơn 0";
+    else if (weight > 300) errors.weight = "Cân nặng không hợp lệ (tối đa 300kg)";
+
+    if (profile.height !== "" && profile.height !== null) {
+      const height = Number(profile.height);
+      if (isNaN(height) || height <= 0) errors.height = "Chiều cao phải lớn hơn 0";
+      else if (height > 250) errors.height = "Chiều cao không hợp lệ (tối đa 250cm)";
+    }
+
+    const expYears = Number(profile.experience_years);
+    if (profile.experience_years === "" || isNaN(expYears)) errors.experience_years = "Số năm kinh nghiệm không được để trống";
+    else if (expYears < 0) errors.experience_years = "Số năm kinh nghiệm không thể âm";
+    else if (expYears > 50) errors.experience_years = "Số năm kinh nghiệm không hợp lệ (tối đa 50 năm)";
+
+    return errors;
+  };
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+
+    // Validate trước khi gọi API
+    const errors = validateProfile();
+    setProfileErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      showMsg("Vui lòng kiểm tra lại thông tin nhập!", "error");
+      return;
+    }
+
     setSavingProfile(true);
     try {
       const payload = {
-        weight: profile.weight === "" ? null : Number(profile.weight),
-        experience_years: profile.experience_years === "" ? null : Number(profile.experience_years),
-        email: profile.email,
+        full_name: profile.full_name.trim(),
+        weight: Number(profile.weight),
+        height: profile.height === "" ? null : Number(profile.height),
+        experience_years: Number(profile.experience_years),
+        email: profile.email.trim(),
+        bio: profile.bio?.trim() || null,
       };
       const updated = await api.put("/jockeys/profile", payload);
       setProfile({
+        full_name: updated?.full_name ?? profile.full_name,
         weight: updated?.weight ?? "",
+        height: updated?.height ?? "",
         experience_years: updated?.experience_years ?? "",
         email: updated?.email ?? profile.email,
+        bio: updated?.bio ?? "",
       });
+      setProfileErrors({});
       showMsg("Cập nhật thông tin hồ sơ Jockey thành công!");
     } catch (err) {
       showMsg(err?.message || "Không thể lưu hồ sơ. Vui lòng thử lại!", "error");
@@ -131,7 +179,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   // để tránh crash khi participants bị thiếu/null hoặc user chưa có full_name
   const myRaces = races.filter(r =>
     Array.isArray(r?.participants) &&
-    r.participants.some(p => p.jockey_name === user?.full_name)
+    r.participants.some(p => p.jockey_name === profile.full_name)
   );
 
   return (
@@ -207,7 +255,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                   <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
                 ) : (
                   myRaces.map(rc => {
-                    const myParticipation = rc.participants.find(p => p.jockey_name === user?.full_name);
+                    const myParticipation = rc.participants.find(p => p.jockey_name === profile.full_name);
                     return (
                       <tr key={rc.id}>
                         <td style={{ fontWeight: "700" }}>{rc.name}</td>
@@ -239,29 +287,101 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
           {profileLoading ? (
             <div style={styles.loading}>Đang tải hồ sơ...</div>
           ) : (
-            <form onSubmit={handleSaveProfile} style={{ maxWidth: "500px", marginTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <form onSubmit={handleSaveProfile} style={{ maxWidth: "520px", marginTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
+              {/* Họ và tên */}
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Cân nặng (kg):</label>
-                <input type="number" value={profile.weight} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
-                  onChange={(e) => setProfile({ ...profile, weight: e.target.value })} required />
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Họ và tên <span style={{ color: "var(--danger)" }}>*</span></label>
+                <input
+                  type="text"
+                  value={profile.full_name}
+                  placeholder="Nhập họ và tên đầy đủ"
+                  style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.full_name ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => { setProfile({ ...profile, full_name: e.target.value }); setProfileErrors({ ...profileErrors, full_name: "" }); }}
+                />
+                {profileErrors.full_name && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.full_name}</span>}
               </div>
 
+              {/* Email */}
               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Địa chỉ Email:</label>
-                <input type="email" value={profile.email} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })} required />
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Địa chỉ Email <span style={{ color: "var(--danger)" }}>*</span></label>
+                <input
+                  type="email"
+                  value={profile.email}
+                  placeholder="example@email.com"
+                  style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.email ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => { setProfile({ ...profile, email: e.target.value }); setProfileErrors({ ...profileErrors, email: "" }); }}
+                />
+                {profileErrors.email && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.email}</span>}
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Số năm kinh nghiệm thi đấu:</label>
-                <input type="number" min="0" value={profile.experience_years} style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
-                  onChange={(e) => setProfile({ ...profile, experience_years: e.target.value })} required />
+              {/* Cân nặng + Chiều cao trên cùng 1 hàng */}
+              <div style={{ display: "flex", gap: "12px" }}>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontWeight: "600", color: "#94a3b8" }}>Cân nặng (kg) <span style={{ color: "var(--danger)" }}>*</span></label>
+                  <input
+                    type="number"
+                    value={profile.weight}
+                    placeholder="Ví dụ: 55"
+                    min="1" max="300" step="0.1"
+                    style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.weight ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                    onChange={(e) => { setProfile({ ...profile, weight: e.target.value }); setProfileErrors({ ...profileErrors, weight: "" }); }}
+                  />
+                  {profileErrors.weight && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.weight}</span>}
+                </div>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontWeight: "600", color: "#94a3b8" }}>Chiều cao (cm)</label>
+                  <input
+                    type="number"
+                    value={profile.height}
+                    placeholder="Ví dụ: 170"
+                    min="1" max="250" step="0.1"
+                    style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.height ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                    onChange={(e) => { setProfile({ ...profile, height: e.target.value }); setProfileErrors({ ...profileErrors, height: "" }); }}
+                  />
+                  {profileErrors.height && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.height}</span>}
+                </div>
               </div>
 
-              <button type="submit" className="btn-primary" style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "10px" }} disabled={savingProfile}>
-                {savingProfile ? "Đang lưu..." : "Lưu thay đổi hồ sơ"}
+              {/* Số năm kinh nghiệm */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Số năm kinh nghiệm thi đấu <span style={{ color: "var(--danger)" }}>*</span></label>
+                <input
+                  type="number"
+                  value={profile.experience_years}
+                  placeholder="Ví dụ: 5"
+                  min="0" max="50"
+                  style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.experience_years ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => { setProfile({ ...profile, experience_years: e.target.value }); setProfileErrors({ ...profileErrors, experience_years: "" }); }}
+                />
+                {profileErrors.experience_years && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.experience_years}</span>}
+              </div>
+
+              {/* Giới thiệu bản thân */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Giới thiệu bản thân</label>
+                <textarea
+                  rows="4"
+                  value={profile.bio}
+                  placeholder="Mô tả ngắn về bản thân, thành tích nổi bật, phong cách thi đấu..."
+                  style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff", resize: "vertical", fontFamily: "inherit" }}
+                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                />
+              </div>
+
+              {/* Nút lưu */}
+              <button
+                type="submit"
+                className="btn-primary"
+                style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "4px", opacity: savingProfile ? 0.7 : 1, cursor: savingProfile ? "not-allowed" : "pointer" }}
+                disabled={savingProfile}
+              >
+                {savingProfile ? "⏳ Đang lưu..." : "💾 Lưu thay đổi hồ sơ"}
               </button>
+
+              <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>
+                <span style={{ color: "var(--danger)" }}>*</span> Trường bắt buộc
+              </p>
             </form>
           )}
         </div>

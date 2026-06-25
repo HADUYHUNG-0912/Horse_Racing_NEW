@@ -72,6 +72,31 @@ class SpectatorProfileOut(SpectatorProfileBase):
     class Config:
         from_attributes = True
 
+class SpectatorProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    favorite_horse_breed: Optional[str] = None
+    favorite_jockey: Optional[str] = None
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+
+class SpectatorProfileDetailOut(BaseModel):
+    id: int
+    username: str
+    email: str
+    full_name: str
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    favorite_horse_breed: Optional[str] = None
+    favorite_jockey: Optional[str] = None
+    reward_points: int
+    current_rank: Optional[int] = None
+    total_predictions: Optional[int] = 0
+    accuracy_rate: Optional[float] = 0.0
+
+    class Config:
+        from_attributes = True
+
 # User schemas
 class UserBase(BaseModel):
     username: str

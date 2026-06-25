@@ -22,6 +22,10 @@ def create_tournament(
     db: Session = Depends(get_db),
     current_user = Depends(RoleChecker(["ADMIN"]))
 ):
+    # Validate that end_date >= start_date
+    if tournament_in.end_date < tournament_in.start_date:
+        raise HTTPException(status_code=400, detail="End date must be greater than or equal to start date")
+    
     tournament = Tournament(
         name=tournament_in.name,
         description=tournament_in.description,
@@ -138,6 +142,14 @@ def update_tournament(
     tournament = db.query(Tournament).filter(Tournament.id == id).first()
     if not tournament:
         raise HTTPException(status_code=404, detail="Tournament not found")
+    
+    # Prepare dates for validation
+    new_start_date = tournament_update.start_date if tournament_update.start_date is not None else tournament.start_date
+    new_end_date = tournament_update.end_date if tournament_update.end_date is not None else tournament.end_date
+    
+    # Validate that end_date >= start_date
+    if new_end_date < new_start_date:
+        raise HTTPException(status_code=400, detail="End date must be greater than or equal to start date")
         
     if tournament_update.name is not None:
         tournament.name = tournament_update.name
