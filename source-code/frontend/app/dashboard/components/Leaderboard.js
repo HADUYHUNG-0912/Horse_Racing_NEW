@@ -37,7 +37,7 @@ export default function Leaderboard() {
       <div style={styles.splitLayout}>
         {/* Horse standings */}
         <div style={{ flex: 1 }}>
-          <h3>Xếp hạng Ngựa đua</h3>
+          <h3 style={{ marginBottom: "12px" }}>Xếp hạng Ngựa đua</h3>
           <div style={styles.tableWrapper}>
             <table style={styles.table}>
               <thead>
@@ -62,7 +62,7 @@ export default function Leaderboard() {
 
         {/* Jockey standings */}
         <div style={{ flex: 1 }}>
-          <h3>Xếp hạng Jockey</h3>
+          <h3 style={{ marginBottom: "12px" }}>Xếp hạng Jockey</h3>
           <div style={styles.tableWrapper}>
             <table style={styles.table}>
               <thead>
