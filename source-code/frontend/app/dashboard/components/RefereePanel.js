@@ -217,7 +217,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                           }} />
                       </div>
                       <div className="form-group" style={{ margin: 0, flex: 1 }}>
-                        <label>Điểm cộng</label>
+                        <label>Điểm cộng/trừ</label>
                         <input type="number" className="input-field" required
                           value={field.points} onChange={(e) => {
                             const copy = [...resultsForm];
