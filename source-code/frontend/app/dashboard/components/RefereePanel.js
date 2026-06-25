@@ -11,6 +11,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
   const [selectedRace, setSelectedRace] = useState(null);
   const [resultsForm, setResultsForm] = useState([]); // Array of { race_participant_id, rank, points, notes }
   const [violationForm, setViolationForm] = useState({ race_participant_id: "", description: "", penalty: "Cảnh cáo", fine_amount: "0" });
+  const [fineAmountError, setFineAmountError] = useState("");
 
   const [selectedRaceForInspection, setSelectedRaceForInspection] = useState(null);
   const [inspectionForm, setInspectionForm] = useState({ weather: "", track_condition: "", horse_health: "" });
@@ -271,17 +272,29 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                   </div>
                   <div className="form-group">
                     <label>Số tiền phạt ($)</label>
-                    <input type="number" min="0" step="1" className="input-field" required
+                    <input type="number" min="0" max="9999999" step="1" className="input-field" required
                       value={violationForm.fine_amount}
                       onChange={(e) => {
                         const val = e.target.value;
-                        // Nếu người dùng nhập số âm thì reset về 0
-                        if (val !== "" && parseInt(val) < 0) {
+                        const num = parseInt(val);
+                        // Không được âm
+                        if (val !== "" && num < 0) {
                           setViolationForm({ ...violationForm, fine_amount: "0" });
+                          setFineAmountError("Số tiền phạt không được âm.");
+                        // Không quá 7 chữ số (max 9999999)
+                        } else if (val !== "" && num > 9999999) {
+                          setViolationForm({ ...violationForm, fine_amount: "9999999" });
+                          setFineAmountError("Số tiền phạt không được vượt quá 9,999,999.");
                         } else {
                           setViolationForm({ ...violationForm, fine_amount: val });
+                          setFineAmountError("");
                         }
                       }} />
+                    {fineAmountError && (
+                      <span style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                        ⚠️ {fineAmountError}
+                      </span>
+                    )}
                   </div>
                   <button type="submit" className="btn-primary" style={{ backgroundColor: "var(--danger)" }}>Báo cáo vi phạm</button>
                 </form>
