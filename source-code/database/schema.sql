@@ -11,6 +11,8 @@ USE HorseRacing;
 GO
 
 -- Drop tables if they exist to allow clean recreations
+IF OBJECT_ID('Awards', 'U') IS NOT NULL DROP TABLE Awards;
+IF OBJECT_ID('Prizes', 'U') IS NOT NULL DROP TABLE Prizes;
 IF OBJECT_ID('RaceInspections', 'U') IS NOT NULL DROP TABLE RaceInspections;
 IF OBJECT_ID('Predictions', 'U') IS NOT NULL DROP TABLE Predictions;
 IF OBJECT_ID('Rankings', 'U') IS NOT NULL DROP TABLE Rankings;
@@ -210,6 +212,29 @@ CREATE TABLE Predictions (
 );
 GO
 
+-- 18. Prizes table (Giải thưởng của tournament)
+CREATE TABLE Prizes (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    tournament_id INT NOT NULL FOREIGN KEY REFERENCES Tournaments(id) ON DELETE CASCADE,
+    position INT NOT NULL,               -- Hạng được trao giải (1 = nhất, 2 = nhì, ...)
+    title NVARCHAR(100) NOT NULL,         -- Tên giải: "Giải Nhất", "Giải Nhì", ...
+    prize_value DECIMAL(15,2) DEFAULT 0.00, -- Giá trị giải thưởng (tiền/hiện vật)
+    description NVARCHAR(MAX) NULL,       -- Mô tả thêm về giải thưởng
+    created_at DATETIME DEFAULT GETDATE(),
+    CONSTRAINT UC_Prize_Position UNIQUE (tournament_id, position)
+);
+
+-- 19. Awards table (Bản ghi trao giải – tự động tạo khi Tournament COMPLETED)
+CREATE TABLE Awards (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    prize_id INT NOT NULL FOREIGN KEY REFERENCES Prizes(id) ON DELETE CASCADE,
+    registration_id INT NOT NULL FOREIGN KEY REFERENCES Registrations(id),
+    awarded_at DATETIME DEFAULT GETDATE(),
+    total_points INT NOT NULL DEFAULT 0,  -- Tổng điểm tích lũy trong tournament
+    notes NVARCHAR(MAX) NULL
+);
+GO
+
 -- Create Indexes for performance optimization
 CREATE INDEX IX_Users_Role ON Users(role_id);
 CREATE INDEX IX_Horses_Owner ON Horses(owner_id);
@@ -218,4 +243,7 @@ CREATE INDEX IX_Races_Round ON Races(round_id);
 CREATE INDEX IX_Registrations_Tournament ON Registrations(tournament_id);
 CREATE INDEX IX_RaceParticipants_Race ON RaceParticipants(race_id);
 CREATE INDEX IX_Rankings_Entity ON Rankings(entity_type, entity_id);
+CREATE INDEX IX_Prizes_Tournament ON Prizes(tournament_id);
+CREATE INDEX IX_Awards_Prize ON Awards(prize_id);
+CREATE INDEX IX_Awards_Registration ON Awards(registration_id);
 GO

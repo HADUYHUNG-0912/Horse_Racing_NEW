@@ -10,6 +10,7 @@ import JockeyPanel from "./components/JockeyPanel";
 import RefereePanel from "./components/RefereePanel";
 import SpectatorPanel from "./components/SpectatorPanel";
 import Leaderboard from "./components/Leaderboard";
+import PrizesPanel from "./components/PrizesPanel";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -121,6 +122,12 @@ export default function Dashboard() {
               </button>
               <button style={activeTab === "users" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("users")}>
                   Quản lý Người dùng
+              </button>
+              <button style={activeTab === "prizes" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("prizes")}>
+                🏅 Quản lý Giải thưởng
+              </button>
+              <button style={activeTab === "awards" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("awards")}>
+                🏆 Xem Awards
               </button>              
             </>
           )}
@@ -196,7 +203,7 @@ export default function Dashboard() {
           ) : (
             <>
           
-          {user.role_name === "ADMIN" && <AdminPanel user={user} activeTab={activeTab} showMsg={showMsg} />}
+          {user.role_name === "ADMIN" && (activeTab === "prizes" || activeTab === "awards" ? <PrizesPanel activeTab={activeTab} showMsg={showMsg} /> : <AdminPanel user={user} activeTab={activeTab} showMsg={showMsg} />)}
           {user.role_name === "OWNER" && <OwnerPanel user={user} activeTab={activeTab} showMsg={showMsg} />}
           {user.role_name === "JOCKEY" && <JockeyPanel user={user} activeTab={activeTab} showMsg={showMsg} />}
           {user.role_name === "REFEREE" && <RefereePanel user={user} activeTab={activeTab} showMsg={showMsg} />}

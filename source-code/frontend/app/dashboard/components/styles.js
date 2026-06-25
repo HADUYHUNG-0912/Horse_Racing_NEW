@@ -136,5 +136,29 @@ export const styles = {
   row: {
     display: "flex",
     gap: "16px",
+  },
+  input: {
+    width: "100%",
+    padding: "10px 12px",
+    background: "rgba(255,255,255,0.03)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "8px",
+    color: "inherit",
+    fontSize: "14px",
+    transition: "border-color 0.2s",
+  },
+  btnSmall: {
+    padding: "6px 12px",
+    fontSize: "12px",
+    borderRadius: "6px",
+    border: "none",
+    cursor: "pointer",
+    fontWeight: "600",
+  },
+  formCard: {
+    padding: "16px",
+    background: "rgba(255,255,255,0.02)",
+    border: "1px solid rgba(255,255,255,0.05)",
+    borderRadius: "8px",
   }
 };

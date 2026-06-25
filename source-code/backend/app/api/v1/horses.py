@@ -11,17 +11,11 @@ router = APIRouter()
 @router.get("/", response_model=List[HorseOut])
 def read_horses(
     db: Session = Depends(get_db),
-    owner_id: Optional[int] = None,
-    current_user = Depends(get_current_user)
+    owner_id: Optional[int] = None
 ):
     query = db.query(Horse)
     if owner_id:
         query = query.filter(Horse.owner_id == owner_id)
-    elif current_user.role.name == "OWNER":
-        # Owner defaults to seeing their own horses
-        owner_profile = db.query(HorseOwnerProfile).filter(HorseOwnerProfile.user_id == current_user.id).first()
-        if owner_profile:
-            query = query.filter(Horse.owner_id == owner_profile.id)
             
     return query.all()
 
