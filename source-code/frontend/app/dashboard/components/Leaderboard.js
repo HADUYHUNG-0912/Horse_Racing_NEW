@@ -16,8 +16,13 @@ export default function Leaderboard() {
   const fetchRankings = async (tournamentId = "") => {
     try {
       const url = tournamentId ? `/results/rankings?tournament_id=${tournamentId}` : "/results/rankings";
-      const data = await api.get(url);
-      setRankings(data);
+      const specUrl = tournamentId ? `/spectators/rankings?tournament_id=${tournamentId}` : "/spectators/rankings";
+      const [rankData, specData] = await Promise.all([
+        api.get(url),
+        api.get(specUrl)
+      ]);
+      setRankings(rankData);
+      setSpectatorRankings(specData);
     } catch (err) {
       setError(err.message || "Không thể tải bảng xếp hạng");
     }
@@ -83,23 +88,23 @@ export default function Leaderboard() {
         </div>
       </div>
 
+      <div style={{ marginBottom: "20px" }}>
+        <label style={{ marginRight: "10px" }}>Lọc theo Giải đấu:</label>
+        <select 
+          className="input-field" 
+          style={{ width: "250px", display: "inline-block" }}
+          value={selectedTournament} 
+          onChange={(e) => setSelectedTournament(e.target.value)}
+        >
+          <option value="">Tất cả giải đấu (Toàn cục)</option>
+          {tournaments.map(t => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+      </div>
+
       {activeTab === "horse_jockey" && (
         <>
-          <div style={{ marginBottom: "20px" }}>
-            <label style={{ marginRight: "10px" }}>Lọc theo Giải đấu:</label>
-            <select 
-              className="input-field" 
-              style={{ width: "250px", display: "inline-block" }}
-              value={selectedTournament} 
-              onChange={(e) => setSelectedTournament(e.target.value)}
-            >
-              <option value="">Tất cả giải đấu (Toàn cục)</option>
-              {tournaments.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-          </div>
-
           <div style={styles.splitLayout}>
             {/* Horse standings */}
             <div style={{ flex: 1 }}>
@@ -168,9 +173,11 @@ export default function Leaderboard() {
               <thead>
                 <tr>
                   <th>Hạng</th>
+                  <th>Avatar</th>
                   <th>Khán giả</th>
-                  <th>Giống ngựa yêu thích</th>
                   <th>Điểm tích lũy</th>
+                  <th>Đoán đúng</th>
+                  <th>Tổng đoán</th>
                 </tr>
               </thead>
               <tbody>
@@ -179,15 +186,25 @@ export default function Leaderboard() {
                     <td style={{ fontWeight: "800", color: i < 3 ? "var(--primary)" : "var(--foreground)" }}>
                       {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
                     </td>
+                    <td>
+                      {s.avatar ? (
+                        <img src={s.avatar} alt="avatar" style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }} />
+                      ) : (
+                        <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#334155", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: "bold" }}>
+                          {(s.full_name || s.username || "U").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </td>
                     <td style={{ fontWeight: "700" }}>
                       {s.full_name || s.username}
                     </td>
-                    <td style={{ color: "#64748b" }}>{s.favorite_horse_breed || "—"}</td>
                     <td style={{ fontWeight: "800", color: "#f59e0b" }}>{s.reward_points} điểm</td>
+                    <td style={{ color: "var(--success)", fontWeight: "600" }}>{s.correct_predictions || 0}</td>
+                    <td style={{ color: "#64748b" }}>{s.total_predictions || 0}</td>
                   </tr>
                 ))}
                 {spectatorRankings.length === 0 && (
-                  <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dữ liệu</td></tr>
+                  <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dữ liệu</td></tr>
                 )}
               </tbody>
             </table>

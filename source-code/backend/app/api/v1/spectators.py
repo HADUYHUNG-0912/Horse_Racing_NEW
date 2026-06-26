@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 
 from datetime import timedelta
 from app.core.timezone_utils import get_vietnam_now_naive
@@ -90,22 +91,64 @@ def read_predictions(
     return preds
 
 @router.get("/rankings", response_model=List[SpectatorProfileDetailOut])
-def get_top_spectators(db: Session = Depends(get_db)):
-    top_spectators = db.query(SpectatorProfile).order_by(SpectatorProfile.reward_points.desc()).limit(10).all()
-    res = []
-    for s in top_spectators:
-        res.append(SpectatorProfileDetailOut(
-            id=s.id,
-            username=s.user.username,
-            email=s.user.email,
-            full_name=s.user.full_name,
-            phone_number=s.user.phone_number,
-            avatar=s.user.avatar,
-            favorite_horse_breed=s.favorite_horse_breed,
-            favorite_jockey=s.favorite_jockey,
-            reward_points=s.reward_points
-        ))
-    return res
+def get_top_spectators(tournament_id: Optional[int] = None, db: Session = Depends(get_db)):
+    if tournament_id:
+        # Calculate points per user for this tournament
+        user_stats = db.execute(text("""
+            SELECT p.user_id, 
+                   COUNT(p.id) as total_preds,
+                   SUM(CASE WHEN p.status = 'Won' THEN 1 ELSE 0 END) as correct_preds
+            FROM Predictions p
+            JOIN RaceParticipants rp ON p.race_participant_id = rp.id
+            JOIN Registrations reg ON rp.registration_id = reg.id
+            WHERE reg.tournament_id = :tid
+            GROUP BY p.user_id
+            ORDER BY correct_preds DESC
+            LIMIT 10
+        """), {"tid": tournament_id}).fetchall()
+        
+        res = []
+        for us in user_stats:
+            s = db.query(SpectatorProfile).filter(SpectatorProfile.user_id == us.user_id).first()
+            if s:
+                correct = int(us.correct_preds) if us.correct_preds else 0
+                total = int(us.total_preds) if us.total_preds else 0
+                res.append(SpectatorProfileDetailOut(
+                    id=s.id,
+                    username=s.user.username,
+                    email=s.user.email,
+                    full_name=s.user.full_name,
+                    phone_number=s.user.phone_number,
+                    avatar=s.user.avatar,
+                    favorite_horse_breed=s.favorite_horse_breed,
+                    favorite_jockey=s.favorite_jockey,
+                    reward_points=correct * 10,
+                    total_predictions=total,
+                    correct_predictions=correct
+                ))
+        return res
+    else:
+        top_spectators = db.query(SpectatorProfile).order_by(SpectatorProfile.reward_points.desc()).limit(10).all()
+        res = []
+        for s in top_spectators:
+            preds = db.query(Prediction).filter(Prediction.user_id == s.user_id).all()
+            total_preds = len(preds)
+            correct_preds = len([p for p in preds if p.status == "Won"])
+            
+            res.append(SpectatorProfileDetailOut(
+                id=s.id,
+                username=s.user.username,
+                email=s.user.email,
+                full_name=s.user.full_name,
+                phone_number=s.user.phone_number,
+                avatar=s.user.avatar,
+                favorite_horse_breed=s.favorite_horse_breed,
+                favorite_jockey=s.favorite_jockey,
+                reward_points=s.reward_points,
+                total_predictions=total_preds,
+                correct_predictions=correct_preds
+            ))
+        return res
 
 @router.put("/predictions/{prediction_id}", response_model=PredictionOut)
 def update_prediction(
