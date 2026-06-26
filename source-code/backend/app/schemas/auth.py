@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
@@ -58,6 +59,17 @@ class OwnerProfileDetailOut(OwnerProfileBase):
     phone_number: Optional[str] = None
     avatar: Optional[str] = None
     company_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class OwnerUpcomingRace(BaseModel):
+    race_id: int
+    race_name: str
+    horse_name: str
+    tournament_name: str
+    race_date: datetime
+    location: Optional[str] = None
 
     class Config:
         from_attributes = True

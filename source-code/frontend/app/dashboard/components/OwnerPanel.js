@@ -11,6 +11,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [tournaments, setTournaments] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [ownerProfile, setOwnerProfile] = useState(null);
+  const [upcomingRaces, setUpcomingRaces] = useState([]);
   const [profileForm, setProfileForm] = useState({ full_name: "", phone_number: "", company_name: "", avatar: "" });
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +52,9 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
         company_name: ownerProfileData.company_name || "",
         avatar: ownerProfileData.avatar || ""
       });
+
+      const races = await api.get("/owners/upcoming-races");
+      setUpcomingRaces(Array.isArray(races) ? races : []);
 
       // Fetch registrations for each tournament (Task 3 - Thuỳ Anh)
       const allRegistrations = [];
@@ -504,6 +508,42 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                            "✗ Bị từ chối"}
                         </span>
                       </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Lịch thi đấu của Ngựa (Owner) */}
+      {activeTab === "upcoming-races" && (
+        <div style={styles.tabContent}>
+          <h2>📅 Lịch thi đấu của Ngựa</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>
+            Những trận đua sắp tới cho ngựa của bạn.
+          </p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Ngựa</th>
+                  <th>Giải đấu</th>
+                  <th>Ngày giờ</th>
+                  <th>Địa điểm</th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingRaces.length === 0 ? (
+                  <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Không có lịch thi đấu nào sắp tới</td></tr>
+                ) : (
+                  upcomingRaces.map(r => (
+                    <tr key={r.race_id}>
+                      <td style={{ fontWeight: "700" }}>{r.horse_name}</td>
+                      <td>{r.tournament_name}</td>
+                      <td>{formatDateTime(r.race_date)}</td>
+                      <td>{r.location || "Chưa rõ"}</td>
                     </tr>
                   ))
                 )}
