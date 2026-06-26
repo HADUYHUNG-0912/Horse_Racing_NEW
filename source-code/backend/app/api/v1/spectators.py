@@ -31,7 +31,7 @@ def make_prediction(
         
     # Check if race has started based on time
     if get_vietnam_now_naive() > part.race.race_time:
-        raise HTTPException(status_code=400, detail="Trận đấu đã bắt đầu, không thể dự đoán")
+        raise HTTPException(status_code=400, detail="Prediction is closed because the race has already started.")
         
     # Check if spectator has already made a prediction for this race
     dup = db.query(Prediction).join(RaceParticipant).filter(
@@ -127,6 +127,9 @@ def update_prediction(
     part = prediction.participant
     if part.race.status != "SCHEDULED":
         raise HTTPException(status_code=400, detail="Cannot edit prediction after race has started")
+        
+    if get_vietnam_now_naive() > part.race.race_time:
+        raise HTTPException(status_code=400, detail="Prediction is closed because the race has already started.")
         
     time_until_race = part.race.race_time - get_vietnam_now_naive()
     if time_until_race < timedelta(minutes=15):
