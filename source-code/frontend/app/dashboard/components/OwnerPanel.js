@@ -259,9 +259,35 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
               </div>
               <div className="form-group">
                 <label>Giống ngựa</label>
-                <input type="text" className="input-field" placeholder="Thoroughbred, Arabian..." required
+                <select className="input-field" required
                   value={editingHorse ? editHorseForm.breed : newHorse.breed} 
-                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (editingHorse) {
+                      setEditHorseForm({ ...editHorseForm, breed: val });
+                    } else {
+                      setNewHorse({ ...newHorse, breed: val });
+                    }
+                  }}>
+                  <option value="">-- Chọn giống ngựa --</option>
+                  <option value="Thoroughbred">Thoroughbred</option>
+                  <option value="Arabian">Arabian</option>
+                  <option value="Quarter Horse">Quarter Horse</option>
+                  <option value="Appaloosa">Appaloosa</option>
+                  <option value="Morgan">Morgan</option>
+                  <option value="Standardbred">Standardbred</option>
+                  <option value="Warmblood">Warmblood</option>
+                  <option value="Paint Horse">Paint Horse</option>
+                  <option value="__other__">Khác</option>
+                </select>
+                {(editingHorse ? editHorseForm.breed !== "" && !["Thoroughbred","Arabian","Quarter Horse","Appaloosa","Morgan","Standardbred","Warmblood","Paint Horse"].includes(editHorseForm.breed) : newHorse.breed !== "" && !["Thoroughbred","Arabian","Quarter Horse","Appaloosa","Morgan","Standardbred","Warmblood","Paint Horse"].includes(newHorse.breed)) && (
+                  <>
+                    <input type="text" className="input-field" placeholder="Nhập giống ngựa khác..." style={{ marginTop: "8px" }} required
+                      value={editingHorse ? (editHorseForm.breed === "__other__" ? "" : editHorseForm.breed) : (newHorse.breed === "__other__" ? "" : newHorse.breed)}
+                      onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
+                    <p style={{ color: "#eab308", fontSize: "12px", marginTop: "4px" }}>⚠️ Giống ngựa này chưa có trong hệ thống, vui lòng kiểm tra lại.</p>
+                  </>
+                )}
               </div>
               <div className="form-group">
                 <label>Giới tính</label>
