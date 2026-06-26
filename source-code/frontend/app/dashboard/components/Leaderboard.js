@@ -16,31 +16,42 @@ export default function Leaderboard() {
   const fetchRankings = async (tournamentId = "") => {
     try {
       const url = tournamentId ? `/results/rankings?tournament_id=${tournamentId}` : "/results/rankings";
-      const specUrl = tournamentId ? `/spectators/rankings?tournament_id=${tournamentId}` : "/spectators/rankings";
-      const [rankData, specData] = await Promise.all([
-        api.get(url),
-        api.get(specUrl)
-      ]);
+      const rankData = await api.get(url);
       setRankings(rankData);
+    } catch (err) {
+      setError(err.message || "Không thể tải bảng xếp hạng Ngựa & Jockey");
+    }
+
+    try {
+      // Bảng Khán giả xuất sắc (LUÔN hiển thị Top Toàn cục hoặc theo giải đấu)
+      const specUrl = tournamentId ? `/spectators/rankings?tournament_id=${tournamentId}` : "/spectators/rankings";
+      const specData = await api.get(specUrl);
       setSpectatorRankings(specData);
     } catch (err) {
-      setError(err.message || "Không thể tải bảng xếp hạng");
+      console.error("Lỗi khi tải bảng khán giả xuất sắc:", err);
+      // Không set `error` toàn cục để không làm crash cả component
+      setSpectatorRankings([]); 
     }
   };
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [rankData, specData, tourData] = await Promise.all([
-        api.get("/results/rankings"),
-        api.get("/spectators/rankings"),
-        api.get("/tournaments")
-      ]);
-      setRankings(rankData);
-      setSpectatorRankings(specData);
+      const tourData = await api.get("/tournaments/");
       setTournaments(tourData);
+      
+      const rankData = await api.get("/results/rankings");
+      setRankings(rankData);
     } catch (err) {
-      setError(err.message || "Lỗi khi tải dữ liệu");
+      setError(err.message || "Lỗi khi tải dữ liệu giải đấu/kết quả");
+    }
+
+    try {
+      const specData = await api.get("/spectators/rankings");
+      setSpectatorRankings(specData);
+    } catch (err) {
+      console.error("Lỗi khi tải bảng khán giả xuất sắc:", err);
+      setSpectatorRankings([]);
     } finally {
       setLoading(false);
     }

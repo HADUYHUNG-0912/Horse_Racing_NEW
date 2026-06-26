@@ -95,7 +95,7 @@ def get_top_spectators(tournament_id: Optional[int] = None, db: Session = Depend
     if tournament_id:
         # Calculate points per user for this tournament
         user_stats = db.execute(text("""
-            SELECT p.user_id, 
+            SELECT TOP 10 p.user_id, 
                    COUNT(p.id) as total_preds,
                    SUM(CASE WHEN p.status = 'Won' THEN 1 ELSE 0 END) as correct_preds
             FROM Predictions p
@@ -104,7 +104,6 @@ def get_top_spectators(tournament_id: Optional[int] = None, db: Session = Depend
             WHERE reg.tournament_id = :tid
             GROUP BY p.user_id
             ORDER BY correct_preds DESC
-            LIMIT 10
         """), {"tid": tournament_id}).fetchall()
         
         res = []
