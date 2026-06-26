@@ -1,5 +1,5 @@
 from typing import List
-from datetime import timedelta
+from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -59,11 +59,29 @@ def create_race(
     if not round_obj:
         raise HTTPException(status_code=404, detail="Round not found")
         
-    # Check if referee exists if provided
+    # Check if race_time falls within tournament dates
+    tournament = round_obj.tournament
+    race_date = race_in.race_time.date()
+    if race_date < tournament.start_date or race_date > tournament.end_date:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Race time must be within tournament dates ({tournament.start_date} to {tournament.end_date})"
+        )
+        
+    # Check if referee exists if provided and verify no conflicts
     if race_in.referee_id:
         ref = db.query(RefereeProfile).filter(RefereeProfile.id == race_in.referee_id).first()
         if not ref:
             raise HTTPException(status_code=404, detail="Referee profile not found")
+        
+        # Check referee schedule conflict (within 2 hours)
+        ref_conflict = db.query(Race).filter(
+            Race.referee_id == race_in.referee_id,
+            Race.race_time >= race_in.race_time - timedelta(hours=2),
+            Race.race_time <= race_in.race_time + timedelta(hours=2)
+        ).first()
+        if ref_conflict:
+            raise HTTPException(status_code=400, detail="Referee has a conflicting schedule within 2 hours of this race time")
             
     race = Race(
         round_id=round_id,
@@ -113,6 +131,26 @@ def add_participant(
     if dup_part:
         raise HTTPException(status_code=400, detail="This horse is already a participant in this race")
         
+    # Check if horse is already scheduled in another race within 2 hours of this race's time
+    horse_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(
+        Registration.horse_id == reg.horse_id,
+        Race.id != id,
+        Race.race_time >= race.race_time - timedelta(hours=2),
+        Race.race_time <= race.race_time + timedelta(hours=2)
+    ).first()
+    if horse_conflicts:
+        raise HTTPException(status_code=400, detail=f"Horse {reg.horse.name} has a conflicting schedule")
+        
+    # Check if jockey is already scheduled in another race within 2 hours of this race's time
+    jockey_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(
+        Registration.jockey_id == reg.jockey_id,
+        Race.id != id,
+        Race.race_time >= race.race_time - timedelta(hours=2),
+        Race.race_time <= race.race_time + timedelta(hours=2)
+    ).first()
+    if jockey_conflicts:
+        raise HTTPException(status_code=400, detail=f"Jockey {reg.jockey.user.full_name} has a conflicting schedule")
+        
     part = RaceParticipant(
         race_id=id,
         registration_id=part_in.registration_id,
@@ -142,6 +180,15 @@ def schedule_race(
         race.name = race_update.name
     if race_update.race_time is not None:
         new_time = race_update.race_time
+        # Check if new_time is within tournament dates
+        tournament = race.round.tournament
+        new_date = new_time.date()
+        if new_date < tournament.start_date or new_date > tournament.end_date:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Race time must be within tournament dates ({tournament.start_date} to {tournament.end_date})"
+            )
+            
         # Check conflicts for all participants
         for p in race.participants:
             horse_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(

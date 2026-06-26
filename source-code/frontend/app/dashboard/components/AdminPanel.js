@@ -131,7 +131,8 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       loadData();
     } catch (err) {
       if (err.status === 400 || (err.response && err.response.status === 400)) {
-        showMsg("Lỗi trùng lịch: Trọng tài đã có lịch đua khác trong khoảng ±2 giờ!", "error");
+        const backendError = err.response?.data?.detail || "Lỗi trùng lịch thi đấu!";
+        showMsg(backendError, "error");
       } else {
         showMsg(err.message, "error");
       }    
@@ -162,6 +163,33 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     } catch (err) {
       showMsg(err.message, "error");
     }
+  };
+
+  const deleteTournament = async (tournamentId, tournamentName) => {
+    console.log("deleteTournament called with:", tournamentId, tournamentName);
+    if (!window.confirm(`⚠️ Bạn chắc chắn muốn xóa giải đấu "${tournamentName}"? Tất cả vòng đấu, trận đua liên quan sẽ bị xóa!`)) {
+      console.log("Delete cancelled by user");
+      return;
+    }
+    console.log("Delete confirmed, calling API for ID:", tournamentId);
+    try {
+      const res = await api.delete(`/tournaments/${tournamentId}`);
+      console.log("API delete response:", res);
+      showMsg("Xóa giải đấu thành công!");
+      loadData();
+    } catch (err) {
+      console.error("API delete error:", err);
+      showMsg(err.message, "error");
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("vi-VN", {
+      day: "2-digit", month: "2-digit", year: "numeric"
+    });
   };
 
   const formatDateTime = (dateStr) => {
@@ -236,8 +264,28 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
               </div>
               <div className="form-group">
                 <label>Thứ tự vòng (Sequence)</label>
-                <input type="number" className="input-field" required
-                  value={newRound.sequence} onChange={(e) => setNewRound({ ...newRound, sequence: e.target.value })} />
+                <input 
+                  type="number" 
+                  className="input-field" 
+                  min="1" 
+                  required
+                  value={newRound.sequence} 
+                  onKeyDown={(e) => {
+                    if (["e", "E", "-", "+", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    if (val !== "") {
+                      const num = parseInt(val, 10);
+                      if (isNaN(num) || num < 1) {
+                        val = "1";
+                      }
+                    }
+                    setNewRound({ ...newRound, sequence: val });
+                  }} 
+                />
               </div>
               <button type="submit" className="btn-primary">Thêm Vòng Đấu</button>
             </form>
@@ -256,6 +304,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                     <th>Thời gian</th>
                     <th>Số vòng đấu</th>
                     <th>Trạng thái</th>
+                    <th>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -264,9 +313,24 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                       <td>{t.id}</td>
                       <td style={{ fontWeight: "700" }}>{t.name}</td>
                       <td>{t.location}</td>
-                      <td>{t.start_date} đến {t.end_date}</td>
+                      <td>{formatDate(t.start_date)} đến {formatDate(t.end_date)}</td>
                       <td>{t.rounds ? t.rounds.length : 0} vòng</td>                      
                       <td><span className="badge badge-info">{t.status}</span></td>
+                      <td>
+                        <button 
+                          className="btn-secondary" 
+                          style={{ 
+                            padding: "6px 12px", 
+                            fontSize: "12px", 
+                            color: "var(--danger)",
+                            border: "1px solid rgba(239, 68, 68, 0.2)",
+                            background: "rgba(239, 68, 68, 0.05)"
+                          }}
+                          onClick={() => deleteTournament(t.id, t.name)}
+                        >
+                          🗑️ Xóa
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -275,7 +339,6 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
           </div>
         </div>
       )}
-
       {/* TAB: Xét duyệt Đăng ký (Admin) */}
       {activeTab === "registrations" && (
         <div style={styles.tabContent}>
@@ -306,14 +369,43 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                           <span className={`badge ${r.status === "APPROVED" ? "badge-approved" : r.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
                             {r.status}
                           </span>
-                        </td>
+                        </td>                        
                         <td>
-                          {r.status === "PENDING" && (
+                          {r.status === "PENDING" ? (
                             <div style={{ display: "flex", gap: "8px" }}>
-                              <button className="btn-primary" style={{ padding: "4px 8px", fontSize: "12px" }}
-                                onClick={() => approveRegistration(r.id, "APPROVED")}>Duyệt</button>
-                              <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)" }}
-                                onClick={() => approveRegistration(r.id, "REJECTED")}>Từ chối</button>
+                              <button
+                                className="btn-primary" 
+                                style={{ padding: "4px 8px", fontSize: "12px", cursor: "pointer" }}
+                                onClick={() => approveRegistration(r.id, "APPROVED")}
+                              >
+                                Duyệt
+                              </button>
+                              <button
+                                className="btn-secondary"
+                                style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)", cursor: "pointer" }}
+                                onClick={() => approveRegistration(r.id, "REJECTED")}
+                              >
+                                Từ chối
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                              <span style={{ fontSize: "12px", color: "#64748b" }}>🔒 Đã xử lý ({r.status})</span>
+                              <button
+                                type="button"
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  color: "#3b82f6",
+                                  textDecoration: "underline",
+                                  fontSize: "11px",
+                                  cursor: "pointer",
+                                  padding: 0
+                                }}
+                                onClick={() => approveRegistration(r.id, "PENDING")}
+                              >
+                                Thay đổi
+                              </button>
                             </div>
                           )}
                         </td>
@@ -325,8 +417,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
             </table>
           </div>
         </div>
-      )}
-
+      )}      
       {/* TAB: Lập lịch Trận đua (Admin) */}
       {activeTab === "races" && (
         <div style={styles.tabContent}>
@@ -340,7 +431,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 <select className="input-field" required
                   value={newRace.round_id} onChange={(e) => setNewRace({ ...newRace, round_id: e.target.value })}>
                   <option value="">-- Chọn vòng đấu --</option>
-                  {tournaments.map(t => 
+                  {tournaments.flatMap(t => 
                     (t.rounds || []).map(r => (
                       <option key={r.id} value={r.id}>{t.name} - {r.name}</option>
                     ))
@@ -365,8 +456,28 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label>Khoảng cách (mét)</label>
-                  <input type="number" className="input-field" required
-                    value={newRace.distance} onChange={(e) => setNewRace({ ...newRace, distance: e.target.value })} />
+                  <input 
+                    type="number" 
+                    className="input-field" 
+                    min="1" 
+                    required
+                    value={newRace.distance} 
+                    onKeyDown={(e) => {
+                      if (["e", "E", "-", "+", "."].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      if (val !== "") {
+                        const num = parseInt(val, 10);
+                        if (isNaN(num) || num < 1) {
+                          val = "1";
+                        }
+                      }
+                      setNewRace({ ...newRace, distance: val });
+                    }} 
+                  />
                 </div>
               </div>
               <div className="form-group">
@@ -410,8 +521,32 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
               </div>
               <div className="form-group">
                 <label>Làn số (Lane Number)</label>
-                <input type="number" className="input-field" placeholder="1-8" required
-                  value={newParticipant.lane_number} onChange={(e) => setNewParticipant({ ...newParticipant, lane_number: e.target.value })} />
+                <input 
+                  type="number" 
+                  className="input-field" 
+                  placeholder="1-8" 
+                  min="1" 
+                  max="8" 
+                  required
+                  value={newParticipant.lane_number} 
+                  onKeyDown={(e) => {
+                    if (["e", "E", "-", "+", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    let val = e.target.value;
+                    if (val !== "") {
+                      const num = parseInt(val, 10);
+                      if (isNaN(num) || num < 1) {
+                        val = "1";
+                      } else if (num > 8) {
+                        val = "8";
+                      }
+                    }
+                    setNewParticipant({ ...newParticipant, lane_number: val });
+                  }} 
+                />
               </div>
               <button type="submit" className="btn-primary">Xếp vào đường đua</button>
             </form>

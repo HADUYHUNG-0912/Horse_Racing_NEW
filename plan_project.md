@@ -87,4 +87,15 @@
     - `*Panel.js` (4 file): thêm `formatDate`/`formatDateTime` — ngày giờ hiển thị dạng dd/mm/yyyy HH:MM.
     - `test_guide_phase1_2.md`: bổ sung bước 8.5 (phân công làn đua - lane assignment).
   - Kiểm thử API-level xác nhận các fix Step 9 & 10 hoạt động chính xác. Sẵn sàng kiểm thử tích hợp toàn luồng Phase 4.
-
+- **Tiến độ đã hoàn thành (24/06/2026 - Kết thúc Phase 4 & Giải quyết xung đột Admin):**
+  - Gộp thành công hai nhánh `feature/be-admin-fix` và `feature/fe-admin-fix` vào nhánh chính `dev-GiaHuy`.
+  - Khắc phục các xung đột gộp mã nguồn (merge conflicts) trong `config.py`, `db_setup.py` và `AdminPanel.js`.
+  - Loại bỏ định nghĩa trùng lặp hàm `deleteTournament` trong `AdminPanel.js` giải quyết dứt điểm lỗi webpack lúc biên dịch dự án Next.js.
+  - Tích hợp múi giờ Việt Nam (`Asia/Ho_Chi_Minh`) cho toàn bộ thời gian ghi nhận đăng ký, mời nài ngựa, vi phạm, dự đoán và bảng xếp hạng.
+  - Bổ sung validate ngày bắt đầu/kết thúc giải đấu (`end_date >= start_date`) và kiểm tra trùng lịch trọng tài trong vòng ±2 tiếng khi xếp lịch đua.
+  - Nâng cấp giao diện quản lý Admin: Định dạng ngày tháng trực quan tiếng Việt, cải tiến UI nút xóa giải đấu nổi bật bằng phong cách Red Secondary, và hỗ trợ quay lại trạng thái đăng ký PENDING từ APPROVED/REJECTED để Admin dễ dàng sửa đổi quyết định.
+  - **Khắc phục triệt để lỗi cơ sở dữ liệu:** Sửa đổi [schema.sql](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/database/schema.sql) để bổ sung các cột còn thiếu trong DB (`phone_number`, `avatar` trong bảng `Users` và `favorite_jockey` trong bảng `SpectatorProfiles`), giúp API xác thực hoạt động ổn định 100% không còn bị lỗi 500.
+  - **Nâng cấp bảo mật biểu mẫu (Form Input Constraints):** Bổ sung thuộc tính `onKeyDown` và `onChange` chặn các ký tự lạ (`e`, `-`, `.`) và tự động chuẩn hóa dữ liệu số (Sequence, Distance, Lane Number) về tối thiểu `1` (và tối đa `8` cho làn) tại [AdminPanel.js](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/frontend/app/dashboard/components/AdminPanel.js).
+  - **Tối ưu hóa kết nối cục bộ (Fix Fail to Fetch):** Điều chỉnh đường dẫn API Client trong [api.js](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/frontend/app/api.js) trỏ trực tiếp về IP `127.0.0.1:8000` thay vì sử dụng hostname `localhost`, giải quyết dứt điểm lỗi kết nối ngắt quãng trên hệ điều hành Windows.
+  - Chạy kiểm thử Next.js build biên dịch thành công 100%, re-seed database và chạy thử nghiệm thực tế hoạt động hoàn hảo trên trình duyệt.
+  - Đồng bộ và đẩy toàn bộ mã nguồn sạch lên nhánh remote `origin/dev-GiaHuy`.

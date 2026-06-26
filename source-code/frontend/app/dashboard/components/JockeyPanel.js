@@ -201,7 +201,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   // để tránh crash khi participants bị thiếu/null hoặc user chưa có full_name
   const myRaces = races.filter(r =>
     Array.isArray(r?.participants) &&
-    r.participants.some(p => p.jockey_name === user?.full_name)
+    r.participants.some(p => p.jockey_name === profile.full_name)
   );
 
   return (
@@ -277,7 +277,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                   <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
                 ) : (
                   myRaces.map(rc => {
-                    const myParticipation = rc.participants.find(p => p.jockey_name === user?.full_name);
+                    const myParticipation = rc.participants.find(p => p.jockey_name === profile.full_name);
                     return (
                       <tr key={rc.id}>
                         <td style={{ fontWeight: "700" }}>{rc.name}</td>
