@@ -74,6 +74,21 @@ class OwnerUpcomingRace(BaseModel):
     class Config:
         from_attributes = True
 
+class OwnerResultHistory(BaseModel):
+    id: int
+    rank: Optional[int] = None
+    points: Optional[int] = None
+    notes: Optional[str] = None
+    horse_name: str
+    race_name: str
+    tournament_name: str
+    race_date: datetime
+    violations: Optional[str] = None
+    violation_count: int = 0
+
+    class Config:
+        from_attributes = True
+
 class RefereeProfileBase(BaseModel):
     certification_level: Optional[str] = None
 

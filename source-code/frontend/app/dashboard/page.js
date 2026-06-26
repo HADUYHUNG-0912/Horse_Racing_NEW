@@ -139,9 +139,14 @@ export default function Dashboard() {
               </button>
               <button style={activeTab === "my-registrations" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("my-registrations")}>
                 📋 Giải đấu đã đăng ký
-              </button>              <button style={activeTab === "upcoming-races" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("upcoming-races") }>
+              </button>
+              <button style={activeTab === "upcoming-races" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("upcoming-races") }>
                 📅 Lịch thi đấu của Ngựa
-              </button>              <button style={activeTab === "profile" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("profile")}>
+              </button>
+              <button style={activeTab === "results" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("results") }>
+                🏆 Kết quả thi đấu
+              </button>
+              <button style={activeTab === "profile" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("profile") }>
                 👤 Hồ sơ cá nhân
               </button>
             </>

@@ -12,6 +12,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [registrations, setRegistrations] = useState([]);
   const [ownerProfile, setOwnerProfile] = useState(null);
   const [upcomingRaces, setUpcomingRaces] = useState([]);
+  const [resultHistory, setResultHistory] = useState([]);
   const [profileForm, setProfileForm] = useState({ full_name: "", phone_number: "", company_name: "", avatar: "" });
   const [loading, setLoading] = useState(true);
 
@@ -55,6 +56,9 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
 
       const races = await api.get("/owners/upcoming-races");
       setUpcomingRaces(Array.isArray(races) ? races : []);
+
+      const results = await api.get("/owners/results");
+      setResultHistory(Array.isArray(results) ? results : []);
 
       // Fetch registrations for each tournament (Task 3 - Thuỳ Anh)
       const allRegistrations = [];
@@ -544,6 +548,47 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       <td>{r.tournament_name}</td>
                       <td>{formatDateTime(r.race_date)}</td>
                       <td>{r.location || "Chưa rõ"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "results" && (
+        <div style={styles.tabContent}>
+          <h2>🏁 Kết quả thi đấu</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>
+            Lịch sử xếp hạng và vi phạm của ngựa của bạn.
+          </p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Ngựa</th>
+                  <th>Cuộc đua</th>
+                  <th>Giải đấu</th>
+                  <th>Rank</th>
+                  <th>Điểm</th>
+                  <th>Ghi chú</th>
+                  <th>Vi phạm</th>
+                </tr>
+              </thead>
+              <tbody>
+                {resultHistory.length === 0 ? (
+                  <tr><td colSpan="7" style={{ textAlign: "center", color: "#64748b" }}>Chưa có kết quả nào</td></tr>
+                ) : (
+                  resultHistory.map(item => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "700" }}>{item.horse_name}</td>
+                      <td>{item.race_name}</td>
+                      <td>{item.tournament_name}</td>
+                      <td>{item.rank ?? "-"}</td>
+                      <td>{item.points ?? "-"}</td>
+                      <td>{item.notes || "-"}</td>
+                      <td>{item.violation_count > 0 ? item.violations : "Không có"}</td>
                     </tr>
                   ))
                 )}

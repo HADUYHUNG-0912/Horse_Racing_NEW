@@ -5,8 +5,8 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, RoleChecker
-from app.models.database_models import User
-from app.schemas.auth import OwnerProfileDetailOut, OwnerProfileUpdate, OwnerUpcomingRace
+from app.models.database_models import User, Violation
+from app.schemas.auth import OwnerProfileDetailOut, OwnerProfileUpdate, OwnerUpcomingRace, OwnerResultHistory
 
 router = APIRouter()
 
@@ -71,6 +71,68 @@ def read_owner_upcoming_races(
     ).mappings().all()
 
     return races
+
+@router.get("/results", response_model=List[OwnerResultHistory])
+def read_owner_results(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(RoleChecker(["OWNER"]))
+):
+    results = db.execute(
+        text(
+            """
+            SELECT
+                res.id AS id,
+                rp.id AS participant_id,
+                res.rank,
+                res.points,
+                res.notes,
+                r.name AS race_name,
+                r.race_time AS race_date,
+                t.name AS tournament_name,
+                h.name AS horse_name
+            FROM Users u
+            INNER JOIN HorseOwnerProfiles hp ON hp.user_id = u.id
+            INNER JOIN Horses h ON h.owner_id = hp.id
+            INNER JOIN Registrations reg ON reg.horse_id = h.id
+            INNER JOIN RaceParticipants rp ON rp.registration_id = reg.id
+            INNER JOIN Results res ON res.race_participant_id = rp.id
+            INNER JOIN Races r ON r.id = rp.race_id
+            INNER JOIN Rounds ro ON ro.id = r.round_id
+            INNER JOIN Tournaments t ON t.id = ro.tournament_id
+            WHERE u.id = :user_id
+            ORDER BY r.race_time DESC, res.rank ASC
+            """
+        ),
+        {"user_id": current_user.id},
+    ).mappings().all()
+
+    if not results:
+        return []
+
+    participant_ids = [row["participant_id"] for row in results]
+    violations_rows = db.query(Violation).filter(Violation.race_participant_id.in_(participant_ids)).all()
+
+    violations_by_participant = {}
+    for v in violations_rows:
+        pid = v.race_participant_id
+        item_parts = [v.description or ""]
+        if v.penalty:
+            item_parts.append(v.penalty)
+        if v.fine_amount:
+            item_parts.append(f"{v.fine_amount:.2f} VND")
+        item = " | ".join([part for part in item_parts if part])
+        violations_by_participant.setdefault(pid, []).append(item)
+
+    output = []
+    for row in results:
+        entry = dict(row)
+        violations = violations_by_participant.get(row["participant_id"], [])
+        entry["violations"] = "; ".join(violations) if violations else ""
+        entry["violation_count"] = len(violations)
+        entry.pop("participant_id", None)
+        output.append(entry)
+
+    return output
 
 @router.put("/profile", response_model=OwnerProfileDetailOut)
 def update_owner_profile(
