@@ -103,3 +103,19 @@ export const api = {
     localStorage.removeItem("token");
   },
 };
+export const fetchPrizes = (tournamentId) => 
+  api.get(`/tournaments/${tournamentId}/prizes`);
+
+export const createPrize = (tournamentId, data) => 
+  api.post(`/tournaments/${tournamentId}/prizes`, data);
+
+export const updateTournamentStatus = (id, status) => 
+  api.put(`/tournaments/${id}/status`, { new_status: status });
+
+export const fetchAdminStats = () => 
+  api.get(`/admin/stats`);
+
+export const fetchAdminUsers = (params) => {
+  const query = new URLSearchParams(params).toString();
+  return api.get(`/admin/users?${query}`);
+};
