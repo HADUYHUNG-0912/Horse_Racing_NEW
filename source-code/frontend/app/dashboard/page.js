@@ -140,6 +140,9 @@ export default function Dashboard() {
               <button style={activeTab === "my-registrations" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("my-registrations")}>
                 📋 Giải đấu đã đăng ký
               </button>
+              <button style={activeTab === "profile" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("profile")}>
+                👤 Hồ sơ cá nhân
+              </button>
             </>
           )}
 

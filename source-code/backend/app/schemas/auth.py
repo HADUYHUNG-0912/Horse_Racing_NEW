@@ -44,6 +44,24 @@ class OwnerProfileOut(OwnerProfileBase):
     class Config:
         from_attributes = True
 
+class OwnerProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    company_name: Optional[str] = None
+
+class OwnerProfileDetailOut(OwnerProfileBase):
+    id: int
+    user_id: int
+    full_name: str
+    email: EmailStr
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    company_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
 class RefereeProfileBase(BaseModel):
     certification_level: Optional[str] = None
 

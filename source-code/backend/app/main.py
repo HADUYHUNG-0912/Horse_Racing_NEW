@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api.v1 import auth, horses, jockeys, tournaments, races, results, spectators, admin, referees
+from app.api.v1 import auth, horses, jockeys, tournaments, races, results, spectators, admin, referees, owners
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -22,6 +22,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(horses.router, prefix=f"{settings.API_V1_STR}/horses", tags=["horses"])
 app.include_router(jockeys.router, prefix=f"{settings.API_V1_STR}/jockeys", tags=["jockeys"])
+app.include_router(owners.router, prefix=f"{settings.API_V1_STR}/owners", tags=["owners"])
 app.include_router(tournaments.router, prefix=f"{settings.API_V1_STR}/tournaments", tags=["tournaments"])
 app.include_router(races.router, prefix=f"{settings.API_V1_STR}/races", tags=["races"])
 app.include_router(results.router, prefix=f"{settings.API_V1_STR}/results", tags=["results"])

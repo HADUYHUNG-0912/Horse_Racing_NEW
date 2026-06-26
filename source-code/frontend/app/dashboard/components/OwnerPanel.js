@@ -10,6 +10,8 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [invitations, setInvitations] = useState([]);
   const [tournaments, setTournaments] = useState([]);
   const [registrations, setRegistrations] = useState([]);
+  const [ownerProfile, setOwnerProfile] = useState(null);
+  const [profileForm, setProfileForm] = useState({ full_name: "", phone_number: "", company_name: "", avatar: "" });
   const [loading, setLoading] = useState(true);
 
   // Form states
@@ -41,6 +43,15 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
       const tours = await api.get("/tournaments");
       setTournaments(asArray(tours));
 
+      const ownerProfileData = await api.get("/owners/profile");
+      setOwnerProfile(ownerProfileData);
+      setProfileForm({
+        full_name: ownerProfileData.full_name || "",
+        phone_number: ownerProfileData.phone_number || "",
+        company_name: ownerProfileData.company_name || "",
+        avatar: ownerProfileData.avatar || ""
+      });
+
       // Fetch registrations for each tournament (Task 3 - Thuỳ Anh)
       const allRegistrations = [];
       for (const tournament of asArray(tours)) {
@@ -66,6 +77,28 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const saveOwnerProfile = async (e) => {
+    e.preventDefault();
+    try {
+      const updatedProfile = await api.put("/owners/profile", {
+        full_name: profileForm.full_name,
+        phone_number: profileForm.phone_number,
+        company_name: profileForm.company_name,
+        avatar: profileForm.avatar
+      });
+      setOwnerProfile(updatedProfile);
+      setProfileForm({
+        full_name: updatedProfile.full_name || "",
+        phone_number: updatedProfile.phone_number || "",
+        company_name: updatedProfile.company_name || "",
+        avatar: updatedProfile.avatar || ""
+      });
+      showMsg("Cập nhật hồ sơ chủ sở hữu thành công!");
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
 
   const createHorse = async (e) => {
     e.preventDefault();
@@ -476,6 +509,96 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Hồ sơ cá nhân Owner */}
+      {activeTab === "profile" && (
+        <div style={styles.tabContent}>
+          <h2>👤 Hồ sơ cá nhân Chủ Sở Hữu</h2>
+          <div style={styles.splitLayout}>
+            <form onSubmit={saveOwnerProfile} style={styles.formPanel} className="glass">
+              <h3>Chỉnh sửa thông tin</h3>
+              <div className="form-group">
+                <label>Họ tên</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.full_name}
+                  onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Số điện thoại</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.phone_number}
+                  onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Công ty / Tên đội</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.company_name}
+                  onChange={(e) => setProfileForm({ ...profileForm, company_name: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Avatar (URL)</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.avatar}
+                  onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
+                />
+              </div>
+              <button type="submit" className="btn-primary">Lưu thay đổi</button>
+            </form>
+
+            <div style={{ flex: 1.2, minWidth: "280px" }}>
+              <div style={styles.formPanel} className="glass">
+                <h3>Thông tin hiện tại</h3>
+                {ownerProfile ? (
+                  <div style={{ display: "grid", gap: "12px" }}>
+                    <div><strong>Họ tên:</strong> {ownerProfile.full_name}</div>
+                    <div><strong>Email:</strong> {ownerProfile.email}</div>
+                    <div><strong>SĐT:</strong> {ownerProfile.phone_number || "Chưa có"}</div>
+                    <div>
+                      <strong>Avatar:</strong>
+                      {ownerProfile.avatar ? (
+                        <img
+                          src={ownerProfile.avatar}
+                          alt="Owner Avatar"
+                          width={80}
+                          height={80}
+                          style={{
+                            display: "block",
+                            marginTop: "8px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            backgroundColor: "#f1f5f9"
+                          }}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/fallback-avatar.png";
+                          }}
+                        />
+                      ) : (
+                        <span>Chưa có</span>
+                      )}
+                    </div>
+                    <div><strong>Công ty:</strong> {ownerProfile.company_name || "Chưa có"}</div>
+                  </div>
+                ) : (
+                  <p style={{ color: "#94a3b8" }}>Đang tải thông tin hồ sơ...</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
