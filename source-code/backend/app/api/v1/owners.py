@@ -1,4 +1,4 @@
-from datetime import datetime
+from app.core.timezone_utils import get_vietnam_now_naive
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import text
@@ -42,7 +42,7 @@ def read_owner_upcoming_races(
     db: Session = Depends(get_db),
     current_user: User = Depends(RoleChecker(["OWNER"]))
 ):
-    current_time = datetime.utcnow()
+    current_time = get_vietnam_now_naive()
     races = db.execute(
         text(
             """
