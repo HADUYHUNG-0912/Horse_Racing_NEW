@@ -11,6 +11,8 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
   const [selectedRace, setSelectedRace] = useState(null);
   const [resultsForm, setResultsForm] = useState([]); // Array of { race_participant_id, rank, points, notes }
   const [violationForm, setViolationForm] = useState({ race_participant_id: "", description: "", penalty: "Cảnh cáo", fine_amount: "0" });
+  const [fineAmountError, setFineAmountError] = useState("");
+  const [expandedRaceId, setExpandedRaceId] = useState(null);
 
   const [selectedRaceForInspection, setSelectedRaceForInspection] = useState(null);
   const [inspectionForm, setInspectionForm] = useState({ weather: "", track_condition: "", horse_health: "" });
@@ -156,36 +158,96 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                   <tr><td colSpan="7" style={{ textAlign: "center", color: "#64748b" }}>Chưa được phân công trận đua nào</td></tr>
                 ) : (
                   races.map(rc => (
-                    <tr key={rc.id}>
-                      <td style={{ fontWeight: "700" }}>{rc.name}</td>
-                      <td>{formatDateTime(rc.race_time)}</td>
-                      <td>{rc.distance}m</td>
-                      <td>{rc.track_condition}</td>
-                      <td>{rc.participants.length}</td>
-                      <td>
-                        <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : rc.status === "RESULTS_ENTERED" ? "badge-info" : "badge-pending"}`}>
-                          {rc.status}
-                        </span>
-                      </td>
-                      <td>
-                        {rc.status === "SCHEDULED" && (
-                          <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", marginRight: "8px", backgroundColor: "#3b82f6" }}
-                            onClick={() => initInspectionForm(rc)}>
-                            Kiểm tra đường đua
+                    <>
+                      <tr key={rc.id}>
+                        <td
+                          style={{ fontWeight: "700", cursor: "pointer", userSelect: "none" }}
+                          onClick={() => setExpandedRaceId(expandedRaceId === rc.id ? null : rc.id)}
+                          title="Click để xem danh sách ngựa tham gia"
+                        >
+                          {expandedRaceId === rc.id ? "▼" : "▶"} {rc.name}
+                        </td>
+                        <td>{formatDateTime(rc.race_time)}</td>
+                        <td>{rc.distance}m</td>
+                        <td>{rc.track_condition}</td>
+                        <td>{rc.participants.length}</td>
+                        <td>
+                          <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : rc.status === "RESULTS_ENTERED" ? "badge-info" : "badge-pending"}`}>
+                            {rc.status}
+                          </span>
+                        </td>
+                        <td>
+                          {rc.status === "SCHEDULED" && (
+                            <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", marginRight: "8px", backgroundColor: "#3b82f6" }}
+                              onClick={() => initInspectionForm(rc)}>
+                              Kiểm tra đường đua
+                            </button>
+                          )}
+                          <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", marginRight: "8px" }}
+                            onClick={() => initResultsForm(rc)}>
+                            {rc.status === "COMPLETED" ? "Sửa kết quả" : "Nhập kết quả"}
                           </button>
-                        )}
-                        <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", marginRight: "8px" }}
-                          onClick={() => initResultsForm(rc)}>
-                          {rc.status === "COMPLETED" ? "Sửa kết quả" : "Nhập kết quả"}
-                        </button>
-                        {rc.status === "RESULTS_ENTERED" && (
-                          <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", backgroundColor: "var(--success)" }}
-                            onClick={() => handleConfirmResults(rc.id)}>
-                            Xác nhận kết quả chính thức
-                          </button>
-                        )}
-                      </td>
-                    </tr>
+                          {rc.status === "RESULTS_ENTERED" && (
+                            <button className="btn-primary" style={{ padding: "6px 12px", fontSize: "12px", backgroundColor: "var(--success)" }}
+                              onClick={() => handleConfirmResults(rc.id)}>
+                              Xác nhận kết quả chính thức
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+
+                      {/* Expanded participant detail */}
+                      {expandedRaceId === rc.id && (
+                        <tr key={`detail-${rc.id}`}>
+                          <td colSpan="7" style={{ padding: "0", background: "rgba(99,102,241,0.06)" }}>
+                            <div style={{ padding: "16px 24px" }}>
+                              <p style={{ fontWeight: "600", marginBottom: "10px", color: "var(--primary)", fontSize: "14px" }}>
+                                🐎 Danh sách ngựa tham gia — {rc.name}
+                              </p>
+                              {rc.participants.length === 0 ? (
+                                <p style={{ color: "#64748b", fontSize: "13px" }}>Chưa có ngựa tham gia.</p>
+                              ) : (
+                                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px", tableLayout: "fixed" }}>
+                                  <colgroup>
+                                    <col style={{ width: "25%" }} />
+                                    <col style={{ width: "25%" }} />
+                                    <col style={{ width: "25%" }} />
+                                    <col style={{ width: "25%" }} />
+                                  </colgroup>
+                                  <thead>
+                                    <tr style={{ background: "rgba(99,102,241,0.15)" }}>
+                                      <th style={{ padding: "8px 12px", textAlign: "center", borderBottom: "1px solid var(--card-border)" }}>Làn số</th>
+                                      <th style={{ padding: "8px 12px", textAlign: "left", borderBottom: "1px solid var(--card-border)" }}>Tên ngựa</th>
+                                      <th style={{ padding: "8px 12px", textAlign: "left", borderBottom: "1px solid var(--card-border)" }}>Tên Jockey</th>
+                                      <th style={{ padding: "8px 12px", textAlign: "left", borderBottom: "1px solid var(--card-border)" }}>Trạng thái</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {[...rc.participants]
+                                      .sort((a, b) => a.lane_number - b.lane_number)
+                                      .map(p => (
+                                        <tr key={p.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                                          <td style={{ padding: "8px 12px", fontWeight: "700", textAlign: "center" }}>{p.lane_number}</td>
+                                          <td style={{ padding: "8px 12px" }}>🐎 {p.horse_name}</td>
+                                          <td style={{ padding: "8px 12px" }}>{p.jockey_name}</td>
+                                          <td style={{ padding: "8px 12px" }}>
+                                            <span className={`badge ${
+                                              p.status === "FINISHED" ? "badge-approved" :
+                                              p.status === "DISQUALIFIED" ? "badge-rejected" :
+                                              p.status === "DNF" ? "badge-pending" : "badge-info"
+                                            }`}>{p.status}</span>
+                                          </td>
+                                        </tr>
+                                      ))
+                                    }
+                                  </tbody>
+                                </table>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
                   ))
                 )}
               </tbody>
@@ -217,7 +279,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                           }} />
                       </div>
                       <div className="form-group" style={{ margin: 0, flex: 1 }}>
-                        <label>Điểm cộng</label>
+                        <label>Điểm cộng/trừ</label>
                         <input type="number" className="input-field" required
                           value={field.points} onChange={(e) => {
                             const copy = [...resultsForm];
@@ -271,17 +333,29 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                   </div>
                   <div className="form-group">
                     <label>Số tiền phạt ($)</label>
-                    <input type="number" min="0" step="1" className="input-field" required
+                    <input type="number" min="0" max="9999999" step="1" className="input-field" required
                       value={violationForm.fine_amount}
                       onChange={(e) => {
                         const val = e.target.value;
-                        // Nếu người dùng nhập số âm thì reset về 0
-                        if (val !== "" && parseInt(val) < 0) {
+                        const num = parseInt(val);
+                        // Không được âm
+                        if (val !== "" && num < 0) {
                           setViolationForm({ ...violationForm, fine_amount: "0" });
+                          setFineAmountError("Số tiền phạt không được âm.");
+                        // Không quá 7 chữ số (max 9999999)
+                        } else if (val !== "" && num > 9999999) {
+                          setViolationForm({ ...violationForm, fine_amount: "9999999" });
+                          setFineAmountError("Số tiền phạt không được vượt quá 9,999,999.");
                         } else {
                           setViolationForm({ ...violationForm, fine_amount: val });
+                          setFineAmountError("");
                         }
                       }} />
+                    {fineAmountError && (
+                      <span style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                        ⚠️ {fineAmountError}
+                      </span>
+                    )}
                   </div>
                   <button type="submit" className="btn-primary" style={{ backgroundColor: "var(--danger)" }}>Báo cáo vi phạm</button>
                 </form>

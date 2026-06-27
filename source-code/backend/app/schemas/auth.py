@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
@@ -40,6 +41,50 @@ class OwnerProfileCreate(OwnerProfileBase):
 class OwnerProfileOut(OwnerProfileBase):
     id: int
     user_id: int
+
+    class Config:
+        from_attributes = True
+
+class OwnerProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    company_name: Optional[str] = None
+
+class OwnerProfileDetailOut(OwnerProfileBase):
+    id: int
+    user_id: int
+    full_name: str
+    email: EmailStr
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    company_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class OwnerUpcomingRace(BaseModel):
+    race_id: int
+    race_name: str
+    horse_name: str
+    tournament_name: str
+    race_date: datetime
+    location: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class OwnerResultHistory(BaseModel):
+    id: int
+    rank: Optional[int] = None
+    points: Optional[int] = None
+    notes: Optional[str] = None
+    horse_name: str
+    race_name: str
+    tournament_name: str
+    race_date: datetime
+    violations: Optional[str] = None
+    violation_count: int = 0
 
     class Config:
         from_attributes = True
@@ -92,6 +137,7 @@ class SpectatorProfileDetailOut(BaseModel):
     reward_points: int
     current_rank: Optional[int] = None
     total_predictions: Optional[int] = 0
+    correct_predictions: Optional[int] = 0
     accuracy_rate: Optional[float] = 0.0
 
     class Config:

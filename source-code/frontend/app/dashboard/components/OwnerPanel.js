@@ -10,6 +10,10 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [invitations, setInvitations] = useState([]);
   const [tournaments, setTournaments] = useState([]);
   const [registrations, setRegistrations] = useState([]);
+  const [ownerProfile, setOwnerProfile] = useState(null);
+  const [upcomingRaces, setUpcomingRaces] = useState([]);
+  const [resultHistory, setResultHistory] = useState([]);
+  const [profileForm, setProfileForm] = useState({ full_name: "", phone_number: "", company_name: "", avatar: "" });
   const [loading, setLoading] = useState(true);
 
   // Form states
@@ -41,6 +45,21 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
       const tours = await api.get("/tournaments");
       setTournaments(asArray(tours));
 
+      const ownerProfileData = await api.get("/owners/profile");
+      setOwnerProfile(ownerProfileData);
+      setProfileForm({
+        full_name: ownerProfileData.full_name || "",
+        phone_number: ownerProfileData.phone_number || "",
+        company_name: ownerProfileData.company_name || "",
+        avatar: ownerProfileData.avatar || ""
+      });
+
+      const races = await api.get("/owners/upcoming-races");
+      setUpcomingRaces(Array.isArray(races) ? races : []);
+
+      const results = await api.get("/owners/results");
+      setResultHistory(Array.isArray(results) ? results : []);
+
       // Fetch registrations for each tournament (Task 3 - Thuỳ Anh)
       const allRegistrations = [];
       for (const tournament of asArray(tours)) {
@@ -66,6 +85,28 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const saveOwnerProfile = async (e) => {
+    e.preventDefault();
+    try {
+      const updatedProfile = await api.put("/owners/profile", {
+        full_name: profileForm.full_name,
+        phone_number: profileForm.phone_number,
+        company_name: profileForm.company_name,
+        avatar: profileForm.avatar
+      });
+      setOwnerProfile(updatedProfile);
+      setProfileForm({
+        full_name: updatedProfile.full_name || "",
+        phone_number: updatedProfile.phone_number || "",
+        company_name: updatedProfile.company_name || "",
+        avatar: updatedProfile.avatar || ""
+      });
+      showMsg("Cập nhật hồ sơ chủ sở hữu thành công!");
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
 
   const createHorse = async (e) => {
     e.preventDefault();
@@ -218,9 +259,35 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
               </div>
               <div className="form-group">
                 <label>Giống ngựa</label>
-                <input type="text" className="input-field" placeholder="Thoroughbred, Arabian..." required
+                <select className="input-field" required
                   value={editingHorse ? editHorseForm.breed : newHorse.breed} 
-                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (editingHorse) {
+                      setEditHorseForm({ ...editHorseForm, breed: val });
+                    } else {
+                      setNewHorse({ ...newHorse, breed: val });
+                    }
+                  }}>
+                  <option value="">-- Chọn giống ngựa --</option>
+                  <option value="Thoroughbred">Thoroughbred</option>
+                  <option value="Arabian">Arabian</option>
+                  <option value="Quarter Horse">Quarter Horse</option>
+                  <option value="Appaloosa">Appaloosa</option>
+                  <option value="Morgan">Morgan</option>
+                  <option value="Standardbred">Standardbred</option>
+                  <option value="Warmblood">Warmblood</option>
+                  <option value="Paint Horse">Paint Horse</option>
+                  <option value="__other__">Khác</option>
+                </select>
+                {(editingHorse ? editHorseForm.breed !== "" && !["Thoroughbred","Arabian","Quarter Horse","Appaloosa","Morgan","Standardbred","Warmblood","Paint Horse"].includes(editHorseForm.breed) : newHorse.breed !== "" && !["Thoroughbred","Arabian","Quarter Horse","Appaloosa","Morgan","Standardbred","Warmblood","Paint Horse"].includes(newHorse.breed)) && (
+                  <>
+                    <input type="text" className="input-field" placeholder="Nhập giống ngựa khác..." style={{ marginTop: "8px" }} required
+                      value={editingHorse ? (editHorseForm.breed === "__other__" ? "" : editHorseForm.breed) : (newHorse.breed === "__other__" ? "" : newHorse.breed)}
+                      onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
+                    <p style={{ color: "#eab308", fontSize: "12px", marginTop: "4px" }}>⚠️ Giống ngựa này chưa có trong hệ thống, vui lòng kiểm tra lại.</p>
+                  </>
+                )}
               </div>
               <div className="form-group">
                 <label>Giới tính</label>
@@ -476,6 +543,173 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Lịch thi đấu của Ngựa (Owner) */}
+      {activeTab === "upcoming-races" && (
+        <div style={styles.tabContent}>
+          <h2>📅 Lịch thi đấu của Ngựa</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>
+            Những trận đua sắp tới cho ngựa của bạn.
+          </p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Ngựa</th>
+                  <th>Giải đấu</th>
+                  <th>Ngày giờ</th>
+                  <th>Địa điểm</th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingRaces.length === 0 ? (
+                  <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Không có lịch thi đấu nào sắp tới</td></tr>
+                ) : (
+                  upcomingRaces.map(r => (
+                    <tr key={r.race_id}>
+                      <td style={{ fontWeight: "700" }}>{r.horse_name}</td>
+                      <td>{r.tournament_name}</td>
+                      <td>{formatDateTime(r.race_date)}</td>
+                      <td>{r.location || "Chưa rõ"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "results" && (
+        <div style={styles.tabContent}>
+          <h2>🏁 Kết quả thi đấu</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>
+            Lịch sử xếp hạng và vi phạm của ngựa của bạn.
+          </p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Ngựa</th>
+                  <th>Cuộc đua</th>
+                  <th>Giải đấu</th>
+                  <th>Rank</th>
+                  <th>Điểm</th>
+                  <th>Ghi chú</th>
+                  <th>Vi phạm</th>
+                </tr>
+              </thead>
+              <tbody>
+                {resultHistory.length === 0 ? (
+                  <tr><td colSpan="7" style={{ textAlign: "center", color: "#64748b" }}>Chưa có kết quả nào</td></tr>
+                ) : (
+                  resultHistory.map(item => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "700" }}>{item.horse_name}</td>
+                      <td>{item.race_name}</td>
+                      <td>{item.tournament_name}</td>
+                      <td>{item.rank ?? "-"}</td>
+                      <td>{item.points ?? "-"}</td>
+                      <td>{item.notes || "-"}</td>
+                      <td>{item.violation_count > 0 ? item.violations : "Không có"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Hồ sơ cá nhân Owner */}
+      {activeTab === "profile" && (
+        <div style={styles.tabContent}>
+          <h2>👤 Hồ sơ cá nhân Chủ Sở Hữu</h2>
+          <div style={styles.splitLayout}>
+            <form onSubmit={saveOwnerProfile} style={styles.formPanel} className="glass">
+              <h3>Chỉnh sửa thông tin</h3>
+              <div className="form-group">
+                <label>Họ tên</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.full_name}
+                  onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Số điện thoại</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.phone_number}
+                  onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Công ty / Tên đội</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.company_name}
+                  onChange={(e) => setProfileForm({ ...profileForm, company_name: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Avatar (URL)</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.avatar}
+                  onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
+                />
+              </div>
+              <button type="submit" className="btn-primary">Lưu thay đổi</button>
+            </form>
+
+            <div style={{ flex: 1.2, minWidth: "280px" }}>
+              <div style={styles.formPanel} className="glass">
+                <h3>Thông tin hiện tại</h3>
+                {ownerProfile ? (
+                  <div style={{ display: "grid", gap: "12px" }}>
+                    <div><strong>Họ tên:</strong> {ownerProfile.full_name}</div>
+                    <div><strong>Email:</strong> {ownerProfile.email}</div>
+                    <div><strong>SĐT:</strong> {ownerProfile.phone_number || "Chưa có"}</div>
+                    <div>
+                      <strong>Avatar:</strong>
+                      {ownerProfile.avatar ? (
+                        <img
+                          src={ownerProfile.avatar}
+                          alt="Owner Avatar"
+                          width={80}
+                          height={80}
+                          style={{
+                            display: "block",
+                            marginTop: "8px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            backgroundColor: "#f1f5f9"
+                          }}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/fallback-avatar.png";
+                          }}
+                        />
+                      ) : (
+                        <span>Chưa có</span>
+                      )}
+                    </div>
+                    <div><strong>Công ty:</strong> {ownerProfile.company_name || "Chưa có"}</div>
+                  </div>
+                ) : (
+                  <p style={{ color: "#94a3b8" }}>Đang tải thông tin hồ sơ...</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

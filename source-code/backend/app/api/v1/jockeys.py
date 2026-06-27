@@ -1,10 +1,11 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import EmailStr
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import JockeyProfile, HorseOwnerProfile, JockeyInvitation, Horse, User
+from app.models.database_models import JockeyProfile, HorseOwnerProfile, JockeyInvitation, Horse, Tournament, User
 from app.schemas.auth import JockeyProfileOut, JockeyProfileUpdate
 from app.schemas.horse import JockeyInvitationCreate, JockeyInvitationOut, JockeyInvitationUpdate
 
@@ -111,7 +112,40 @@ def invite_jockey(
     jockey = db.query(JockeyProfile).filter(JockeyProfile.id == invite_in.jockey_id).first()
     if not jockey:
         raise HTTPException(status_code=404, detail="Jockey profile not found")
-        
+
+    # Verify tournament exists
+    tournament = db.query(Tournament).filter(Tournament.id == invite_in.tournament_id).first()
+    if not tournament:
+        raise HTTPException(status_code=404, detail="Tournament not found")
+
+    # ----- CHECK 1 (raw SQL): 1 horse only 1 jockey per tournament -----
+    sql_check_horse = text("""
+        SELECT COUNT(*) FROM JockeyInvitations
+        WHERE horse_id = :horse_id
+          AND tournament_id = :tournament_id
+          AND status = 'PENDING'
+    """)
+    result_horse = db.execute(sql_check_horse, {
+        "horse_id": invite_in.horse_id,
+        "tournament_id": invite_in.tournament_id,
+    }).scalar()
+    if result_horse and result_horse > 0:
+        raise HTTPException(status_code=400, detail="Ngựa này đã có jockey trong giải đấu")
+
+    # ----- CHECK 2 (raw SQL): 1 jockey only 1 horse per tournament -----
+    sql_check_jockey = text("""
+        SELECT COUNT(*) FROM JockeyInvitations
+        WHERE jockey_id = :jockey_id
+          AND tournament_id = :tournament_id
+          AND status = 'PENDING'
+    """)
+    result_jockey = db.execute(sql_check_jockey, {
+        "jockey_id": invite_in.jockey_id,
+        "tournament_id": invite_in.tournament_id,
+    }).scalar()
+    if result_jockey and result_jockey > 0:
+        raise HTTPException(status_code=400, detail="Jockey này đã được mời trong giải đấu")
+
     # Create invitation
     invitation = JockeyInvitation(
         owner_id=owner.id,
