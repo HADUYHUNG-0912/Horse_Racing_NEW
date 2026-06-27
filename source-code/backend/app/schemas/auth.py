@@ -137,6 +137,7 @@ class SpectatorProfileDetailOut(BaseModel):
     reward_points: int
     current_rank: Optional[int] = None
     total_predictions: Optional[int] = 0
+    correct_predictions: Optional[int] = 0
     accuracy_rate: Optional[float] = 0.0
 
     class Config:

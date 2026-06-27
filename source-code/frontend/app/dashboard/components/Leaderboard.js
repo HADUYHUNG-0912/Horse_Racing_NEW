@@ -16,26 +16,42 @@ export default function Leaderboard() {
   const fetchRankings = async (tournamentId = "") => {
     try {
       const url = tournamentId ? `/results/rankings?tournament_id=${tournamentId}` : "/results/rankings";
-      const data = await api.get(url);
-      setRankings(data);
+      const rankData = await api.get(url);
+      setRankings(rankData);
     } catch (err) {
-      setError(err.message || "Không thể tải bảng xếp hạng");
+      setError(err.message || "Không thể tải bảng xếp hạng Ngựa & Jockey");
+    }
+
+    try {
+      // Bảng Khán giả xuất sắc (LUÔN hiển thị Top Toàn cục hoặc theo giải đấu)
+      const specUrl = tournamentId ? `/spectators/rankings?tournament_id=${tournamentId}` : "/spectators/rankings";
+      const specData = await api.get(specUrl);
+      setSpectatorRankings(specData);
+    } catch (err) {
+      console.error("Lỗi khi tải bảng khán giả xuất sắc:", err);
+      // Không set `error` toàn cục để không làm crash cả component
+      setSpectatorRankings([]); 
     }
   };
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [rankData, specData, tourData] = await Promise.all([
-        api.get("/results/rankings"),
-        api.get("/spectators/rankings"),
-        api.get("/tournaments")
-      ]);
-      setRankings(rankData);
-      setSpectatorRankings(specData);
+      const tourData = await api.get("/tournaments/");
       setTournaments(tourData);
+      
+      const rankData = await api.get("/results/rankings");
+      setRankings(rankData);
     } catch (err) {
-      setError(err.message || "Lỗi khi tải dữ liệu");
+      setError(err.message || "Lỗi khi tải dữ liệu giải đấu/kết quả");
+    }
+
+    try {
+      const specData = await api.get("/spectators/rankings");
+      setSpectatorRankings(specData);
+    } catch (err) {
+      console.error("Lỗi khi tải bảng khán giả xuất sắc:", err);
+      setSpectatorRankings([]);
     } finally {
       setLoading(false);
     }
@@ -83,23 +99,23 @@ export default function Leaderboard() {
         </div>
       </div>
 
+      <div style={{ marginBottom: "20px" }}>
+        <label style={{ marginRight: "10px" }}>Lọc theo Giải đấu:</label>
+        <select 
+          className="input-field" 
+          style={{ width: "250px", display: "inline-block" }}
+          value={selectedTournament} 
+          onChange={(e) => setSelectedTournament(e.target.value)}
+        >
+          <option value="">Tất cả giải đấu (Toàn cục)</option>
+          {tournaments.map(t => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+      </div>
+
       {activeTab === "horse_jockey" && (
         <>
-          <div style={{ marginBottom: "20px" }}>
-            <label style={{ marginRight: "10px" }}>Lọc theo Giải đấu:</label>
-            <select 
-              className="input-field" 
-              style={{ width: "250px", display: "inline-block" }}
-              value={selectedTournament} 
-              onChange={(e) => setSelectedTournament(e.target.value)}
-            >
-              <option value="">Tất cả giải đấu (Toàn cục)</option>
-              {tournaments.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-          </div>
-
           <div style={styles.splitLayout}>
             {/* Horse standings */}
             <div style={{ flex: 1 }}>
@@ -168,9 +184,11 @@ export default function Leaderboard() {
               <thead>
                 <tr>
                   <th>Hạng</th>
+                  <th>Avatar</th>
                   <th>Khán giả</th>
-                  <th>Giống ngựa yêu thích</th>
                   <th>Điểm tích lũy</th>
+                  <th>Đoán đúng</th>
+                  <th>Tổng đoán</th>
                 </tr>
               </thead>
               <tbody>
@@ -179,15 +197,25 @@ export default function Leaderboard() {
                     <td style={{ fontWeight: "800", color: i < 3 ? "var(--primary)" : "var(--foreground)" }}>
                       {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
                     </td>
+                    <td>
+                      {s.avatar ? (
+                        <img src={s.avatar} alt="avatar" style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }} />
+                      ) : (
+                        <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#334155", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", fontWeight: "bold" }}>
+                          {(s.full_name || s.username || "U").charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </td>
                     <td style={{ fontWeight: "700" }}>
                       {s.full_name || s.username}
                     </td>
-                    <td style={{ color: "#64748b" }}>{s.favorite_horse_breed || "—"}</td>
                     <td style={{ fontWeight: "800", color: "#f59e0b" }}>{s.reward_points} điểm</td>
+                    <td style={{ color: "var(--success)", fontWeight: "600" }}>{s.correct_predictions || 0}</td>
+                    <td style={{ color: "#64748b" }}>{s.total_predictions || 0}</td>
                   </tr>
                 ))}
                 {spectatorRankings.length === 0 && (
-                  <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dữ liệu</td></tr>
+                  <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dữ liệu</td></tr>
                 )}
               </tbody>
             </table>
