@@ -91,3 +91,38 @@ Nhánh chính để merge: `dev-GiaHuy`
 | Step 10: Owner thấy ID thay vì tên + badge sai | `horse.py` + `OwnerPanel.js` | Schema + UI hiển thị tên và badge |
 | Ngày giờ hiển thị dạng ISO raw | `*Panel.js` (4 file) | Thêm `formatDate`/`formatDateTime` |
 | Test guide thiếu bước lane assignment | `test_guide_phase1_2.md` | Thêm bước 8.5 |
+
+---
+
+## 🚀 Phase 4 - UAT & Hoàn thiện (27/06/2026)
+
+### 🏁 Phân hệ RACE REFEREE - Bùi Huy (Đã tích hợp)
+- [x] **Hiển thị chi tiết trận đấu:** Khi click vào một trận đấu, hiển thị bảng danh sách đầy đủ (Làn số, Tên ngựa, Tên Jockey, Trạng thái) thay vì chỉ hiển thị số lượng.
+- [x] **Ràng buộc số tiền phạt:** Tiền phạt không được âm và giới hạn tối đa là 9.999.999.
+
+### 🔮 Phân hệ SPECTATOR - Thu Mây (Đã tích hợp)
+- [x] **Khóa dự đoán khi quá giờ:** Backend API và Frontend lock/disable form khi quá giờ của trận đấu (theo giờ Việt Nam naive).
+- [x] **Dropdown lọc bảng xếp hạng:** Lọc bảng xếp hạng Ngựa & Jockey và bảng xếp hạng Khán giả động từ API theo từng giải đấu.
+- [x] **Khán giả xuất sắc:** Thêm tab "Khán giả xuất sắc" hiển thị Top 10 Spectator có điểm cao nhất kèm chi tiết tỷ lệ đoán trúng.
+
+### 🐎 Phân hệ HORSE OWNER - Thuỳ Anh (Đã tích hợp)
+- [x] **Cập nhật Hồ sơ Chủ ngựa:** API và giao diện UI form cập nhật thông tin cá nhân Chủ ngựa (`GET/PUT /owners/profile`).
+- [x] **Lịch thi đấu của Ngựa:** Tab hiển thị các trận sắp diễn ra của ngựa mình (đã sửa lệch múi giờ so sánh sang naive Vietnam time).
+- [x] **Lịch sử thi đấu:** Tab hiển thị kết quả xếp hạng và lịch sử vi phạm/phạt của ngựa mình.
+
+### 👨‍💻 Phân hệ ADMIN (Backend) - Gia Huy (Chưa tích hợp)
+- [ ] **API CRUD Prize:** Quản lý giải thưởng giải đấu tại `/tournaments/{id}/prizes`.
+- [ ] **API Tournament Status:** Chuyển trạng thái Tournament (`PUT /tournaments/{id}/status`).
+- [ ] **API Tự động trao giải:** Xây dựng logic tự động trao giải (`Awards`) khi Tournament đổi sang `COMPLETED`.
+- [ ] **API Analytics & Stats:** API thống kê `/admin/stats` và `/spectators/leaderboard`.
+
+### 👩‍💻 Phân hệ ADMIN (Frontend) - Huệ (Chưa tích hợp)
+- [ ] **Giao diện Cấu hình Giải thưởng:** UI nhập giải thưởng cho Tournament.
+- [ ] **Giao diện Trạng thái Giải đấu:** Nút thay đổi trạng thái giải đấu trong tab Quản lý.
+- [ ] **Giao diện Analytics:** Tab vẽ biểu đồ Analytics và thống kê từ API stats.
+- [ ] **Tìm kiếm & Phân trang:** Bổ sung thanh tìm kiếm và phân trang ở danh sách User.
+
+### 🏇 Phân hệ JOCKEY - Thái Châu (Chưa tích hợp)
+- [ ] **Bộ lọc Leaderboard:** Tích hợp bộ lọc giải đấu ở bảng xếp hạng chung.
+- [ ] **Giải thưởng Jockey:** Bổ sung tab xem giải thưởng đã đạt được trong tab Hồ sơ cá nhân.
+

@@ -2,8 +2,7 @@
 
 *   **Nhánh Git:** `feature/fe-admin-phase4-ui`
 *   **Người thực hiện:** Huệ
-*   **Trạng thái review:** Đã sửa lỗi và gộp (Merged & Fixed)
-*   **Mức độ hoàn thiện tổng thể:** 100% (Đã tích hợp)
+*   **Trạng thái review:** Cần sửa lỗi nhỏ để gộp nhánh
 
 ---
 

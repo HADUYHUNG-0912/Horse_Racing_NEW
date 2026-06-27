@@ -3,8 +3,8 @@
 - **Nhánh Git:** `feature/referee-detail-participants`
 - **Người thực hiện:** Bùi Huy (huyblq0064-N3)
 - **Số commit:** 5 commits (`977fa2e`, `c238329`, `8566cda`, `3598647`, `44f96c7`)
-- **Trạng thái review:** Đã sửa lỗi và gộp (Merged & Fixed)
-- **Mức độ hoàn thiện tổng thể:** 100% (Đã tích hợp)
+- **Trạng thái review:** Task chính hoàn thành tốt (~95%), nhưng có **6 regressions** cần khôi phục
+- **Mức độ hoàn thiện tổng thể:** ~80% (cần fix regressions trước khi merge)
 
 ---
 

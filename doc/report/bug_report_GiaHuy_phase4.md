@@ -2,8 +2,7 @@
 
 *   **Nhánh Git:** `feature/be-admin-phase4-prizes`
 *   **Người thực hiện:** Gia Huy
-*   **Trạng thái review:** Đã sửa lỗi và gộp (Merged & Fixed)
-*   **Mức độ hoàn thiện tổng thể:** 100% (Đã tích hợp)
+*   **Trạng thái review:** Cần cập nhật lại code (Có lỗi Regression nghiêm trọng)
 
 ---
 

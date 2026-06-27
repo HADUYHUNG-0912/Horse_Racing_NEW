@@ -3,8 +3,8 @@
 - **Nhánh Git:** `feature/spectator-lock-and-leaderboard`
 - **Người thực hiện:** Thu Mây (maydtt6742-bit)
 - **Số commit:** 3 commits chính (`fe62fa5`, `1f011f8`, `2c93de7`)
-- **Trạng thái review:** Đã sửa lỗi và gộp (Merged & Fixed)
-- **Mức độ hoàn thiện tổng thể:** 100% (Đã tích hợp)
+- **Trạng thái review:** 3/4 tasks hoàn thành tốt, có 5 regressions nghiêm trọng
+- **Mức độ hoàn thiện tổng thể:** ~75% (cần fix regressions trước khi merge)
 
 ---
 
