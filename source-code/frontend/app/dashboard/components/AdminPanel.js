@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
 
+
 export default function AdminPanel({ user, activeTab, showMsg }) {
   const [tournaments, setTournaments] = useState([]);
   const [races, setRaces] = useState([]);
@@ -23,7 +24,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
   const [stats, setStats] = useState(null);
   const [userSearch, setUserSearch] = useState("");
   const [userPage, setUserPage] = useState(1);
-  const [newPrize, setNewPrize] = useState({ position: "1", title: "", prize_value: "", description: "" });
+  
   
   const loadData = async () => {
     try {
@@ -120,29 +121,9 @@ const approvedRegistrations = useMemo(() => {
   return registrations.filter(r => r.status === "APPROVED");
 }, [registrations]);
 
-const handleCreatePrize = async (e) => {
-    e.preventDefault();
-    if (!selectedTournamentId) return showMsg("Vui lòng chọn giải đấu trước!", "error");
-    try {
-      await api.post(`/tournaments/${selectedTournamentId}/prizes`, {
-        position: parseInt(newPrize.position, 10),
-        title: newPrize.title,
-        prize_value: parseFloat(newPrize.prize_value),
-        description: newPrize.description
-      });
-      showMsg("Cấu hình hạng mục giải thưởng thành công!");
-      setNewPrize({ position: "1", title: "", prize_value: "", description: "" });
-      
-      const res = await api.get(`/tournaments/${selectedTournamentId}/prizes`);
-      setPrizes(res || []);
-    } catch (err) {
-      showMsg(err.message, "error");
-    }
-  };
-
   const handleUpdateTournamentStatus = async (id, status) => {
     try {      
-      await api.put(`/tournaments/status/${id}`, { new_status: status });            
+      await api.put(`/tournaments/${id}/status`, { new_status: status });
       showMsg(`Chuyển trạng thái giải đấu sang "${status}" thành công!`);
       loadData(); 
     } catch (err) {
@@ -566,81 +547,12 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
           </div>
         </div>
       )}
-      {/* TAB: Cấu hình Cơ cấu Giải thưởng (THÊM TOÀN BỘ KHỐI NÀY) */}
-    {activeTab === "prizes" && (
-      <div style={styles.tabContent}>
-        <h2>🏆 Cấu hình Cơ cấu Giải thưởng (Huệ)</h2>
-        <div style={{ marginBottom: "16px" }} className="form-group">
-          <label style={{ fontWeight: "bold" }}>Chọn giải đấu để thiết lập giải thưởng:</label>
-          <select className="input-field" value={selectedTournamentId} onChange={(e) => setSelectedTournamentId(e.target.value)}>
-            <option value="">-- Chọn giải đấu --</option>
-            {tournaments.map(t => <option key={t.id} value={t.id}>{t.name} [{t.status}]</option>)}
-          </select>
+      {/* TAB: Cấu hình Cơ cấu Giải thưởng */}
+      {activeTab === "prizes" && (
+        <div style={styles.tabContent}>
+          <PrizesPanel tournaments={tournaments} showMsg={showMsg} />
         </div>
-
-        {selectedTournamentId && (
-          <div style={styles.splitLayout}>
-            <form onSubmit={handleCreatePrize} style={styles.formPanel} className="glass">
-              <h3>Thêm Hạng Mạc Giải Thưởng</h3>
-              <div className="form-group">
-                <label>Thứ hạng áp dụng (Hạng 1, 2, 3...)</label>
-                <input type="number" className="input-field" min="1" required value={newPrize.position} onChange={(e) => setNewPrize({ ...newPrize, position: e.target.value })} />
-              </div>
-              <div className="form-group">
-                <label>Tên giải thưởng</label>
-                <input type="text" className="input-field" placeholder="Ví dụ: Giải Nhất, Siêu cúp" required value={newPrize.title} onChange={(e) => setNewPrize({ ...newPrize, title: e.target.value })} />
-              </div>
-              <div className="form-group">
-                <label>Số tiền thưởng (VNĐ)</label>
-                <input type="number" className="input-field" placeholder="Ví dụ: 20000000" min="0" required value={newPrize.prize_value} onChange={(e) => setNewPrize({ ...newPrize, prize_value: e.target.value })} />
-              </div>
-              <div className="form-group">
-                <label>Mô tả vật phẩm kèm theo</label>
-                <textarea className="input-field" placeholder="Cúp lưu niệm, chứng nhận..." value={newPrize.description} onChange={(e) => setNewPrize({ ...newPrize, description: e.target.value })} />
-              </div>
-              <button type="submit" className="btn-primary">💾 Lưu cấu hình giải</button>
-            </form>
-
-            <div style={{ flex: 1.5 }} className="glass">
-              <h3 style={{ padding: "12px" }}>Danh sách giải thưởng & Kết quả trao giải tự động</h3>
-              <div style={styles.tableWrapper}>
-                <table style={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Thứ hạng</th>
-                      <th>Tên giải</th>
-                      <th>Tiền thưởng</th>
-                      <th>Bên đoạt giải (Khi giải kết thúc)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {prizes.length === 0 ? (
-                      <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Chưa có cấu hình giải thưởng cho giải đấu này.</td></tr>
-                    ) : (
-                      prizes.map(p => (
-                        <tr key={p.id}>
-                          <td><span className="badge badge-info">Hạng {p.position}</span></td>
-                          <td><b>{p.title}</b></td>
-                          <td>{p.prize_value ? Math.abs(Number(p.prize_value)).toLocaleString("vi-VN") : 0} VNĐ</td>
-                          <td>
-                            {p.awarded_to_horse ? (
-                              <div style={{ fontSize: "12px", color: "#10b981" }}>
-                                🐴 <b>{p.awarded_to_horse}</b> (Jockey: {p.awarded_to_jockey}) <br/>
-                                <small style={{ color: "#64748b" }}>Tích lũy: +{p.awarded_total_points}đ</small>
-                              </div>
-                            ) : <span style={{ color: "#64748b", fontSize: "12px" }}>Hệ thống tự trao khi đóng giải</span>}
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    )}
+      )}    
       {/* TAB: Xét duyệt Đăng ký (Admin) */}
       {activeTab === "registrations" && (
         <div style={styles.tabContent}>
@@ -918,21 +830,15 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
           </tr>
         </thead>
         <tbody>
-          {users.length === 0 ? (
-            <tr>
-              <td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>
-                Chưa có dữ liệu thành viên
-              </td>
-            </tr>
+          {(!users || !Array.isArray(users) || users.length === 0) ? (
+            <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dữ liệu thành viên</td></tr>
           ) : (
             users.map((u) => (
-              <tr key={u.id}>
-                <td>{u.id}</td>
+              <tr key={u.id}>        
+                <td>{u.id}</td> 
                 <td style={{ fontWeight: "700" }}>{u.username}</td>
                 <td>{u.email}</td>
-                <td>
-                  <span className="badge badge-info">{u.role_name}</span>
-                </td>
+                <td><span className="badge badge-info">{u.role_name}</span></td>
                 <td>
                   {u.is_active ? (
                     <span className="badge badge-approved">Đang hoạt động</span>
@@ -947,16 +853,16 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                       padding: "6px 12px",
                       fontSize: "12px",
                       color: u.is_active ? "var(--danger)" : "#fff",
-                    }}
-                    onClick={() => handleToggleUserStatus(u.id, u.is_active)}
-                  >
+                     }}
+                      onClick={() => handleToggleUserStatus(u.id, u.is_active)}
+                    >
                     {u.is_active ? " Khóa tài khoản" : " Mở khóa"}
                   </button>
                 </td>
               </tr>
             ))
           )}
-        </tbody>
+        </tbody>            
       </table>      
     </div> 
     <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "12px" }}>
