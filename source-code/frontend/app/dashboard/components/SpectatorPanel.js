@@ -199,7 +199,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                   marginBottom: "12px",
                   fontSize: "13px"
                 }}>
-                  ⚠️ Prediction is closed because the race has already started.
+                  ⚠️ Trận đấu đã quá giờ, không thể dự đoán.
                 </div>
               )}
               <div className="form-group">
