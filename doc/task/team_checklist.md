@@ -122,7 +122,7 @@ Nhánh chính để merge: `dev-GiaHuy`
 - [x] **Giao diện Analytics:** Tab Tổng quan hệ thống hiển thị thống kê từ API `/admin/stats`.
 - [ ] **Tìm kiếm & Phân trang:** Bổ sung thanh tìm kiếm và phân trang ở danh sách User.
 
-### 🏇 Phân hệ JOCKEY - Thái Châu (Chưa tích hợp)
-- [ ] **Bộ lọc Leaderboard:** Tích hợp bộ lọc giải đấu ở bảng xếp hạng chung.
-- [ ] **Giải thưởng Jockey:** Bổ sung tab xem giải thưởng đã đạt được trong tab Hồ sơ cá nhân.
+### 🏇 Phân hệ JOCKEY - Thái Châu (Đã tích hợp)
+- [x] **Bộ lọc Leaderboard:** Tích hợp bộ lọc giải đấu ở bảng xếp hạng chung.
+- [x] **Giải thưởng Jockey:** Bổ sung tab xem giải thưởng đã đạt được trong tab Hồ sơ cá nhân.
 
