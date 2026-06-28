@@ -110,16 +110,16 @@ Nhánh chính để merge: `dev-GiaHuy`
 - [x] **Lịch thi đấu của Ngựa:** Tab hiển thị các trận sắp diễn ra của ngựa mình (đã sửa lệch múi giờ so sánh sang naive Vietnam time).
 - [x] **Lịch sử thi đấu:** Tab hiển thị kết quả xếp hạng và lịch sử vi phạm/phạt của ngựa mình.
 
-### 👨‍💻 Phân hệ ADMIN (Backend) - Gia Huy (Chưa tích hợp)
-- [ ] **API CRUD Prize:** Quản lý giải thưởng giải đấu tại `/tournaments/{id}/prizes`.
-- [ ] **API Tournament Status:** Chuyển trạng thái Tournament (`PUT /tournaments/{id}/status`).
-- [ ] **API Tự động trao giải:** Xây dựng logic tự động trao giải (`Awards`) khi Tournament đổi sang `COMPLETED`.
-- [ ] **API Analytics & Stats:** API thống kê `/admin/stats` và `/spectators/leaderboard`.
+### 👨‍💻 Phân hệ ADMIN (Backend) - Gia Huy (Đã tích hợp)
+- [x] **API CRUD Prize:** Quản lý giải thưởng giải đấu tại `/tournaments/{id}/prizes`.
+- [x] **API Tournament Status:** Chuyển trạng thái Tournament (`PUT /tournaments/{id}/status`).
+- [x] **API Tự động trao giải:** Xây dựng logic tự động trao giải (`Awards`) khi Tournament đổi sang `COMPLETED`.
+- [x] **API Analytics & Stats:** API thống kê `/admin/stats` và `/spectators/leaderboard`.
 
-### 👩‍💻 Phân hệ ADMIN (Frontend) - Huệ (Chưa tích hợp)
-- [ ] **Giao diện Cấu hình Giải thưởng:** UI nhập giải thưởng cho Tournament.
-- [ ] **Giao diện Trạng thái Giải đấu:** Nút thay đổi trạng thái giải đấu trong tab Quản lý.
-- [ ] **Giao diện Analytics:** Tab vẽ biểu đồ Analytics và thống kê từ API stats.
+### 👩‍💻 Phân hệ ADMIN (Frontend) - Huệ (Đã tích hợp)
+- [x] **Giao diện Cấu hình Giải thưởng:** UI nhập giải thưởng cho Tournament (sử dụng PrizesPanel của Gia Huy).
+- [x] **Giao diện Trạng thái Giải đấu:** Nút thay đổi trạng thái giải đấu trong tab Quản lý.
+- [x] **Giao diện Analytics:** Tab Tổng quan hệ thống hiển thị thống kê từ API `/admin/stats`.
 - [ ] **Tìm kiếm & Phân trang:** Bổ sung thanh tìm kiếm và phân trang ở danh sách User.
 
 ### 🏇 Phân hệ JOCKEY - Thái Châu (Chưa tích hợp)
