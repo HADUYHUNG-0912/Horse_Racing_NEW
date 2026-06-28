@@ -111,8 +111,14 @@ export default function Dashboard() {
           {/* Admin Tabs */}
           {user.role_name === "ADMIN" && (
             <>
+              <button style={activeTab === "overview" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("overview")}>
+                📊 Tổng quan hệ thống
+              </button>
               <button style={activeTab === "tournaments" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("tournaments")}>
                 🏆 Quản lý Giải đấu
+              </button>
+              <button style={activeTab === "prizes" ? styles.activeTabBtn : styles.tabBtn } onClick={() => setActiveTab("prizes")}>
+                🥇 Cấu hình Giải thưởng
               </button>
               <button style={activeTab === "registrations" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("registrations")}>
                 📋 Xét duyệt Đăng ký
@@ -121,14 +127,14 @@ export default function Dashboard() {
                 🏁 Lập lịch Trận đua
               </button>
               <button style={activeTab === "users" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("users")}>
-                  Quản lý Người dùng
+                  👥 Quản lý Người dùng
               </button>
               <button style={activeTab === "prizes" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("prizes")}>
                 🏅 Quản lý Giải thưởng
               </button>
               <button style={activeTab === "awards" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("awards")}>
                 🏆 Xem Awards
-              </button>              
+              </button>
             </>
           )}
 
