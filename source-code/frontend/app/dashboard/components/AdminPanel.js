@@ -12,6 +12,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
     const [jockeys, setJockeys] = useState([]);
     const [loading, setLoading] = useState(true);
     const [users, setUsers] = useState([]);
+    const [stats, setStats] = useState(null);
 
     // Form states
     const [newTournament, setNewTournament] = useState({
@@ -277,6 +278,127 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
 
     return (
         <>
+            {/* TAB: Tổng quan hệ thống */}
+            {activeTab === 'overview' && (
+                <div style={styles.tabContent}>
+                    <h2>📊 Tổng quan hệ thống</h2>
+                    {!stats ? (
+                        <div style={{ textAlign: 'center', padding: '40px' }}>
+                            <button className="btn-primary" onClick={async () => {
+                                try {
+                                    const data = await api.get('/admin/stats');
+                                    setStats(data);
+                                } catch (err) {
+                                    showMsg('Không thể tải thống kê: ' + err.message, 'error');
+                                }
+                            }}>📊 Tải thống kê</button>
+                        </div>
+                    ) : (
+                        <div>
+                            {/* Summary Cards */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                                {[
+                                    { label: '👥 Người dùng', value: stats.summary?.total_users },
+                                    { label: '🏆 Giải đấu', value: stats.summary?.total_tournaments },
+                                    { label: '🏁 Trận đua', value: stats.summary?.total_races },
+                                    { label: '🐎 Ngựa', value: stats.summary?.total_horses },
+                                    { label: '🏇 Nài ngựa', value: stats.summary?.total_jockeys },
+                                    { label: '📋 Đăng ký', value: stats.summary?.total_registrations },
+                                    { label: '🏅 Giải thưởng', value: stats.summary?.total_prizes },
+                                    { label: '🎖️ Đã trao', value: stats.summary?.total_awards },
+                                ].map((item, idx) => (
+                                    <div key={idx} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '20px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#67e8f9' }}>{item.value ?? 0}</div>
+                                        <div style={{ fontSize: '14px', color: '#94a3b8', marginTop: '4px' }}>{item.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Users by Role */}
+                            {stats.users_by_role && (
+                                <div style={{ marginBottom: '24px' }}>
+                                    <h3>👥 Phân bố người dùng theo vai trò</h3>
+                                    <table style={styles.table}>
+                                        <thead><tr><th style={styles.th}>Vai trò</th><th style={styles.th}>Số lượng</th></tr></thead>
+                                        <tbody>
+                                            {Object.entries(stats.users_by_role).map(([role, count]) => (
+                                                <tr key={role}><td style={styles.td}>{role}</td><td style={styles.td}>{count}</td></tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {/* Tournament by Status */}
+                            {stats.tournaments_by_status && (
+                                <div style={{ marginBottom: '24px' }}>
+                                    <h3>🏆 Giải đấu theo trạng thái</h3>
+                                    <table style={styles.table}>
+                                        <thead><tr><th style={styles.th}>Trạng thái</th><th style={styles.th}>Số lượng</th></tr></thead>
+                                        <tbody>
+                                            {Object.entries(stats.tournaments_by_status).map(([st, count]) => (
+                                                <tr key={st}><td style={styles.td}>{st}</td><td style={styles.td}>{count}</td></tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {/* Predictions */}
+                            {stats.predictions && (
+                                <div style={{ marginBottom: '24px' }}>
+                                    <h3>🔮 Thống kê dự đoán</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
+                                        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.predictions.total}</div>
+                                            <div style={{ fontSize: '13px', color: '#94a3b8' }}>Tổng dự đoán</div>
+                                        </div>
+                                        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4ade80' }}>{stats.predictions.correct}</div>
+                                            <div style={{ fontSize: '13px', color: '#94a3b8' }}>Dự đoán đúng</div>
+                                        </div>
+                                        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fbbf24' }}>{stats.predictions.global_accuracy_rate}%</div>
+                                            <div style={{ fontSize: '13px', color: '#94a3b8' }}>Tỷ lệ chính xác</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Top 5 Jockeys */}
+                            {stats.top_jockeys && stats.top_jockeys.length > 0 && (
+                                <div style={{ marginBottom: '24px' }}>
+                                    <h3>🏇 Top 5 Nài ngựa</h3>
+                                    <table style={styles.table}>
+                                        <thead><tr><th style={styles.th}>Hạng</th><th style={styles.th}>Tên</th><th style={styles.th}>Điểm</th></tr></thead>
+                                        <tbody>
+                                            {stats.top_jockeys.map(j => (
+                                                <tr key={j.jockey_id}><td style={styles.td}>{j.rank}</td><td style={styles.td}>{j.full_name}</td><td style={styles.td}>{j.total_points}</td></tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {/* Top 5 Horses */}
+                            {stats.top_horses && stats.top_horses.length > 0 && (
+                                <div style={{ marginBottom: '24px' }}>
+                                    <h3>🐎 Top 5 Ngựa đua</h3>
+                                    <table style={styles.table}>
+                                        <thead><tr><th style={styles.th}>Hạng</th><th style={styles.th}>Tên</th><th style={styles.th}>Giống</th><th style={styles.th}>Điểm</th></tr></thead>
+                                        <tbody>
+                                            {stats.top_horses.map(h => (
+                                                <tr key={h.horse_id}><td style={styles.td}>{h.rank}</td><td style={styles.td}>{h.name}</td><td style={styles.td}>{h.breed}</td><td style={styles.td}>{h.total_points}</td></tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* TAB: Quản lý Giải đấu (Admin) */}
             {activeTab === 'tournaments' && (
                 <div style={styles.tabContent}>
