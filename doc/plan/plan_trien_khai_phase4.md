@@ -82,3 +82,22 @@ gantt
 *   **Sáng (đến 12h00):** Hoàn thành việc kết nối dữ liệu Frontend - Backend cho từng Role và chạy kiểm thử nội bộ trên máy local.
 *   **Chiều (13h00 - 15h00):** Các thành viên tạo Pull Request để Team Leader (Duy Hưng) tiến hành review và merge các nhánh tính năng của từng Role vào nhánh chung `dev-GiaHuy`.
 *   **Chiều (từ 15h00):** Chạy lại script `db_setup.py` để đồng bộ lại dữ liệu sạch. Cả nhóm thực hiện nghiệm thu UAT theo kịch bản liên hoàn trên các vai trò hệ thống đã thiết lập.
+
+---
+
+## 📝 NHẬT KÝ THỰC HIỆN DỰ ÁN (EXECUTION LOG) — NGÀY 28/06/2026
+
+*   **Tích hợp & Đóng gói Phân hệ Admin & Jockey (Hoàn tất 100% việc gộp nhánh):**
+    *   **Gia Huy (PR #35):** Merge nhánh Backend Admin thành công. Đã cấu hình DB kết nối cục bộ và khôi phục các properties/models.
+    *   **Huệ (PR #34):** Merge nhánh Frontend Admin thành công. Đã tích hợp PrizesPanel và giải quyết xung đột UI tab giải thưởng.
+    *   **Thái Châu (PR #32):** Merge nhánh Jockey thành công. Đã tích hợp bộ lọc giải đấu ở bảng xếp hạng và tab giải thưởng của Jockey.
+*   **Sửa lỗi & Tối ưu hóa tính năng tích hợp:**
+    *   Sửa lỗi logic lọc bảng xếp hạng (Leaderboard) chuyển từ Client-side sang Backend query động kèm `tournament_id` để hiển thị dữ liệu chính xác.
+    *   Mở lại API `GET /horses/` cho toàn bộ tài khoản để sửa lỗi đếm ngựa hiển thị `0` ở Trang chủ (Landing Page).
+    *   Khôi phục kiểm tra trùng lịch 2 tiếng ở API `add_participant` trong `races.py`.
+    *   Thêm tab "📊 Tổng quan hệ thống" (Overview) hiển thị dữ liệu stats của Admin.
+    *   Sửa lỗi crash Next.js do thiếu import `PrizesPanel` trong `AdminPanel.js`.
+*   **Nghiệm thu UAT:**
+    *   Tạo file hướng dẫn kiểm thử tích hợp liên hoàn [test_guide_phase4.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/test/test_guide_phase4.md) hướng dẫn quy trình chạy UAT liên vai trò (Admin -> Owner -> Jockey -> Referee -> Spectator -> Admin).
+    *   Cập nhật và kiểm kê checklist hoàn thành của toàn đội ngũ trong [team_checklist.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/task/team_checklist.md).
+

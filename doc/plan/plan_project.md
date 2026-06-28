@@ -99,3 +99,16 @@
   - **Tối ưu hóa kết nối cục bộ (Fix Fail to Fetch):** Điều chỉnh đường dẫn API Client trong [api.js](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/frontend/app/api.js) trỏ trực tiếp về IP `127.0.0.1:8000` thay vì sử dụng hostname `localhost`, giải quyết dứt điểm lỗi kết nối ngắt quãng trên hệ điều hành Windows.
   - Chạy kiểm thử Next.js build biên dịch thành công 100%, re-seed database và chạy thử nghiệm thực tế hoạt động hoàn hảo trên trình duyệt.
   - Đồng bộ và đẩy toàn bộ mã nguồn sạch lên nhánh remote `origin/dev-GiaHuy`.
+- **Tiến độ đã hoàn thành (28/06/2026 - Tích hợp & Kiểm thử toàn bộ Phase 4):**
+  - **Tích hợp nhánh của Gia Huy (PR #35) & Huệ (PR #34) & Thái Châu (PR #32):**
+    - Merge thành công toàn bộ các nhánh tính năng của phân hệ Admin Backend, Admin Frontend và Jockey vào nhánh chính `dev-GiaHuy`.
+    - Giải quyết dứt điểm các xung đột gộp mã nguồn trong `spectators.py`, `AdminPanel.js`, và `page.js`.
+  - **Sửa lỗi logic & Ràng buộc nghiệp vụ tích hợp:**
+    - **Backend (Races & Horses):** Khôi phục kiểm tra trùng lịch 2 tiếng cho ngựa/jockey khi thêm participant (`races.py`); mở rộng quyền truy cập API `GET /horses/` cho mọi tài khoản đã đăng nhập thay vì khóa cứng role `OWNER`, giúp thông số đếm ngựa trên trang chủ hoạt động chính xác.
+    - **Frontend (Admin Panel):** Tích hợp thành công tab "📊 Tổng quan hệ thống" hiển thị dữ liệu Analytics động từ API `/admin/stats`; sửa lỗi trùng lặp tab Giải thưởng và sửa lỗi thiếu import `PrizesPanel` gây crash Next.js.
+    - **Frontend (Leaderboard & Jockey):** Sửa lỗi bộ lọc Giải đấu trên Bảng xếp hạng và tab Thành tích của Jockey. Thay vì tự lọc Client-side (gây trống dữ liệu do global schema không chứa `tournament_id`), hệ thống đã được cập nhật gọi API động `/results/rankings?tournament_id={id}` từ Backend và bổ sung trạng thái loading trực quan.
+  - **Dọn dẹp và đóng gói:**
+    - Xóa toàn bộ các nhánh tính năng local và remote của Gia Huy, Huệ và Thái Châu để giữ cây thư mục Git sạch sẽ.
+    - Tạo tài liệu hướng dẫn kiểm thử tích hợp liên hoàn UAT Phase 4 tại [test_guide_phase4.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/test/test_guide_phase4.md) dựa theo phân công `team_task_assignment_phase4.md`.
+    - Cập nhật checklist dự án trong [team_checklist.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/task/team_checklist.md).
+
