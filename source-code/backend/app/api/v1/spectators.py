@@ -1,5 +1,6 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
@@ -89,6 +90,70 @@ def read_predictions(
                 db.commit() # Save evaluated status
                 
     return preds
+
+@router.get("/leaderboard")
+def get_leaderboard(
+    db: Session = Depends(get_db),
+    page: int = Query(default=1, ge=1, description="Trang hiện tại"),
+    limit: int = Query(default=10, ge=1, le=50, description="Số bản ghi mỗi trang (tối đa 50)"),
+):
+    """
+    Leaderboard spectators – xếp hạng theo reward_points.
+    Công khai, không cần đăng nhập.
+    Trả về rank, username, full_name, reward_points, total_predictions, accuracy_rate.
+    """
+    total_spectators = db.query(func.count(SpectatorProfile.id)).scalar()
+
+    offset = (page - 1) * limit
+    spectators = (
+        db.query(SpectatorProfile)
+        .order_by(SpectatorProfile.reward_points.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    result = []
+    for idx, s in enumerate(spectators):
+        global_rank = offset + idx + 1
+
+        # Thống kê predictions của spectator
+        total_preds = (
+            db.query(func.count(Prediction.id))
+            .filter(Prediction.user_id == s.user_id)
+            .scalar()
+        )
+        correct_preds = (
+            db.query(func.count(Prediction.id))
+            .filter(Prediction.user_id == s.user_id, Prediction.status == "Won")
+            .scalar()
+        )
+        evaluated = (
+            db.query(func.count(Prediction.id))
+            .filter(Prediction.user_id == s.user_id, Prediction.status.in_(["Won", "Lost"]))
+            .scalar()
+        )
+        accuracy = round(correct_preds / evaluated * 100, 1) if evaluated > 0 else 0.0
+
+        result.append({
+            "rank": global_rank,
+            "spectator_id": s.id,
+            "username": s.user.username,
+            "full_name": s.user.full_name,
+            "reward_points": s.reward_points,
+            "total_predictions": total_preds,
+            "correct_predictions": correct_preds,
+            "accuracy_rate": accuracy,
+            "favorite_horse_breed": s.favorite_horse_breed,
+        })
+
+    return {
+        "page": page,
+        "limit": limit,
+        "total": total_spectators,
+        "data": result,
+    }
+
 
 @router.get("/rankings", response_model=List[SpectatorProfileDetailOut])
 def get_top_spectators(tournament_id: Optional[int] = None, db: Session = Depends(get_db)):

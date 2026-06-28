@@ -47,18 +47,6 @@ class JockeyProfile(Base):
     registrations = relationship("Registration", back_populates="jockey")
     invitations = relationship("JockeyInvitation", back_populates="jockey")
 
-    @property
-    def username(self):
-        return self.user.username if self.user else None
-
-    @property
-    def full_name(self):
-        return self.user.full_name if self.user else None
-
-    @property
-    def email(self):
-        return self.user.email if self.user else None
-
 class HorseOwnerProfile(Base):
     __tablename__ = 'HorseOwnerProfiles'
     
@@ -124,6 +112,7 @@ class Tournament(Base):
     rounds = relationship("Round", back_populates="tournament", cascade="all, delete-orphan")
     registrations = relationship("Registration", back_populates="tournament", cascade="all, delete-orphan")
     invitations = relationship("JockeyInvitation", back_populates="tournament", cascade="all, delete-orphan")
+    prizes = relationship("Prize", back_populates="tournament", cascade="all, delete-orphan")
 
 class Round(Base):
     __tablename__ = 'Rounds'
@@ -187,27 +176,19 @@ class JockeyInvitation(Base):
 
     @property
     def owner_name(self):
-        if self.owner and self.owner.user:
-            return self.owner.user.full_name
-        return f"Chủ #{self.owner_id}"
+        return self.owner.user.full_name if self.owner and self.owner.user else None
 
     @property
     def horse_name(self):
-        if self.horse:
-            return self.horse.name
-        return f"Ngựa #{self.horse_id}"
+        return self.horse.name if self.horse else None
 
     @property
     def tournament_name(self):
-        if self.tournament:
-            return self.tournament.name
-        return f"Giải #{self.tournament_id}"
+        return self.tournament.name if self.tournament else None
 
     @property
     def jockey_name(self):
-        if self.jockey and self.jockey.user:
-            return self.jockey.user.full_name
-        return f"Jockey #{self.jockey_id}"
+        return self.jockey.user.full_name if self.jockey and self.jockey.user else None
 
 class RaceParticipant(Base):
     __tablename__ = 'RaceParticipants'
@@ -283,3 +264,37 @@ class RaceInspection(Base):
     created_at = Column(DateTime, default=get_vietnam_now_naive)
     
     race = relationship("Race", back_populates="inspection")
+
+class Prize(Base):
+    """Giải thưởng được thiết kế trước cho một tournament."""
+    __tablename__ = 'Prizes'
+
+    id = Column(Integer, primary_key=True, index=True)
+    tournament_id = Column(Integer, ForeignKey('Tournaments.id', ondelete="CASCADE"), nullable=False)
+    position = Column(Integer, nullable=False)   # Hạng được trao giải (1=nhất, 2=nhì ...)
+    title = Column(Unicode(100), nullable=False)  # "Giải Nhất", "Giải Nhì", ...
+    prize_value = Column(Numeric(15, 2), default=0.00)
+    description = Column(UnicodeText, nullable=True)
+    created_at = Column(DateTime, default=get_vietnam_now_naive)
+
+    tournament = relationship("Tournament", back_populates="prizes")
+    award = relationship("Award", uselist=False, back_populates="prize", cascade="all, delete-orphan")
+
+class Award(Base):
+    """Bản ghi trao giải – tự động sinh ra khi Tournament COMPLETED."""
+    __tablename__ = 'Awards'
+
+    id = Column(Integer, primary_key=True, index=True)
+    prize_id = Column(Integer, ForeignKey('Prizes.id', ondelete="CASCADE"), nullable=False)
+    registration_id = Column(Integer, ForeignKey('Registrations.id'), nullable=False)
+    awarded_at = Column(DateTime, default=get_vietnam_now_naive)
+    total_points = Column(Integer, nullable=False, default=0)
+    notes = Column(UnicodeText, nullable=True)
+
+    prize = relationship("Prize", back_populates="award")
+    registration = relationship("Registration")
+
+    @property
+    def tournament(self):
+        """Convenience property – trả về tournament thông qua prize."""
+        return self.prize.tournament
