@@ -1,21 +1,22 @@
-# 🧪 HƯỚNG DẪN KIỂM THỬ TÍCH HỢP (INTEGRATION TEST GUIDE) - PHASE 4
+# 📋 HƯỚNG DẪN KIỂM THỬ TÍCH HỢP (INTEGRATION TEST GUIDE) - PHASE 4
 
-Tài liệu này hướng dẫn các kịch bản kiểm thử tích hợp (end-to-end) cho các tính năng mới trong **Phase 4** bao gồm phân hệ của **Gia Huy, Huệ, Thái Châu, Thuỳ Anh, Thu Mây và Bùi Huy** trên nhánh `dev-GiaHuy`.
+Tài liệu này được xây dựng dựa trên kịch bản chạy thử nghiệm UAT liên hoàn quy định tại mục 3 của tài liệu **[team_task_assignment_phase4.md](file:///c:/Users/USER/.gemini/antigravity-ide/brain/8d692f35-4bb4-49cf-81fb-f0251acc762c/team_task_assignment_phase4.md)**. Hướng dẫn chi tiết từng bước kiểm thử luồng tích hợp nghiệp vụ giữa các vai trò trên nhánh `dev-GiaHuy`.
 
 ---
 
 ## 🛠️ Chuẩn bị môi trường & Dữ liệu mẫu
 
 ### 1. Cập nhật Database cấu trúc mới nhất
-Hãy chắc chắn rằng Database của bạn đã được cập nhật đầy đủ cấu trúc bảng mới (bao gồm các bảng `Prizes`, `Awards`, và các cột bổ sung ở Phase 4):
+Để đảm bảo toàn bộ cơ sở dữ liệu (Prizes, Awards, etc.) được thiết lập sạch sẽ trước khi thực hiện UAT:
 ```powershell
 cd source-code/backend
-# Kích hoạt venv và chạy script thiết lập cơ sở dữ liệu
+# Kích hoạt môi trường ảo Python
 .\venv312\Scripts\activate
+# Chạy script cài đặt DB và nạp seed data mặc định
 python db_setup.py
 ```
 
-### 2. Tài khoản thử nghiệm mẫu (Seeding Data)
+### 2. Tài khoản thử nghiệm liên hoàn (Credentials)
 *   **Admin:** `admin` | `password123`
 *   **Chủ ngựa (Owner):** `owner1` | `owner123`
 *   **Nài ngựa (Jockey):** `jockey1` | `jockey123`
@@ -24,110 +25,94 @@ python db_setup.py
 
 ---
 
-## 📋 Các kịch bản thử nghiệm tích hợp (E2E Test Cases)
+## 📋 Quy trình kiểm thử UAT liên hoàn (E2E UAT Workflow)
 
-### Kịch bản 1: Quản trị viên quản lý Giải đấu, Vòng đấu, Trận đấu & Cơ cấu giải thưởng
-> **Mục tiêu:** Kiểm tra tab Tổng quan Analytics, cấu hình Giải thưởng cho giải đấu và đổi trạng thái để kích hoạt tự động trao giải.
-
-1.  **Đăng nhập** hệ thống với tài khoản Admin (`admin` / `password123`).
-2.  **Xem tab "📊 Tổng quan hệ thống":**
-    *   Nhấn nút **"📊 Tải thống kê"**.
-    *   **Kết quả mong đợi:** Hiển thị chi tiết số lượng người dùng, giải đấu, trận đấu, nài ngựa, thống kê độ chính xác dự đoán của khán giả, và Top 5 nài ngựa/ngựa xuất sắc nhất.
-3.  **Xem tab "🏆 Quản lý Giải đấu":**
-    *   Tạo một giải đấu mới (ví dụ: *"Giải đua Thử Nghiệm Phase 4"*).
-4.  **Cấu hình Giải thưởng:**
-    *   Chuyển sang tab **"🏅 Quản lý Giải thưởng"** (hoặc **"🥇 Cấu hình Giải thưởng"**).
-    *   Chọn giải đấu *"Giải đua Thử Nghiệm Phase 4"*.
-    *   Nhập thông tin tạo Giải thưởng:
-        *   **Hạng:** `1` | **Tên giải:** `Cúp Vô Địch Phase 4` | **Trị giá:** `50000000` | **Mô tả:** `Giải nhất`
-    *   Nhấn **"Tạo giải thưởng"**.
-    *   **Kết quả mong đợi:** Giải thưởng mới hiển thị trong bảng danh sách ở dưới. Có nút **Xóa** hoạt động tốt gọi đến API `DELETE`.
-5.  **Quy trình kết thúc giải đấu & Tự động trao giải:**
-    *   Quay lại tab **"🏆 Quản lý Giải đấu"**, tìm giải đấu vừa tạo và cập nhật trạng thái giải đấu từ `UPCOMING` sang `ACTIVE`.
-    *   Sau khi các trận đua của giải đấu được nhập kết quả và xác nhận hoàn thành, chuyển trạng thái giải đấu sang **`COMPLETED`**.
-    *   **Kết quả mong đợi:** 
-        *   Hệ thống tự động chạy logic xếp hạng và trao giải `Award` dựa trên tổng điểm của các ngựa tham gia.
-        *   Chuyển sang tab **"🏆 Xem Awards"**: Bản ghi trao giải cho vị trí số 1 xuất hiện tự động kèm tên Ngựa và Jockey chiến thắng.
+### Bước 1: Khởi tạo Giải đấu & Cơ cấu giải thưởng (Vai trò: Admin)
+1.  **Đăng nhập** tài khoản Admin (`admin` / `password123`).
+2.  Chuyển sang tab **"🏆 Quản lý Giải đấu"**, nhấn tạo giải đấu mới:
+    *   **Tên giải:** `Giải Đua Siêu Cúp Phase 4`
+    *   **Mô tả:** `Giải đấu kiểm thử tích hợp liên hoàn Phase 4`
+    *   **Thời gian:** Chọn ngày bắt đầu và kết thúc phù hợp (ví dụ: ngày hôm nay).
+    *   **Địa điểm:** `Đường đua Phú Thọ`
+3.  Chuyển sang tab **"🏅 Quản lý Giải thưởng"**:
+    *   Chọn giải đấu vừa tạo: `Giải Đua Siêu Cúp Phase 4`.
+    *   Thêm cơ cấu giải thưởng:
+        *   **Hạng 1:** `Cúp Vàng Phú Thọ` | **Trị giá:** `10000000` | **Mô tả:** `Dành cho ngựa vô địch`
+        *   **Hạng 2:** `Cúp Bạc Phú Thọ` | **Trị giá:** `5000000` | **Mô tả:** `Dành cho ngựa về nhì`
+4.  Quay lại tab **"🏆 Quản lý Giải đấu"**, tìm giải đấu vừa tạo và click vào nút **"Kích hoạt"** (hoặc nút trạng thái) để chuyển trạng thái sang **`ACTIVE`**.
+5.  **Kết quả mong đợi:** 
+    *   Giải đấu và các giải thưởng được tạo thành công trong DB.
+    *   Trạng thái giải đấu hiển thị là `ACTIVE`.
 
 ---
 
-### Kịch bản 2: Quy trình Lời mời và Cập nhật Hồ sơ của Nài Ngựa (Jockey)
-> **Mục tiêu:** Kiểm tra tính năng cập nhật hồ sơ cá nhân lưu trực tiếp vào Database, nhận và đồng ý lời mời thi đấu từ Chủ ngựa.
-
-1.  **Gửi lời mời từ Chủ ngựa:**
-    *   Đăng nhập bằng tài khoản Chủ ngựa (`owner1` / `owner123`).
-    *   Chọn tab **"✉️ Mời Jockey"**, gửi lời mời đến Jockey (`jockey1`) tham gia thi đấu cùng ngựa của mình.
-2.  **Đồng ý lời mời & Cập nhật Hồ sơ với tư cách Jockey:**
-    *   Đăng nhập bằng tài khoản Jockey (`jockey1` / `jockey123`).
-    *   Truy cập tab **"👤 Hồ sơ cá nhân"**:
-        *   Nhập thông tin Chiều cao, Cân nặng, Số năm kinh nghiệm, Bio.
-        *   Nhấn **"Lưu thay đổi hồ sơ"**.
-        *   **Kết quả mong đợi:** Hệ thống báo cập nhật thành công. Tải lại trang thông tin vẫn được giữ nguyên (không bị mất do đã lưu trực tiếp vào SQL Server).
-    *   Chọn tab **"✉️ Lời mời Nhận được"**:
-        *   Xem chi tiết lời mời vừa được gửi từ `owner1`. Nhấn nút **"Đồng ý"**.
-        *   **Kết quả mong đợi:** Lời mời chuyển sang trạng thái `ACCEPTED`.
-    *   Chọn tab **"🏁 Lịch trình Đua"**:
-        *   **Kết quả mong đợi:** Danh sách trận đấu mà bạn (Jockey) được xếp lịch chạy xuất hiện đầy đủ thông tin ngựa đua và thời gian chạy.
+### Bước 2: Cập nhật hồ sơ, Mời Jockey & Đăng ký giải (Vai trò: Chủ ngựa - Owner)
+1.  **Đăng nhập** tài khoản Chủ ngựa (`owner1` / `owner123`).
+2.  Chuyển sang tab **"👤 Hồ sơ cá nhân"**:
+    *   Nhập/Cập nhật thông tin: Thay đổi Họ tên hoặc Số điện thoại.
+    *   Nhấn **"Cập nhật hồ sơ"**.
+    *   **Kết quả mong đợi:** Giao diện báo lưu thành công, tải lại trang dữ liệu mới được hiển thị đúng.
+3.  Chuyển sang tab **"✉️ Mời Jockey"**:
+    *   Gửi lời mời đến Jockey `jockey1` tham gia cùng một ngựa của mình tại giải đấu `Giải Đua Siêu Cúp Phase 4`.
+4.  Chuyển sang tab **"🏆 Đăng ký Giải đấu"**:
+    *   Chọn giải đấu `Giải Đua Siêu Cúp Phase 4`, chọn Ngựa đua và Jockey tương ứng để đăng ký tham gia giải.
+5.  **Kết quả mong đợi:**
+    *   Lời mời ở trạng thái `PENDING` được lưu trong bảng `JockeyInvitations`.
+    *   Bản ghi đăng ký hiển thị trong danh sách ở trạng thái chờ xét duyệt.
 
 ---
 
-### Kịch bản 3: Xem Lịch thi đấu & Lịch sử vi phạm của Chủ ngựa (Horse Owner)
-> **Mục tiêu:** Kiểm tra khả năng cập nhật profile, bộ lọc thời gian trận đấu sắp diễn ra (sửa múi giờ Việt Nam) và xem lịch sử vi phạm.
-
-1.  **Đăng nhập** bằng tài khoản Chủ ngựa (`owner1` / `owner123`).
-2.  **Cập nhật thông tin cá nhân:**
-    *   Vào tab **"👤 Hồ sơ cá nhân"**, thay đổi Họ và tên hoặc Số điện thoại và bấm **"Cập nhật hồ sơ"**.
-    *   **Kết quả mong đợi:** Giao diện lưu thành công, dữ liệu được ghi xuống bảng `Users` và `HorseOwnerProfiles` tương ứng.
-3.  **Xem lịch thi đấu tương lai:**
-    *   Vào tab **"📅 Lịch thi đấu của Ngựa"**.
-    *   **Kết quả mong đợi:** Chỉ hiển thị các trận đấu có lịch khởi tranh **sau thời gian hiện tại của bạn** (sử dụng so sánh múi giờ Việt Nam naive).
-4.  **Xem kết quả & Lịch sử vi phạm:**
-    *   Vào tab **"🏆 Kết quả thi đấu"**.
-    *   **Kết quả mong đợi:** Hiển thị danh sách ngựa đua của bạn kèm thứ hạng kết quả, điểm số, danh sách các vi phạm/mức phạt tiền do Trọng tài ghi nhận.
-
----
-
-### Kịch bản 4: Trọng tài quản lý chi tiết trận đấu & Giới hạn mức phạt
-> **Mục tiêu:** Kiểm tra giao diện xem chi tiết trận đấu (làn chạy, ngựa, jockey) và các ràng buộc khi ghi nhận vi phạm.
-
-1.  **Đăng nhập** bằng tài khoản Trọng tài (`referee1` / `referee123`).
-2.  **Xem chi tiết danh sách trận đấu:**
-    *   Trong bảng danh sách các trận đấu được phân công, nhấn vào dòng trận đấu hoặc nút **"Xem chi tiết"**.
-    *   **Kết quả mong đợi:** Một bảng thông tin chi tiết hiện ra bên dưới hiển thị rõ: Số làn chạy, Tên ngựa đua, Tên Jockey điều khiển, Trạng thái tham gia.
-3.  **Ghi nhận vi phạm & Kiểm tra giới hạn phạt:**
-    *   Tìm trận đấu, nhấn nút **"Nhập vi phạm"**.
-    *   Nhập số tiền phạt là `-50000` (âm) hoặc `20000000` (vượt quá 9.999.999 VNĐ). Nhấn Lưu.
-    *   **Kết quả mong đợi:** Hệ thống báo lỗi và chặn lại (Số tiền phạt không được âm và giới hạn tối đa là 9.999.999 VNĐ).
-    *   Nhập số tiền phạt hợp lệ là `1500000`, mô tả vi phạm, bấm Lưu.
-    *   **Kết quả mong đợi:** Hệ thống báo thành công, vi phạm được ghi nhận.
+### Bước 3: Phản hồi lời mời & Lập lịch trận đua (Vai trò: Jockey & Admin)
+1.  **Đồng ý lời mời thi đấu (Jockey):**
+    *   **Đăng nhập** tài khoản Jockey (`jockey1` / `jockey123`).
+    *   Chuyển sang tab **"👤 Hồ sơ cá nhân"**, nhập các thông số (Chiều cao, Cân nặng, Số năm kinh nghiệm) và nhấn Lưu.
+    *   Chuyển sang tab **"✉️ Lời mời Nhận được"**, tìm lời mời từ `owner1` và nhấn **"Đồng ý"**.
+    *   **Kết quả mong đợi:** Trạng thái lời mời chuyển sang `ACCEPTED`.
+2.  **Duyệt đăng ký & Xếp lịch đua (Admin):**
+    *   **Đăng nhập** tài khoản Admin (`admin` / `password123`).
+    *   Vào tab **"📋 Xét duyệt Đăng ký"**, tìm bản đăng ký của giải đấu `Giải Đua Siêu Cúp Phase 4` và click **"Duyệt"** (Approved).
+    *   Vào tab **"🏁 Lập lịch Trận đua"**:
+        *   Tạo trận đấu mới và xếp nài/ngựa vừa duyệt vào làn chạy.
+        *   **Kiểm thử logic trùng lịch (Conflict Check):** Cố tình xếp nài ngựa hoặc ngựa đó vào một trận đấu khác diễn ra cách trận đấu này dưới 2 tiếng.
+        *   **Kết quả mong đợi:** Hệ thống chặn lại và báo lỗi trùng lịch của ngựa/jockey.
+        *   Tiến hành xếp lịch hợp lệ (trận đấu duy nhất hoặc cách nhau trên 2 tiếng).
 
 ---
 
-### Kịch bản 5: Chặn dự đoán khi quá giờ của Khán giả (Spectator)
-> **Mục tiêu:** Kiểm tra cơ chế tự động khóa nút/form dự đoán khi thời gian hiện tại vượt quá giờ thi đấu của trận đấu.
-
-1.  **Đăng nhập** bằng tài khoản Khán giả (`spectator1` / `spec123`).
-2.  Chuyển sang tab **"Dự đoán Trận đua"**.
-3.  Tìm một trận đấu có thời gian bắt đầu chạy **đã trôi qua** so với thời gian thực tế (ví dụ: trận đấu chạy lúc 8:00 sáng nay).
-4.  **Kết quả mong đợi:** 
-    *   Nút gửi dự đoán của trận đấu đó bị mờ đi (Disabled).
-    *   Hệ thống hiển thị trạng thái: `"Đã quá giờ dự đoán"` hoặc `"Trận đấu đã bắt đầu"`.
-    *   Nếu cố tình gọi API gửi lên, Backend sẽ trả về lỗi `HTTP 400 Bad Request: Prediction time has ended`.
+### Bước 4: Giám sát, ghi nhận vi phạm & nhập kết quả (Vai trò: Trọng tài - Referee)
+1.  **Đăng nhập** tài khoản Trọng tài (`referee1` / `referee123`).
+2.  **Kiểm tra xem chi tiết:**
+    *   Click vào trận đấu được phân công.
+    *   **Kết quả mong đợi:** Hiển thị chi tiết bảng danh sách các làn chạy, tên ngựa, tên nài tương ứng đầy đủ thay vì chỉ hiện con số.
+3.  **Nhập vi phạm & phạt:**
+    *   Click **"Nhập vi phạm"**. Nhập số tiền phạt `-1000` hoặc `20000000` (ngoài khoảng 0 đến 9.999.999).
+    *   **Kết quả mong đợi:** Hệ thống báo lỗi không hợp lệ.
+    *   Nhập số tiền phạt hợp lệ (ví dụ: `1000000` VNĐ) và lưu.
+    *   **Kết quả mong đợi:** Vi phạm được lưu thành công.
+4.  **Nhập kết quả nháp & Xác nhận chính thức:**
+    *   Nhấn **"Nhập kết quả"**, phân hạng cho các làn chạy và lưu nháp (Trận đấu chuyển sang `RESULTS_ENTERED`).
+    *   Nhấn **"Xác nhận kết quả chính thức"** (Trận đấu chuyển sang `COMPLETED`).
+    *   **Kết quả mong đợi:** Bảng điểm Rankings được cập nhật tự động ở Backend.
 
 ---
 
-### Kịch bản 6: Bộ lọc giải đấu động trên Bảng xếp hạng & Tab giải thưởng
-> **Mục tiêu:** Kiểm tra tính năng lọc động gọi từ Backend cho Bảng xếp hạng chung và Tab giải thưởng của Jockey.
+### Bước 5: Chặn dự đoán & Kiểm tra bảng xếp hạng (Vai trò: Khán giả - Spectator)
+1.  **Đăng nhập** tài khoản Khán giả (`spectator1` / `spec123`).
+2.  Chuyển sang tab **"Dự đoán Trận đua"**:
+    *   Tìm trận đấu đã kết thúc hoặc trận đấu có giờ chạy nằm trong quá khứ.
+    *   **Kết quả mong đợi:** Nút dự đoán bị khóa (Disabled) kèm cảnh báo quá giờ. Nếu gửi API thủ công, Backend báo lỗi `HTTP 400`.
+3.  **Kiểm tra bảng xếp hạng Khán giả:**
+    *   Chuyển sang trang **Leaderboard**, click tab **"Khán giả xuất sắc"**.
+    *   **Kết quả mong đợi:** Hiển thị Top 10 khán giả có điểm cao nhất kèm tỷ lệ chính xác (Spectator `spectator1` cập nhật đúng điểm số nếu đoán đúng trận đấu vừa rồi).
 
-1.  **Kiểm tra Bảng xếp hạng chung:**
-    *   Chuyển sang trang **Leaderboard (Bảng xếp hạng)** từ thanh điều hướng chính.
-    *   Mặc định khi chọn **"Tất cả"**: Hiển thị bảng xếp hạng toàn cục.
-    *   Click vào các nút giải đấu cụ thể (ví dụ: *"Giải đua Thử Nghiệm Phase 4"*).
-    *   **Kết quả mong đợi:**
-        *   Component hiển thị chữ `"📋 Đang xem: [Tên giải đấu] — Đang tải dữ liệu..."` trong giây lát.
-        *   Dữ liệu được tải động từ API `/results/rankings?tournament_id={id}` và cập nhật chính xác thứ tự xếp hạng của Ngựa & Jockey trong giải đấu đó.
-2.  **Kiểm tra Tab giải thưởng trong Hồ sơ Jockey:**
-    *   Đăng nhập bằng tài khoản Jockey (`jockey1` / `jockey123`).
-    *   Chuyển sang tab **"🏆 Giải thưởng & Thành tích thi đấu"**.
-    *   Sử dụng dropdown chọn giải đấu cụ thể.
-    *   **Kết quả mong đợi:** Điểm số tích lũy, Hạng cao nhất và danh sách các giải thưởng được cập nhật động và khớp hoàn toàn với kết quả của giải đấu được chọn.
+---
+
+### Bước 6: Dynamic Leaderboard & Tự động trao giải (Vai trò: Admin)
+1.  **Kiểm tra bảng xếp hạng động:**
+    *   Tại trang **Leaderboard**, chọn bộ lọc các giải đấu cụ thể qua các nút bấm giải đấu.
+    *   **Kết quả mong đợi:** Dữ liệu xếp hạng thay đổi động theo từng giải đấu và hiển thị chính xác (thay vì trống trơn như lỗi cũ).
+2.  **Kết thúc giải đấu & Kiểm tra trao giải tự động:**
+    *   **Đăng nhập** tài khoản Admin (`admin` / `password123`).
+    *   Vào tab **"🏆 Quản lý Giải đấu"**, chuyển trạng thái giải đấu `Giải Đua Siêu Cúp Phase 4` sang **`COMPLETED`**.
+    *   Vào tab **"🏆 Xem Awards"**:
+        *   **Kết quả mong đợi:** Bản ghi tự động trao giải tương ứng với Hạng 1 (`Cúp Vàng Phú Thọ`) và Hạng 2 (`Cúp Bạc Phú Thọ`) được ghi nhận khớp chính xác với ngựa đua/jockey đạt tổng điểm cao nhất trong giải đấu.
