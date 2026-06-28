@@ -73,26 +73,38 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
   };
 
-  const loadRankings = async () => {
+  const loadTournaments = async () => {
     try {
-      const [rankData, tourData] = await Promise.all([
-        api.get("/results/rankings"),
-        api.get("/tournaments"),
-      ]);
-      setRankings(Array.isArray(rankData) ? rankData : []);
+      const tourData = await api.get("/tournaments");
       setTournaments(Array.isArray(tourData) ? tourData : []);
     } catch (err) {
-      // rankings không critical
-    } finally {
-      setRankingsLoading(false);
+      // ignore
     }
   };
 
   useEffect(() => {
     loadData();
     loadProfile();
-    loadRankings();
+    loadTournaments();
   }, []);
+
+  useEffect(() => {
+    const loadRankingsFiltered = async () => {
+      try {
+        setRankingsLoading(true);
+        const url = selectedTournament === "all"
+          ? "/results/rankings"
+          : `/results/rankings?tournament_id=${selectedTournament}`;
+        const rankData = await api.get(url);
+        setRankings(Array.isArray(rankData) ? rankData : []);
+      } catch (err) {
+        // ignore
+      } finally {
+        setRankingsLoading(false);
+      }
+    };
+    loadRankingsFiltered();
+  }, [selectedTournament]);
 
   const respondInvitation = async (id, status) => {
     const actionName = status === 'ACCEPTED' ? 'CHẤP NHẬN' : 'TỪ CHỐI';
@@ -432,12 +444,13 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
           {rankingsLoading ? (
             <div style={styles.loading}>Đang tải dữ liệu giải thưởng...</div>
           ) : (() => {
-            // Lọc chỉ lấy ranking của Jockey hiện tại
-            const myRankings = rankings.filter(r =>
-              r.entity_type === "JOCKEY" &&
-              r.entity_name === user?.full_name &&
-              (selectedTournament === "all" || String(r.tournament_id) === selectedTournament)
-            );
+            // Lọc chỉ lấy ranking của Jockey hiện tại và map tournament_id động nếu có bộ lọc
+            const myRankings = rankings
+              .filter(r => r.entity_type === "JOCKEY" && r.entity_name === user?.full_name)
+              .map(r => ({
+                ...r,
+                tournament_id: selectedTournament !== "all" ? Number(selectedTournament) : r.tournament_id
+              }));
 
             // Thống kê tổng hợp
             const totalPoints = myRankings.reduce((sum, r) => sum + (r.points || 0), 0);

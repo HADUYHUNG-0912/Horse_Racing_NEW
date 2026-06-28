@@ -13,17 +13,12 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [rankingsLoading, setRankingsLoading] = useState(false);
+
   useEffect(() => {
-    // FIX Bug 2+3: chỉ 1 hàm load duy nhất, không duplicate
-    const loadAll = async () => {
+    const loadMetadata = async () => {
       try {
-        // FIX Bug 1: dùng đúng endpoint /tournaments (không phải /results/tournaments)
-        // FIX Bug 5: bọc spectators/rankings riêng để không crash cả trang nếu chưa có API
-        const [rankData, tourData] = await Promise.all([
-          api.get("/results/rankings"),
-          api.get("/tournaments"),
-        ]);
-        setRankings(Array.isArray(rankData) ? rankData : []);
+        const tourData = await api.get("/tournaments");
         setTournaments(Array.isArray(tourData) ? tourData : []);
 
         // Spectator rankings gọi riêng, không crash trang nếu API chưa tồn tại
@@ -34,14 +29,33 @@ export default function Leaderboard() {
           setSpectatorRankings([]);
         }
       } catch (err) {
-        setError(err.message || "Không thể tải bảng xếp hạng");
+        setError(err.message || "Không thể tải giải đấu");
       } finally {
         setLoading(false);
       }
     };
 
-    loadAll();
+    loadMetadata();
   }, []);
+
+  useEffect(() => {
+    const loadRankings = async () => {
+      try {
+        setRankingsLoading(true);
+        const url = selectedTournament === "all"
+          ? "/results/rankings"
+          : `/results/rankings?tournament_id=${selectedTournament}`;
+        const rankData = await api.get(url);
+        setRankings(Array.isArray(rankData) ? rankData : []);
+      } catch (err) {
+        setError(err.message || "Không thể tải xếp hạng");
+      } finally {
+        setRankingsLoading(false);
+      }
+    };
+
+    loadRankings();
+  }, [selectedTournament]);
 
   if (loading) {
     return <div style={styles.loading}>Đang tải bảng xếp hạng...</div>;
@@ -51,13 +65,8 @@ export default function Leaderboard() {
     return <div style={{ color: "var(--danger)", padding: "24px" }}>Lỗi: {error}</div>;
   }
 
-  // FIX Bug 4: chỉ tính filteredRankings 1 lần, dùng chung
-  const filteredRankings = selectedTournament === "all"
-    ? rankings
-    : rankings.filter(r => String(r.tournament_id) === selectedTournament);
-
-  const horseRankings = filteredRankings.filter(r => r.entity_type === "HORSE");
-  const jockeyRankings = filteredRankings.filter(r => r.entity_type === "JOCKEY");
+  const horseRankings = rankings.filter(r => r.entity_type === "HORSE");
+  const jockeyRankings = rankings.filter(r => r.entity_type === "JOCKEY");
 
   return (
     <div style={styles.tabContent}>
@@ -128,7 +137,11 @@ export default function Leaderboard() {
           {selectedTournament !== "all" && (
             <div style={{ marginBottom: "16px", padding: "10px 16px", background: "#1e293b", borderRadius: "8px", border: "1px solid #334155", color: "#94a3b8", fontSize: "13px" }}>
               📋 Đang xem: <strong style={{ color: "#fff" }}>{tournaments.find(t => String(t.id) === selectedTournament)?.name}</strong>
-              {filteredRankings.length === 0 && <span style={{ marginLeft: "12px", color: "#64748b" }}>— Chưa có dữ liệu xếp hạng</span>}
+              {rankingsLoading ? (
+                <span style={{ marginLeft: "12px", color: "var(--primary)" }}>— Đang tải dữ liệu...</span>
+              ) : (
+                rankings.length === 0 && <span style={{ marginLeft: "12px", color: "#64748b" }}>— Chưa có dữ liệu xếp hạng</span>
+              )}
             </div>
           )}
 
