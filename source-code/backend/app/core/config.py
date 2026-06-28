@@ -23,7 +23,7 @@ class Settings:
     
     # SQLEXPRESS connection string cho máy của bạn
     # Sử dụng dấu gạch chéo xuôi '/' để Python không bao giờ bị lỗi đọc chuỗi (bản chất SQL Server hiểu tốt cả / và \)
-    SQL_SERVER_HOST: str = os.getenv("SQL_SERVER_HOST", r"(localdb)\MSSQLLocalDB")
+    SQL_SERVER_HOST: str = os.getenv("SQL_SERVER_HOST", r"localhost\SQLEXPRESS")
     SQL_SERVER_DB: str = os.getenv("SQL_SERVER_DB", "HorseRacing")
    
     @property

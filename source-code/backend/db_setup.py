@@ -20,7 +20,7 @@ def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
 def main():
-    server = os.getenv("SQL_SERVER_HOST", r"(localdb)\MSSQLLocalDB")
+    server = os.getenv("SQL_SERVER_HOST", r"localhost\SQLEXPRESS")
     
     # 1. Connect to master to create the database if not exists
     print("Connecting to SQL Server Master...")

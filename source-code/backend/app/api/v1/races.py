@@ -81,6 +81,12 @@ def create_race(
     round_obj = db.query(Round).filter(Round.id == round_id).first()
     if not round_obj:
         raise HTTPException(status_code=404, detail="Round not found")
+
+    tournament = round_obj.tournament
+    if tournament and race_in.race_time:
+        race_date = race_in.race_time.date()
+        if race_date < tournament.start_date or race_date > tournament.end_date:
+            raise HTTPException(status_code=400, detail="Race time must be within the tournament start and end dates")
         
     # Check if referee exists if provided and verify no conflicts
     if race_in.referee_id:
@@ -174,6 +180,12 @@ def schedule_race(
         race.name = race_update.name
     if race_update.race_time is not None:
         new_time = race_update.race_time
+        tournament = race.round.tournament if race.round else None
+        if tournament:
+            race_date = new_time.date()
+            if race_date < tournament.start_date or race_date > tournament.end_date:
+                raise HTTPException(status_code=400, detail="Race time must be within the tournament start and end dates")
+
         # Check conflicts for all participants
         for p in race.participants:
             horse_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(

@@ -19,6 +19,19 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
   const [newRace, setNewRace] = useState({ round_id: "", name: "", race_time: "", track_condition: "Good", distance: "1200", referee_id: "" });
   const [newParticipant, setNewParticipant] = useState({ race_id: "", registration_id: "", lane_number: "" });
 
+  const preventInvalidNumericKey = (e) => {
+    if (["e", "E", "-", ".", "+"].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const normalizePositiveInteger = (value, fallback = 1) => {
+    if (value === "") return "";
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isNaN(parsed) || parsed < 1) return fallback;
+    return parsed;
+  };
+
   const loadData = async () => {
     try {
       const tours = await api.get("/tournaments");
@@ -156,7 +169,8 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
   const approveRegistration = async (regId, status) => {
     try {
       await api.put(`/tournaments/registrations/${regId}`, { status });
-      showMsg(`Đã ${status === "APPROVED" ? "phê duyệt" : "từ chối"} đăng ký!`);
+      const label = status === "APPROVED" ? "phê duyệt" : status === "REJECTED" ? "từ chối" : "đặt về trạng thái chờ";
+      showMsg(`Đã ${label} đăng ký!`);
       loadData();
     } catch (err) {
       showMsg(err.message, "error");
@@ -325,13 +339,16 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                           </span>
                         </td>
                         <td>
-                          {r.status === "PENDING" && (
+                          {r.status === "PENDING" ? (
                             <div style={{ display: "flex", gap: "8px" }}>
                               <button className="btn-primary" style={{ padding: "4px 8px", fontSize: "12px" }}
                                 onClick={() => approveRegistration(r.id, "APPROVED")}>Duyệt</button>
                               <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)" }}
                                 onClick={() => approveRegistration(r.id, "REJECTED")}>Từ chối</button>
                             </div>
+                          ) : (
+                            <button className="btn-secondary" style={{ padding: "4px 8px", fontSize: "12px" }}
+                              onClick={() => approveRegistration(r.id, "PENDING")}>Đặt về chờ</button>
                           )}
                         </td>
                       </tr>
@@ -383,7 +400,9 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 <div className="form-group" style={{ flex: 1 }}>
                   <label>Khoảng cách (mét)</label>
                   <input type="number" className="input-field" required
-                    value={newRace.distance} onChange={(e) => setNewRace({ ...newRace, distance: e.target.value })} />
+                    value={newRace.distance}
+                    onKeyDown={preventInvalidNumericKey}
+                    onChange={(e) => setNewRace({ ...newRace, distance: normalizePositiveInteger(e.target.value, 1) })} />
                 </div>
               </div>
               <div className="form-group">
@@ -428,7 +447,9 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
               <div className="form-group">
                 <label>Làn số (Lane Number)</label>
                 <input type="number" className="input-field" placeholder="1-8" required
-                  value={newParticipant.lane_number} onChange={(e) => setNewParticipant({ ...newParticipant, lane_number: e.target.value })} />
+                  value={newParticipant.lane_number}
+                  onKeyDown={preventInvalidNumericKey}
+                  onChange={(e) => setNewParticipant({ ...newParticipant, lane_number: normalizePositiveInteger(e.target.value, 1) })} />
               </div>
               <button type="submit" className="btn-primary">Xếp vào đường đua</button>
             </form>

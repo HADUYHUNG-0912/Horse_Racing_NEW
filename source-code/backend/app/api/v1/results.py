@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import text
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import Race, RaceParticipant, Result, Violation, Ranking, Horse, JockeyProfile, Prediction, SpectatorProfile
+from app.models.database_models import Race, RaceParticipant, Result, Violation, Ranking, Horse, JockeyProfile, Prediction, SpectatorProfile, Registration, Round, Tournament
 from app.schemas.result import ResultCreate, ResultOut, ViolationCreate, ViolationOut, RankingOut
 from app.core.timezone_utils import get_vietnam_now_naive
 
@@ -174,7 +174,69 @@ def record_violation(
     return violation
 
 @router.get("/rankings", response_model=List[RankingOut])
-def read_rankings(db: Session = Depends(get_db)):
+def read_rankings(db: Session = Depends(get_db), tournament_id: Optional[int] = None):
+    if tournament_id is not None:
+        tournament = db.query(Tournament).filter(Tournament.id == tournament_id).first()
+        if not tournament:
+            raise HTTPException(status_code=404, detail="Tournament not found")
+
+        horse_points = (
+            db.query(
+                Registration.horse_id,
+                func.coalesce(func.sum(Result.points), 0).label("total_points")
+            )
+            .join(RaceParticipant, Registration.id == RaceParticipant.registration_id)
+            .join(Result, RaceParticipant.id == Result.race_participant_id)
+            .join(Race, RaceParticipant.race_id == Race.id)
+            .join(Round, Race.round_id == Round.id)
+            .filter(Round.tournament_id == tournament_id)
+            .group_by(Registration.horse_id)
+            .order_by(text("total_points DESC"))
+            .all()
+        )
+
+        jockey_points = (
+            db.query(
+                Registration.jockey_id,
+                func.coalesce(func.sum(Result.points), 0).label("total_points")
+            )
+            .join(RaceParticipant, Registration.id == RaceParticipant.registration_id)
+            .join(Result, RaceParticipant.id == Result.race_participant_id)
+            .join(Race, RaceParticipant.race_id == Race.id)
+            .join(Round, Race.round_id == Round.id)
+            .filter(Round.tournament_id == tournament_id)
+            .group_by(Registration.jockey_id)
+            .order_by(text("total_points DESC"))
+            .all()
+        )
+
+        rankings = []
+        for idx, (horse_id, points) in enumerate(horse_points, start=1):
+            horse = db.query(Horse).filter(Horse.id == horse_id).first()
+            rankings.append(RankingOut(
+                id=idx,
+                entity_type="HORSE",
+                entity_id=horse_id,
+                entity_name=horse.name if horse else "Unknown Horse",
+                points=int(points or 0),
+                rank=idx,
+                updated_at=get_vietnam_now_naive()
+            ))
+
+        for idx, (jockey_id, points) in enumerate(jockey_points, start=1):
+            jockey = db.query(JockeyProfile).filter(JockeyProfile.id == jockey_id).first()
+            rankings.append(RankingOut(
+                id=idx + 1000,
+                entity_type="JOCKEY",
+                entity_id=jockey_id,
+                entity_name=jockey.user.full_name if jockey and jockey.user else "Unknown Jockey",
+                points=int(points or 0),
+                rank=idx,
+                updated_at=get_vietnam_now_naive()
+            ))
+
+        return rankings
+
     rankings = db.query(Ranking).order_by(Ranking.entity_type, Ranking.rank).all()
     for rank in rankings:
         if rank.entity_type == "HORSE":
@@ -185,27 +247,57 @@ def read_rankings(db: Session = Depends(get_db)):
             rank.entity_name = jockey.user.full_name if jockey else "Unknown Jockey"
     return rankings
 
-def recalculate_rankings(db: Session):
+def recalculate_rankings(db: Session, tournament_id: Optional[int] = None):
     # Fetch all points grouped by Horse
-    cursor = db.execute(text("""
+    horse_query = text("""
         SELECT reg.horse_id, SUM(res.points) as total_points
         FROM Results res
         JOIN RaceParticipants rp ON res.race_participant_id = rp.id
         JOIN Registrations reg ON rp.registration_id = reg.id
-        GROUP BY reg.horse_id
-        ORDER BY total_points DESC
-    """))
+        JOIN RaceParticipants rp2 ON rp2.id = rp.id
+        JOIN Races r ON r.id = rp2.race_id
+        JOIN Rounds rd ON rd.id = r.round_id
+    """)
+    if tournament_id is not None:
+        horse_query = text(f"""
+            {horse_query.text}
+            WHERE rd.tournament_id = {tournament_id}
+            GROUP BY reg.horse_id
+            ORDER BY total_points DESC
+        """)
+    else:
+        horse_query = text(f"""
+            {horse_query.text}
+            GROUP BY reg.horse_id
+            ORDER BY total_points DESC
+        """)
+    cursor = db.execute(horse_query)
     horse_points = cursor.fetchall()
     
     # Fetch all points grouped by Jockey
-    cursor = db.execute(text("""
+    jockey_query = text("""
         SELECT reg.jockey_id, SUM(res.points) as total_points
         FROM Results res
         JOIN RaceParticipants rp ON res.race_participant_id = rp.id
         JOIN Registrations reg ON rp.registration_id = reg.id
-        GROUP BY reg.jockey_id
-        ORDER BY total_points DESC
-    """))
+        JOIN RaceParticipants rp2 ON rp2.id = rp.id
+        JOIN Races r ON r.id = rp2.race_id
+        JOIN Rounds rd ON rd.id = r.round_id
+    """)
+    if tournament_id is not None:
+        jockey_query = text(f"""
+            {jockey_query.text}
+            WHERE rd.tournament_id = {tournament_id}
+            GROUP BY reg.jockey_id
+            ORDER BY total_points DESC
+        """)
+    else:
+        jockey_query = text(f"""
+            {jockey_query.text}
+            GROUP BY reg.jockey_id
+            ORDER BY total_points DESC
+        """)
+    cursor = db.execute(jockey_query)
     jockey_points = cursor.fetchall()
     
     # Delete current rankings

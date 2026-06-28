@@ -20,6 +20,8 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
     full_name = Column(Unicode(100), nullable=False)
+    phone_number = Column(String(20), nullable=True)
+    avatar = Column(String(255), nullable=True)
     role_id = Column(Integer, ForeignKey('Roles.id'), nullable=False)
     is_active = Column(Boolean, default=True)
     
@@ -72,6 +74,7 @@ class SpectatorProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
     favorite_horse_breed = Column(Unicode(50), nullable=True)
+    favorite_jockey = Column(Unicode(100), nullable=True)
     reward_points = Column(Integer, default=0, nullable=False)
     
     user = relationship("User", back_populates="spectator_profile")
@@ -170,6 +173,22 @@ class JockeyInvitation(Base):
     jockey = relationship("JockeyProfile", back_populates="invitations")
     horse = relationship("Horse", back_populates="invitations")
     tournament = relationship("Tournament", back_populates="invitations")
+
+    @property
+    def owner_name(self):
+        return self.owner.user.full_name if self.owner and self.owner.user else None
+
+    @property
+    def horse_name(self):
+        return self.horse.name if self.horse else None
+
+    @property
+    def tournament_name(self):
+        return self.tournament.name if self.tournament else None
+
+    @property
+    def jockey_name(self):
+        return self.jockey.user.full_name if self.jockey and self.jockey.user else None
 
 class RaceParticipant(Base):
     __tablename__ = 'RaceParticipants'
