@@ -258,7 +258,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
           {selectedRace && (
             <div style={{ marginTop: "32px", borderTop: "1px solid var(--card-border)", paddingTop: "24px" }}>
               <h2>📝 Nhập kết quả & Vi phạm cho trận: <span style={{ color: "var(--primary)" }}>{selectedRace.name}</span></h2>
-              
+
               <div style={styles.splitLayout}>
                 {/* Results Form */}
                 <form onSubmit={submitResults} style={{ ...styles.formPanel, flex: 1.5 }} className="glass">
@@ -366,7 +366,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
           {selectedRaceForInspection && (
             <div style={{ marginTop: "32px", borderTop: "1px solid var(--card-border)", paddingTop: "24px" }}>
               <h2>🔍 Kiểm tra trước trận đấu: <span style={{ color: "var(--primary)" }}>{selectedRaceForInspection.name}</span></h2>
-              
+
               <form onSubmit={submitInspection} style={{ ...styles.formPanel, maxWidth: "600px" }} className="glass">
                 <div className="form-group">
                   <label>Thời tiết</label>

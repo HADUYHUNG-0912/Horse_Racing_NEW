@@ -174,6 +174,9 @@ export default function Dashboard() {
               <button style={activeTab === "profile" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("profile")}>
   👤 Hồ sơ cá nhân
 </button>
+              <button style={activeTab === "jockey-rewards" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("jockey-rewards")}>
+                🏆 Giải thưởng đạt được
+              </button>
             </>
           )}
 
