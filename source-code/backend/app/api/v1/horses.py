@@ -14,16 +14,17 @@ def read_horses(
     current_user = Depends(get_current_user),
     owner_id: Optional[int] = None
 ):
-    if current_user.role.name != "OWNER":
-        raise HTTPException(status_code=403, detail="Only owners can access their horses")
+    query = db.query(Horse)
 
-    owner_profile = db.query(HorseOwnerProfile).filter(HorseOwnerProfile.user_id == current_user.id).first()
-    if not owner_profile:
-        raise HTTPException(status_code=400, detail="Owner profile not found")
-
-    query = db.query(Horse).filter(Horse.owner_id == owner_profile.id)
-    if owner_id is not None and owner_id != owner_profile.id:
-        raise HTTPException(status_code=403, detail="You can only view your own horses")
+    # If OWNER, only show their own horses
+    if current_user.role.name == "OWNER":
+        owner_profile = db.query(HorseOwnerProfile).filter(HorseOwnerProfile.user_id == current_user.id).first()
+        if not owner_profile:
+            raise HTTPException(status_code=400, detail="Owner profile not found")
+        query = query.filter(Horse.owner_id == owner_profile.id)
+    elif owner_id is not None:
+        # Other roles can filter by owner_id optionally
+        query = query.filter(Horse.owner_id == owner_id)
             
     return query.all()
 

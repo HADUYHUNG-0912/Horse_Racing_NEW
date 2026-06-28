@@ -151,6 +151,26 @@ def add_participant(
     if dup_part:
         raise HTTPException(status_code=400, detail="This horse is already a participant in this race")
         
+    # Check if horse is already scheduled in another race within 2 hours of this race's time
+    horse_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(
+        Registration.horse_id == reg.horse_id,
+        Race.id != id,
+        Race.race_time >= race.race_time - timedelta(hours=2),
+        Race.race_time <= race.race_time + timedelta(hours=2)
+    ).first()
+    if horse_conflicts:
+        raise HTTPException(status_code=400, detail=f"Horse {reg.horse.name} has a conflicting schedule")
+        
+    # Check if jockey is already scheduled in another race within 2 hours of this race's time
+    jockey_conflicts = db.query(Race).join(RaceParticipant).join(Registration).filter(
+        Registration.jockey_id == reg.jockey_id,
+        Race.id != id,
+        Race.race_time >= race.race_time - timedelta(hours=2),
+        Race.race_time <= race.race_time + timedelta(hours=2)
+    ).first()
+    if jockey_conflicts:
+        raise HTTPException(status_code=400, detail=f"Jockey {reg.jockey.user.full_name} has a conflicting schedule")
+        
     part = RaceParticipant(
         race_id=id,
         registration_id=part_in.registration_id,
