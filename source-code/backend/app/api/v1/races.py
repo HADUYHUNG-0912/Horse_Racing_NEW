@@ -14,6 +14,8 @@ def read_races(db: Session = Depends(get_db)):
     races = db.query(Race).all()
     # Populate extra fields for response schemas
     for race in races:
+        if race.round:
+            race.tournament_id = race.round.tournament_id
         if race.referee:
             race.referee_name = race.referee.user.full_name
         for p in race.participants:
@@ -41,6 +43,8 @@ def read_assigned_races(
             
     # Populate extra fields for response schemas
     for race in races:
+        if race.round:
+            race.tournament_id = race.round.tournament_id
         if race.referee:
             race.referee_name = race.referee.user.full_name
         for p in race.participants:

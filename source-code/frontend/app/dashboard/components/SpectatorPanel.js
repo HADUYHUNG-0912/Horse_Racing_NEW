@@ -7,10 +7,12 @@ import { styles } from "./styles";
 export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const [predictions, setPredictions] = useState([]);
   const [races, setRaces] = useState([]);
+  const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSeason, setSelectedSeason] = useState("");
 
   // Form states
-  const [predictionForm, setPredictionForm] = useState({ race_id: "", horse_id: "", predicted_rank: "1" });
+  const [predictionForm, setPredictionForm] = useState({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1", tournament_type: "" });
   const [editingPredictionId, setEditingPredictionId] = useState(null);
 
   // Schedules tab states
@@ -25,7 +27,8 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
     avatar: "",
     favorite_horse_breed: "",
     email: "",
-    favorite_jockey: ""
+    favorite_jockey: "",
+    gender: ""
   });
 
   const [profileStats, setProfileStats] = useState({
@@ -43,6 +46,9 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
       const allRaces = await api.get("/races");
       setRaces(allRaces);
 
+      const allTournaments = await api.get("/tournaments");
+      setTournaments(allTournaments);
+
       const profile = await api.get("/spectators/profile");
       setProfileForm({
         full_name: profile.full_name || "",
@@ -50,7 +56,8 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
         avatar: profile.avatar || "",
         favorite_horse_breed: profile.favorite_horse_breed || "",
         email: profile.email || "",
-        favorite_jockey: profile.favorite_jockey || ""
+        favorite_jockey: profile.favorite_jockey || "",
+        gender: profile.gender || ""
       });
       setProfileStats({
         current_rank: profile.current_rank || "Chưa xếp hạng",
@@ -88,7 +95,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
         });
         showMsg("Dự đoán thành công!");
       }
-      setPredictionForm({ race_id: "", horse_id: "", predicted_rank: "1" });
+      setPredictionForm({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1", tournament_type: "" });
       setEditingPredictionId(null);
       loadData();
     } catch (err) {
@@ -99,9 +106,11 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const handleEditClick = (pred) => {
     setEditingPredictionId(pred.id);
     setPredictionForm({
+      tournament_id: pred.race?.tournament_id || "",
       race_id: pred.race_id || "",
       horse_id: pred.horse_id || "",
-      predicted_rank: pred.predicted_rank || "1"
+      predicted_rank: pred.predicted_rank || "1",
+      tournament_type: ""
     });
     // Scroll to form or focus
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -109,7 +118,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
 
   const cancelEdit = () => {
     setEditingPredictionId(null);
-    setPredictionForm({ race_id: "", horse_id: "", predicted_rank: "1" });
+    setPredictionForm({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1", tournament_type: "" });
   };
 
   const deletePrediction = async (id) => {
@@ -173,8 +182,19 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
     return <div style={styles.loading}>Đang tải dữ liệu Spectator...</div>;
   }
 
-  const upcomingRaces = races.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING");
-  const completedRaces = races.filter(rc => rc.status === "COMPLETED");
+  const uniqueSeasons = Array.from(new Set(tournaments.map(t => {
+    return t.start_date ? new Date(t.start_date).getFullYear().toString() : "";
+  }).filter(s => s !== ""))).sort((a, b) => b - a);
+
+  const filteredRaces = races.filter(rc => {
+    if (!selectedSeason) return true;
+    const tournament = tournaments.find(t => t.id === rc.tournament_id);
+    if (!tournament || !tournament.start_date) return false;
+    return new Date(tournament.start_date).getFullYear().toString() === selectedSeason;
+  });
+
+  const upcomingRaces = filteredRaces.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING");
+  const completedRaces = filteredRaces.filter(rc => rc.status === "COMPLETED");
 
   const selectedRaceObj = races.find(rc => rc.id === parseInt(predictionForm.race_id));
   const isLocked = selectedRaceObj ? new Date() > new Date(selectedRaceObj.race_time) : false;
@@ -203,12 +223,51 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                 </div>
               )}
               <div className="form-group">
+                <label>Chọn Mùa giải</label>
+                <select className="input-field"
+                  value={selectedSeason} 
+                  onChange={(e) => {
+                      setSelectedSeason(e.target.value);
+                      setPredictionForm({ ...predictionForm, tournament_id: "", race_id: "", horse_id: "" });
+                  }}>
+                  <option value="">-- Tất cả mùa giải --</option>
+                  {uniqueSeasons.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Chọn Giải đấu</label>
+                <select className="input-field"
+                  value={predictionForm.tournament_id || ""} 
+                  onChange={(e) => setPredictionForm({ ...predictionForm, tournament_id: e.target.value, race_id: "", horse_id: "" })}>
+                  <option value="">-- Tất cả giải đấu --</option>
+                  {tournaments
+                    .filter(t => !selectedSeason || (t.start_date && new Date(t.start_date).getFullYear().toString() === selectedSeason))
+                    .map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Loại giải đấu</label>
+                <select className="input-field"
+                  value={predictionForm.tournament_type || ""} 
+                  onChange={(e) => setPredictionForm({ ...predictionForm, tournament_type: e.target.value })}>
+                  <option value="">-- Chọn loại giải đấu --</option>
+                  <option value="championship">Giải Vô Địch</option>
+                  <option value="friendly">Giải Giao Hữu</option>
+                  <option value="open">Giải Mở Rộng</option>
+                  <option value="charity">Giải Từ Thiện</option>
+                </select>
+              </div>
+              <div className="form-group">
                 <label>Chọn Trận đua</label>
                 <select className="input-field" required
                   value={predictionForm.race_id} 
                   onChange={(e) => setPredictionForm({ ...predictionForm, race_id: e.target.value, horse_id: "" })}>
                   <option value="">-- Chọn trận đua --</option>
-                  {races.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING").map(rc => (
+                  {races.filter(rc => (rc.status === "SCHEDULED" || rc.status === "PENDING") && (!predictionForm.tournament_id || rc.tournament_id === parseInt(predictionForm.tournament_id))).map(rc => (
                     <option key={rc.id} value={rc.id}>{rc.name} ({rc.track_condition} - {rc.distance}m)</option>
                   ))}
                 </select>
@@ -331,7 +390,17 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
         <div style={styles.tabContent}>
           {/* --- Section 1: Lịch thi đấu sắp diễn ra --- */}
           <div>
-            <h2 style={{ marginBottom: "20px" }}>📅 Lịch thi đấu sắp diễn ra</h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h2 style={{ margin: 0 }}>📅 Lịch thi đấu sắp diễn ra</h2>
+              <select className="input-field" style={{ width: "200px" }}
+                value={selectedSeason} 
+                onChange={(e) => setSelectedSeason(e.target.value)}>
+                <option value="">-- Tất cả mùa giải --</option>
+                {uniqueSeasons.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
             {upcomingRaces.length === 0 ? (
               <div style={{
                 textAlign: "center",
@@ -618,6 +687,19 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                     onChange={(e) => setProfileForm({ ...profileForm, favorite_jockey: e.target.value })}
                     placeholder="Tên nài ngựa..."
                   />
+                </div>
+                <div className="form-group">
+                  <label>Giới tính</label>
+                  <select
+                    className="input-field"
+                    value={profileForm.gender}
+                    onChange={(e) => setProfileForm({ ...profileForm, gender: e.target.value })}
+                  >
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
                 </div>
               </div>
               <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "15px" }}>

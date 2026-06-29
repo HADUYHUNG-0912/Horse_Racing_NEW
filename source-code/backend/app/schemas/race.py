@@ -51,6 +51,7 @@ class RaceUpdate(BaseModel):
 class RaceOut(RaceBase):
     id: int
     round_id: int
+    tournament_id: Optional[int] = None
     referee_name: Optional[str] = None
     participants: List[RaceParticipantOut] = []
 

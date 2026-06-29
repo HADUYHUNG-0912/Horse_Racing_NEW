@@ -77,6 +77,8 @@ CREATE TABLE SpectatorProfiles (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(id) ON DELETE CASCADE,
     favorite_horse_breed NVARCHAR(50) NULL,
+    favorite_jockey NVARCHAR(100) NULL,
+    gender NVARCHAR(20) NULL,
     reward_points INT NOT NULL DEFAULT 0
 );
 
