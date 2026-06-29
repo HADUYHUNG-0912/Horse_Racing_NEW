@@ -103,6 +103,7 @@ class SpectatorProfile(Base):
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
     favorite_horse_breed = Column(Unicode(50), nullable=True)
     favorite_jockey = Column(Unicode(100), nullable=True)
+    gender = Column(Unicode(20), nullable=True)
     reward_points = Column(Integer, default=0, nullable=False)
     
     user = relationship("User", back_populates="spectator_profile")

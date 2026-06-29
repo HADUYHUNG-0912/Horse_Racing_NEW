@@ -314,6 +314,7 @@ def get_spectator_profile(
         avatar=current_user.avatar,
         favorite_horse_breed=spectator.favorite_horse_breed,
         favorite_jockey=spectator.favorite_jockey,
+        gender=spectator.gender,
         reward_points=spectator.reward_points,
         current_rank=current_rank,
         total_predictions=total_predictions,
@@ -340,6 +341,8 @@ def update_spectator_profile(
         spectator.favorite_horse_breed = profile_update.favorite_horse_breed
     if profile_update.favorite_jockey is not None:
         spectator.favorite_jockey = profile_update.favorite_jockey
+    if profile_update.gender is not None:
+        spectator.gender = profile_update.gender
         
     db.commit()
     db.refresh(current_user)
@@ -369,6 +372,7 @@ def update_spectator_profile(
         avatar=current_user.avatar,
         favorite_horse_breed=spectator.favorite_horse_breed,
         favorite_jockey=spectator.favorite_jockey,
+        gender=spectator.gender,
         reward_points=spectator.reward_points,
         current_rank=current_rank,
         total_predictions=total_predictions,
