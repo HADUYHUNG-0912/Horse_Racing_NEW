@@ -70,7 +70,14 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     elif role_name == "OWNER":
         profile = HorseOwnerProfile(
             user_id=user.id,
-            company_name=user_in.company_name
+            company_name=user_in.company_name,
+            age=user_in.age,
+            experience_years=user_in.experience_years or 0,
+            occupation=user_in.occupation,
+            address=user_in.address,
+            nationality=user_in.nationality,
+            social_link=user_in.social_link,
+            bio=user_in.bio
         )
         db.add(profile)
     elif role_name == "REFEREE":

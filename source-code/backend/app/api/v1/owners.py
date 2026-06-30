@@ -25,7 +25,15 @@ def read_owner_profile(
                 u.email,
                 u.phone_number,
                 u.avatar,
-                h.company_name
+                u.created_at AS joined_date,
+                h.company_name,
+                h.age,
+                h.experience_years,
+                h.occupation,
+                h.address,
+                h.nationality,
+                h.social_link,
+                h.bio
             FROM Users u
             INNER JOIN HorseOwnerProfiles h ON h.user_id = u.id
             WHERE u.id = :user_id
@@ -150,6 +158,15 @@ def update_owner_profile(
     if "full_name" in update_data:
         user_updates.append("full_name = :full_name")
         user_params["full_name"] = update_data["full_name"]
+    if "email" in update_data:
+        existing_email = db.query(User).filter(
+            User.email == update_data["email"],
+            User.id != current_user.id,
+        ).first()
+        if existing_email:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
+        user_updates.append("email = :email")
+        user_params["email"] = update_data["email"]
     if "phone_number" in update_data:
         user_updates.append("phone_number = :phone_number")
         user_params["phone_number"] = update_data["phone_number"]
@@ -163,12 +180,29 @@ def update_owner_profile(
             user_params,
         )
 
-    if "company_name" in update_data:
+    owner_fields = [
+        "company_name",
+        "age",
+        "experience_years",
+        "occupation",
+        "address",
+        "nationality",
+        "social_link",
+        "bio",
+    ]
+    owner_updates = []
+    owner_params = {"user_id": current_user.id}
+    for field in owner_fields:
+        if field in update_data:
+            owner_updates.append(f"{field} = :{field}")
+            owner_params[field] = update_data[field]
+
+    if owner_updates:
         db.execute(
             text(
-                "UPDATE HorseOwnerProfiles SET company_name = :company_name WHERE user_id = :user_id"
+                f"UPDATE HorseOwnerProfiles SET {', '.join(owner_updates)} WHERE user_id = :user_id"
             ),
-            {"company_name": update_data["company_name"], "user_id": current_user.id},
+            owner_params,
         )
 
     db.commit()
@@ -183,7 +217,15 @@ def update_owner_profile(
                 u.email,
                 u.phone_number,
                 u.avatar,
-                h.company_name
+                u.created_at AS joined_date,
+                h.company_name,
+                h.age,
+                h.experience_years,
+                h.occupation,
+                h.address,
+                h.nationality,
+                h.social_link,
+                h.bio
             FROM Users u
             INNER JOIN HorseOwnerProfiles h ON h.user_id = u.id
             WHERE u.id = :user_id
