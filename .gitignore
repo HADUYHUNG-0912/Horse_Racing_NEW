@@ -228,3 +228,6 @@ __marimo__/
 
 # Optional
 *.pdf   
+# Node dependencies
+node_modules/
+source-code/frontend/node_modules/
