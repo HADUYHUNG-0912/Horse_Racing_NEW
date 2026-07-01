@@ -1,5 +1,0 @@
-\babel@toc {english}{}\relax 
-\contentsline {chapter}{Acknowledgement}{2}{chapter*.2}%
-\contentsline {chapter}{Definition and Acronyms}{3}{chapter*.3}%
-\contentsline {chapter}{\numberline {1}Software Design Description}{4}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Entity Relationship Diagram}{4}{section.1.1}%

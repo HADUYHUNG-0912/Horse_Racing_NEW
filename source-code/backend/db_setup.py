@@ -287,7 +287,7 @@ def main():
             print("Seeding Violations...")
             # Pegasus got a violation
             cursor.execute("INSERT INTO Violations (race_participant_id, description, penalty, fine_amount, violation_date) VALUES (?, ?, ?, ?, ?)",
-                           (participant_map[("Grand Final", "Pegasus")], "Lane crossing infraction in final turn", "Warning", 50.00, "2026-05-12 15:15:00"))
+                           (participant_map[("Grand Final", "Pegasus")], "Lane crossing infraction in final turn", "Warning", 1000000.00, "2026-05-12 15:15:00"))
 
         # Rankings
         cursor.execute("SELECT COUNT(*) FROM Rankings")
