@@ -94,9 +94,15 @@ export default function PrizesPanel({ activeTab, showMsg }) {
               onChange={(e) => setSelectedTournament(e.target.value)}
               style={{ ...styles.input, marginTop: "8px" }}
             >
-              <option value="">-- Chọn giải đấu --</option>
+              <option value="" style={{ backgroundColor: "#1e293b", color: "#ffffff" }}>
+                -- Chọn giải đấu --
+              </option>
               {tournaments.map((t) => (
-                <option key={t.id} value={t.id}>
+                <option 
+                  key={t.id} 
+                  value={t.id} 
+                  style={{ backgroundColor: "#1e293b", color: "#ffffff" }}
+                >
                   {t.name} ({t.status})
                 </option>
               ))}
