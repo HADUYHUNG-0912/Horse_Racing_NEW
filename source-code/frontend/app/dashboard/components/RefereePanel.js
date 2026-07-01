@@ -332,8 +332,8 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                     </select>
                   </div>
                   <div className="form-group">
-                    <label>Số tiền phạt ($)</label>
-                    <input type="number" min="0" max="9999999" step="1" className="input-field" required
+                    <label>Số tiền phạt (VND)</label>
+                    <input type="number" min="0" max="99999999" step="1" className="input-field" required
                       value={violationForm.fine_amount}
                       onChange={(e) => {
                         const val = e.target.value;
@@ -342,10 +342,10 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                         if (val !== "" && num < 0) {
                           setViolationForm({ ...violationForm, fine_amount: "0" });
                           setFineAmountError("Số tiền phạt không được âm.");
-                        // Không quá 7 chữ số (max 9999999)
-                        } else if (val !== "" && num > 9999999) {
-                          setViolationForm({ ...violationForm, fine_amount: "9999999" });
-                          setFineAmountError("Số tiền phạt không được vượt quá 9,999,999.");
+                        // Không quá 8 chữ số (max 99999999)
+                        } else if (val !== "" && num > 99999999) {
+                          setViolationForm({ ...violationForm, fine_amount: "99999999" });
+                          setFineAmountError("Số tiền phạt không được vượt quá 99.999.999.");
                         } else {
                           setViolationForm({ ...violationForm, fine_amount: val });
                           setFineAmountError("");
