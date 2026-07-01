@@ -1,0 +1,18 @@
+\titleformat{\chapter}
+  {\normalfont\LARGE\bfseries\color{TitleRed}}
+  {\Roman{chapter}.}{0.5em}{}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries}
+  {\thesection.}{0.5em}{}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}{0.5em}{}
+
+\renewcommand{\arraystretch}{1.35}
+
+\newcommand{\templateTitle}[1]{
+    {\Large\bfseries\color{TitleRed} #1}
+    \vspace{0.8cm}
+}
