@@ -49,7 +49,11 @@ Horse_Racing_Report/
 │   │   ├── usecase_diagram_overview.tex            (Gia Huy - Use Case Diagram tong cho MVP)
 │   │   ├── usecase_description.tex                 (Gia Huy)
 │   │   │
+<<<<<<< HEAD
 │   │   ├── flows/                                  <- moi flow = 1 nguoi, 3 file
+=======
+│   │   ├── flows/                                  <- moi flow = 1 nguoi
+>>>>>>> f0b46831b7354977e7a08fb1bca9c64135975d8f
 │   │   │   ├── horse_owner_registration/           <- Thuy Anh
 │   │   │   │   ├── screen_flow.tex
 │   │   │   │   
