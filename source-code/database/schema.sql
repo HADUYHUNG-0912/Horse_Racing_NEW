@@ -49,7 +49,8 @@ CREATE TABLE Users (
     phone_number VARCHAR(20) NULL,
     avatar VARCHAR(255) NULL,
     role_id INT NOT NULL FOREIGN KEY REFERENCES Roles(id),
-    is_active BIT DEFAULT 1
+    is_active BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE()
 );
 
 -- 3. JockeyProfiles table
