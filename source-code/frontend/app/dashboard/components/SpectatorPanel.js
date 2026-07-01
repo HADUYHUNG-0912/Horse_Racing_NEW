@@ -12,7 +12,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const [selectedSeason, setSelectedSeason] = useState("");
 
   // Form states
-  const [predictionForm, setPredictionForm] = useState({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1", tournament_type: "" });
+  const [predictionForm, setPredictionForm] = useState({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1" });
   const [editingPredictionId, setEditingPredictionId] = useState(null);
 
   // Schedules tab states
@@ -95,7 +95,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
         });
         showMsg("Dự đoán thành công!");
       }
-      setPredictionForm({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1", tournament_type: "" });
+      setPredictionForm({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1" });
       setEditingPredictionId(null);
       loadData();
     } catch (err) {
@@ -109,8 +109,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
       tournament_id: pred.race?.tournament_id || "",
       race_id: pred.race_id || "",
       horse_id: pred.horse_id || "",
-      predicted_rank: pred.predicted_rank || "1",
-      tournament_type: ""
+      predicted_rank: pred.predicted_rank || "1"
     });
     // Scroll to form or focus
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -118,7 +117,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
 
   const cancelEdit = () => {
     setEditingPredictionId(null);
-    setPredictionForm({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1", tournament_type: "" });
+    setPredictionForm({ tournament_id: "", race_id: "", horse_id: "", predicted_rank: "1" });
   };
 
   const deletePrediction = async (id) => {
@@ -249,18 +248,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                   ))}
                 </select>
               </div>
-              <div className="form-group">
-                <label>Loại giải đấu</label>
-                <select className="input-field"
-                  value={predictionForm.tournament_type || ""} 
-                  onChange={(e) => setPredictionForm({ ...predictionForm, tournament_type: e.target.value })}>
-                  <option value="">-- Chọn loại giải đấu --</option>
-                  <option value="championship">Giải Vô Địch</option>
-                  <option value="friendly">Giải Giao Hữu</option>
-                  <option value="open">Giải Mở Rộng</option>
-                  <option value="charity">Giải Từ Thiện</option>
-                </select>
-              </div>
+
               <div className="form-group">
                 <label>Chọn Trận đua</label>
                 <select className="input-field" required
