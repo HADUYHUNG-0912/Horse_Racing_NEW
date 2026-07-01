@@ -31,9 +31,9 @@ def make_prediction(
     if part.race.status == "COMPLETED":
         raise HTTPException(status_code=400, detail="Cannot make prediction on a completed race")
         
-    # Check if race has started based on time
-    if get_vietnam_now_naive() > part.race.race_time:
-        raise HTTPException(status_code=400, detail="Trận đấu đã bắt đầu, không thể dự đoán")
+    time_until_race = part.race.race_time - get_vietnam_now_naive()
+    if time_until_race < timedelta(minutes=15):
+        raise HTTPException(status_code=400, detail="Predictions can only be made up to 15 minutes before the race starts")
         
     # Check if spectator has already made a prediction for this race
     dup = db.query(Prediction).join(RaceParticipant).filter(
@@ -63,9 +63,14 @@ def make_prediction(
 @router.get("/predictions", response_model=List[PredictionOut])
 def read_predictions(
     db: Session = Depends(get_db),
-    current_user = Depends(RoleChecker(["SPECTATOR"]))
+    current_user = Depends(RoleChecker(["SPECTATOR"])),
+    page: int = Query(default=1, ge=1, description="Trang hiện tại"),
+    limit: int = Query(default=50, ge=1, le=100, description="Số bản ghi mỗi trang")
 ):
-    preds = db.query(Prediction).filter(Prediction.user_id == current_user.id).all()
+    offset = (page - 1) * limit
+    preds = db.query(Prediction).filter(
+        Prediction.user_id == current_user.id
+    ).order_by(Prediction.prediction_date.desc()).offset(offset).limit(limit).all()
     
     # Process prediction outcomes dynamically based on results
     for p in preds:
@@ -75,19 +80,6 @@ def read_predictions(
         p.horse_name = part.registration.horse.name
         p.jockey_name = part.registration.jockey.user.full_name
         p.race_name = part.race.name
-        
-        # If prediction is pending and race is completed, evaluate it
-        if p.status == "PENDING" and part.race.status == "COMPLETED":
-            result = db.query(Result).filter(Result.race_participant_id == part.id).first()
-            if result:
-                if result.rank == p.predicted_rank:
-                    p.status = "Won"
-                    spectator = db.query(SpectatorProfile).filter(SpectatorProfile.user_id == p.user_id).first()
-                    if spectator:
-                        spectator.earnRewardPoints(10)
-                else:
-                    p.status = "Lost"
-                db.commit() # Save evaluated status
                 
     return preds
 
@@ -107,7 +99,7 @@ def get_leaderboard(
     offset = (page - 1) * limit
     spectators = (
         db.query(SpectatorProfile)
-        .order_by(SpectatorProfile.reward_points.desc())
+        .order_by(SpectatorProfile.reward_points.desc(), SpectatorProfile.id.asc())
         .offset(offset)
         .limit(limit)
         .all()

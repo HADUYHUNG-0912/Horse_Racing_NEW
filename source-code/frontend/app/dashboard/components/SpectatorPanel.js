@@ -196,7 +196,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const completedRaces = filteredRaces.filter(rc => rc.status === "COMPLETED");
 
   const selectedRaceObj = races.find(rc => rc.id === parseInt(predictionForm.race_id));
-  const isLocked = selectedRaceObj ? new Date() > new Date(selectedRaceObj.race_time) : false;
+  const isLocked = selectedRaceObj ? (new Date(selectedRaceObj.race_time) - new Date()) < 15 * 60 * 1000 : false;
 
   return (
     <>
@@ -733,16 +733,16 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                   {predictions.map(pred => {
                     let statusColor = "#94a3b8";
                     let statusText = "Đang chờ";
-                    if (pred.is_correct === true) { statusColor = "#22c55e"; statusText = "Thắng"; }
-                    if (pred.is_correct === false) { statusColor = "#ef4444"; statusText = "Thua"; }
+                    if (pred.status === "Won") { statusColor = "#22c55e"; statusText = "Thắng"; }
+                    if (pred.status === "Lost") { statusColor = "#ef4444"; statusText = "Thua"; }
 
                     return (
                       <tr key={pred.id} style={{ borderBottom: "1px solid #1e293b" }}>
-                        <td style={{ padding: "12px 8px" }}>{pred.race?.name || `Trận #${pred.race_id}`}</td>
-                        <td style={{ padding: "12px 8px" }}>{pred.horse?.name || `Ngựa #${pred.horse_id}`}</td>
-                        <td style={{ padding: "12px 8px" }}>{new Date(pred.created_at).toLocaleString()}</td>
+                        <td style={{ padding: "12px 8px" }}>{pred.race_name || `Trận #${pred.race_id}`}</td>
+                        <td style={{ padding: "12px 8px" }}>{pred.horse_name || `Ngựa #${pred.horse_id}`}</td>
+                        <td style={{ padding: "12px 8px" }}>{pred.prediction_date ? new Date(pred.prediction_date).toLocaleString() : "—"}</td>
                         <td style={{ padding: "12px 8px", color: statusColor, fontWeight: "600" }}>{statusText}</td>
-                        <td style={{ padding: "12px 8px" }}>{pred.points_awarded > 0 ? `+${pred.points_awarded}` : "0"}</td>
+                        <td style={{ padding: "12px 8px" }}>{pred.status === "Won" ? "+10" : "0"}</td>
                       </tr>
                     );
                   })}
