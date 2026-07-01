@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr
 
 class Token(BaseModel):
     access_token: str
@@ -9,12 +9,16 @@ class Token(BaseModel):
 class TokenPayload(BaseModel):
     sub: Optional[str] = None
 
+    model_config = {"extra": "ignore"}
+
 # Profiles schemas
 class JockeyProfileBase(BaseModel):
     bio: Optional[str] = None
     weight: Optional[float] = None
     height: Optional[float] = None
     experience_years: Optional[int] = 0
+    phone: Optional[str] = None
+    gender: Optional[str] = None
 
 class JockeyProfileCreate(JockeyProfileBase):
     pass
@@ -29,27 +33,10 @@ class JockeyProfileOut(JockeyProfileBase):
     full_name: Optional[str] = None
     email: Optional[EmailStr] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
 
 class OwnerProfileBase(BaseModel):
     company_name: Optional[str] = None
-    age: Optional[int] = Field(default=None, ge=18, le=100)
-    experience_years: Optional[int] = Field(default=0, ge=0)
-    occupation: Optional[str] = None
-    address: Optional[str] = None
-    nationality: Optional[str] = None
-    social_link: Optional[str] = None
-    bio: Optional[str] = Field(default=None, max_length=300)
-
-    @field_validator("social_link")
-    @classmethod
-    def validate_social_link(cls, value):
-        if not value:
-            return value
-        if value.startswith("http://") or value.startswith("https://"):
-            return value
-        raise ValueError("Social link must start with http:// or https://")
 
 class OwnerProfileCreate(OwnerProfileBase):
     pass
@@ -57,37 +44,15 @@ class OwnerProfileCreate(OwnerProfileBase):
 class OwnerProfileOut(OwnerProfileBase):
     id: int
     user_id: int
-    full_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    phone_number: Optional[str] = None
-    avatar: Optional[str] = None
-    joined_date: Optional[datetime] = None
 
     class Config:
         from_attributes = True
 
 class OwnerProfileUpdate(BaseModel):
     full_name: Optional[str] = None
-    email: Optional[EmailStr] = None
     phone_number: Optional[str] = None
     avatar: Optional[str] = None
     company_name: Optional[str] = None
-    age: Optional[int] = Field(default=None, ge=18, le=100)
-    experience_years: Optional[int] = Field(default=None, ge=0)
-    occupation: Optional[str] = None
-    address: Optional[str] = None
-    nationality: Optional[str] = None
-    social_link: Optional[str] = None
-    bio: Optional[str] = Field(default=None, max_length=300)
-
-    @field_validator("social_link")
-    @classmethod
-    def validate_social_link(cls, value):
-        if not value:
-            return value
-        if value.startswith("http://") or value.startswith("https://"):
-            return value
-        raise ValueError("Social link must start with http:// or https://")
 
 class OwnerProfileDetailOut(OwnerProfileBase):
     id: int
@@ -97,7 +62,6 @@ class OwnerProfileDetailOut(OwnerProfileBase):
     phone_number: Optional[str] = None
     avatar: Optional[str] = None
     company_name: Optional[str] = None
-    joined_date: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -197,22 +161,8 @@ class UserCreate(UserBase):
     height: Optional[float] = None
     experience_years: Optional[int] = 0
     company_name: Optional[str] = None
-    age: Optional[int] = Field(default=None, ge=18, le=100)
-    occupation: Optional[str] = None
-    address: Optional[str] = None
-    nationality: Optional[str] = None
-    social_link: Optional[str] = None
     certification_level: Optional[str] = None
     favorite_horse_breed: Optional[str] = None
-
-    @field_validator("social_link")
-    @classmethod
-    def validate_owner_social_link(cls, value):
-        if not value:
-            return value
-        if value.startswith("http://") or value.startswith("https://"):
-            return value
-        raise ValueError("Social link must start with http:// or https://")
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None

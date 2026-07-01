@@ -24,7 +24,6 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   // FIX (Task 4): KHÔNG còn dùng localStorage. Hồ sơ được nạp từ API
   // (GET /jockeys/profile) khi component mount, và lưu xuống Database
   // qua API (PUT /jockeys/profile) khi submit form.
-  // - Bỏ field "phone" vì cột này chưa tồn tại trong bảng JockeyProfiles.
   // - "experience" (text tự do) đổi thành "experience_years" (số nguyên)
   //   để khớp đúng cột experience_years (INT) trong Database.
   const [profile, setProfile] = useState({
@@ -33,6 +32,8 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     height: "",
     experience_years: "",
     email: user?.email || "",
+    phone: "",
+    gender: "",
     bio: "",
   });
   const [profileLoading, setProfileLoading] = useState(true);
@@ -64,6 +65,8 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
         height: data?.height ?? "",
         experience_years: data?.experience_years ?? "",
         email: data?.email ?? user?.email ?? "",
+        phone: data?.phone ?? "",
+        gender: data?.gender ?? "",
         bio: data?.bio ?? "",
       });
     } catch (err) {
@@ -73,38 +76,26 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
   };
 
-  const loadTournaments = async () => {
+  const loadRankings = async () => {
     try {
-      const tourData = await api.get("/tournaments");
+      const [rankData, tourData] = await Promise.all([
+        api.get("/results/rankings"),
+        api.get("/tournaments"),
+      ]);
+      setRankings(Array.isArray(rankData) ? rankData : []);
       setTournaments(Array.isArray(tourData) ? tourData : []);
     } catch (err) {
-      // ignore
+      // rankings không critical
+    } finally {
+      setRankingsLoading(false);
     }
   };
 
   useEffect(() => {
     loadData();
     loadProfile();
-    loadTournaments();
+    loadRankings();
   }, []);
-
-  useEffect(() => {
-    const loadRankingsFiltered = async () => {
-      try {
-        setRankingsLoading(true);
-        const url = selectedTournament === "all"
-          ? "/results/rankings"
-          : `/results/rankings?tournament_id=${selectedTournament}`;
-        const rankData = await api.get(url);
-        setRankings(Array.isArray(rankData) ? rankData : []);
-      } catch (err) {
-        // ignore
-      } finally {
-        setRankingsLoading(false);
-      }
-    };
-    loadRankingsFiltered();
-  }, [selectedTournament]);
 
   const respondInvitation = async (id, status) => {
     const actionName = status === 'ACCEPTED' ? 'CHẤP NHẬN' : 'TỪ CHỐI';
@@ -153,6 +144,13 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     else if (expYears < 0) errors.experience_years = "Số năm kinh nghiệm không thể âm";
     else if (expYears > 50) errors.experience_years = "Số năm kinh nghiệm không hợp lệ (tối đa 50 năm)";
 
+    if (profile.phone && profile.phone.trim()) {
+      const phoneRegex = /^[0-9]{9,11}$/;
+      if (!phoneRegex.test(profile.phone.trim().replace(/\s/g, ""))) {
+        errors.phone = "Số điện thoại không hợp lệ (9-11 chữ số)";
+      }
+    }
+
     return errors;
   };
 
@@ -175,6 +173,8 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
         height: profile.height === "" ? null : Number(profile.height),
         experience_years: Number(profile.experience_years),
         email: profile.email.trim(),
+        phone: profile.phone?.trim() || null,
+        gender: profile.gender || null,
         bio: profile.bio?.trim() || null,
       };
       const updated = await api.put("/jockeys/profile", payload);
@@ -184,6 +184,8 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
         height: updated?.height ?? "",
         experience_years: updated?.experience_years ?? "",
         email: updated?.email ?? profile.email,
+        phone: updated?.phone ?? profile.phone,
+        gender: updated?.gender ?? profile.gender,
         bio: updated?.bio ?? "",
       });
       setProfileErrors({});
@@ -213,7 +215,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   // để tránh crash khi participants bị thiếu/null hoặc user chưa có full_name
   const myRaces = races.filter(r =>
     Array.isArray(r?.participants) &&
-    r.participants.some(p => p.jockey_name === profile.full_name)
+    r.participants.some(p => p.jockey_name === user?.full_name)
   );
 
   return (
@@ -289,7 +291,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                   <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
                 ) : (
                   myRaces.map(rc => {
-                    const myParticipation = rc.participants.find(p => p.jockey_name === profile.full_name);
+                    const myParticipation = rc.participants.find(p => p.jockey_name === user?.full_name);
                     return (
                       <tr key={rc.id}>
                         <td style={{ fontWeight: "700" }}>{rc.name}</td>
@@ -347,6 +349,34 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                   onChange={(e) => { setProfile({ ...profile, email: e.target.value }); setProfileErrors({ ...profileErrors, email: "" }); }}
                 />
                 {profileErrors.email && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.email}</span>}
+              </div>
+
+              {/* Số điện thoại */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Số điện thoại</label>
+                <input
+                  type="tel"
+                  value={profile.phone}
+                  placeholder="Ví dụ: 0912345678"
+                  style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.phone ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => { setProfile({ ...profile, phone: e.target.value }); setProfileErrors({ ...profileErrors, phone: "" }); }}
+                />
+                {profileErrors.phone && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.phone}</span>}
+              </div>
+
+              {/* Giới tính */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Giới tính</label>
+                <select
+                  value={profile.gender}
+                  style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: profile.gender ? "#fff" : "#64748b" }}
+                  onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
+                >
+                  <option value="">-- Chọn giới tính --</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                  <option value="other">Khác</option>
+                </select>
               </div>
 
               {/* Cân nặng + Chiều cao trên cùng 1 hàng */}
@@ -444,13 +474,12 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
           {rankingsLoading ? (
             <div style={styles.loading}>Đang tải dữ liệu giải thưởng...</div>
           ) : (() => {
-            // Lọc chỉ lấy ranking của Jockey hiện tại và map tournament_id động nếu có bộ lọc
-            const myRankings = rankings
-              .filter(r => r.entity_type === "JOCKEY" && r.entity_name === user?.full_name)
-              .map(r => ({
-                ...r,
-                tournament_id: selectedTournament !== "all" ? Number(selectedTournament) : r.tournament_id
-              }));
+            // Lọc chỉ lấy ranking của Jockey hiện tại
+            const myRankings = rankings.filter(r =>
+              r.entity_type === "JOCKEY" &&
+              r.entity_name === user?.full_name &&
+              (selectedTournament === "all" || String(r.tournament_id) === selectedTournament)
+            );
 
             // Thống kê tổng hợp
             const totalPoints = myRankings.reduce((sum, r) => sum + (r.points || 0), 0);

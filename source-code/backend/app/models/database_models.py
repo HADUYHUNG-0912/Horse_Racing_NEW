@@ -24,7 +24,6 @@ class User(Base):
     avatar = Column(String(255), nullable=True)
     role_id = Column(Integer, ForeignKey('Roles.id'), nullable=False)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=get_vietnam_now_naive)
     
     role = relationship("Role", back_populates="users")
     
@@ -43,6 +42,8 @@ class JockeyProfile(Base):
     weight = Column(Numeric(5, 2), nullable=True)
     height = Column(Numeric(5, 2), nullable=True)
     experience_years = Column(Integer, default=0)
+    phone = Column(String(20), nullable=True)
+    gender = Column(String(10), nullable=True)
     
     user = relationship("User", back_populates="jockey_profile")
     registrations = relationship("Registration", back_populates="jockey")
@@ -54,37 +55,10 @@ class HorseOwnerProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
     company_name = Column(Unicode(100), nullable=True)
-    age = Column(Integer, nullable=True)
-    experience_years = Column(Integer, default=0)
-    occupation = Column(Unicode(100), nullable=True)
-    address = Column(Unicode(255), nullable=True)
-    nationality = Column(Unicode(100), nullable=True)
-    social_link = Column(String(255), nullable=True)
-    bio = Column(UnicodeText, nullable=True)
     
     user = relationship("User", back_populates="owner_profile")
     horses = relationship("Horse", back_populates="owner", cascade="all, delete-orphan")
     invitations = relationship("JockeyInvitation", back_populates="owner")
-
-    @property
-    def full_name(self):
-        return self.user.full_name if self.user else None
-
-    @property
-    def email(self):
-        return self.user.email if self.user else None
-
-    @property
-    def phone_number(self):
-        return self.user.phone_number if self.user else None
-
-    @property
-    def avatar(self):
-        return self.user.avatar if self.user else None
-
-    @property
-    def joined_date(self):
-        return self.user.created_at if self.user else None
 
 class RefereeProfile(Base):
     __tablename__ = 'RefereeProfiles'
