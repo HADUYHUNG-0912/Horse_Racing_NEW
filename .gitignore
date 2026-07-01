@@ -218,13 +218,16 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Project custom reports, LaTeX and utilities
-Báo cáo*.md
-Báo_cáo*.md
-report-latex/
-*.whl
-jira_creator.py
-jira_import_tasks.csv
-team-checklist.md
-team_task_assignment.md
-test.tex
+# LaTeX build files
+*.aux
+*.out
+*.toc
+*.log
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Temporary files
+*.tmp
