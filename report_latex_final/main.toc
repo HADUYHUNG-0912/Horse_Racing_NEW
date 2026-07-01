@@ -1,0 +1,23 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{Acknowledgement}{2}{chapter*.2}%
+\contentsline {chapter}{Definition and Acronyms}{3}{chapter*.3}%
+\contentsline {chapter}{\numberline {1}Project Introduction}{4}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Overview}{4}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Project Information}{4}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Project Team}{4}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}Product Background}{4}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Existing Systems}{5}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Prism Horse}{5}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}RaceDB}{6}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}Market Analysis}{7}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Business Opportunity}{7}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Software Product Vision}{7}{section.1.6}%
+\contentsline {section}{\numberline {1.7}Project Scope \& Limitations}{7}{section.1.7}%
+\contentsline {subsection}{\numberline {1.7.1}Major Features}{7}{subsection.1.7.1}%
+\contentsline {subsubsection}{Major Features for Admin}{7}{subsection.1.7.1}%
+\contentsline {subsubsection}{Major Features for Horse Owner}{7}{subsection.1.7.1}%
+\contentsline {subsection}{\numberline {1.7.2}Limitations \& Exclusions}{7}{subsection.1.7.2}%
+\contentsline {chapter}{\numberline {2}Software Project Management Plan}{8}{chapter.2}%
+\contentsline {chapter}{\numberline {3}Software Requirement Specification}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Functional Requirements}{9}{section.3.1}%
+\contentsline {chapter}{\numberline {4}Software Design Description}{10}{chapter.4}%
