@@ -2,6 +2,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Date, Numeric, Text, Boolean, Unicode, UnicodeText
 from sqlalchemy.orm import relationship
 from app.core.database import Base
+from app.core.timezone_utils import get_vietnam_now_naive
 
 class Role(Base):
     __tablename__ = 'Roles'
@@ -19,8 +20,11 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
     full_name = Column(Unicode(100), nullable=False)
+    phone_number = Column(String(20), nullable=True)
+    avatar = Column(String(255), nullable=True)
     role_id = Column(Integer, ForeignKey('Roles.id'), nullable=False)
     is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=get_vietnam_now_naive)
     
     role = relationship("Role", back_populates="users")
     
@@ -50,10 +54,37 @@ class HorseOwnerProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
     company_name = Column(Unicode(100), nullable=True)
+    age = Column(Integer, nullable=True)
+    experience_years = Column(Integer, default=0)
+    occupation = Column(Unicode(100), nullable=True)
+    address = Column(Unicode(255), nullable=True)
+    nationality = Column(Unicode(100), nullable=True)
+    social_link = Column(String(255), nullable=True)
+    bio = Column(UnicodeText, nullable=True)
     
     user = relationship("User", back_populates="owner_profile")
     horses = relationship("Horse", back_populates="owner", cascade="all, delete-orphan")
     invitations = relationship("JockeyInvitation", back_populates="owner")
+
+    @property
+    def full_name(self):
+        return self.user.full_name if self.user else None
+
+    @property
+    def email(self):
+        return self.user.email if self.user else None
+
+    @property
+    def phone_number(self):
+        return self.user.phone_number if self.user else None
+
+    @property
+    def avatar(self):
+        return self.user.avatar if self.user else None
+
+    @property
+    def joined_date(self):
+        return self.user.created_at if self.user else None
 
 class RefereeProfile(Base):
     __tablename__ = 'RefereeProfiles'
@@ -71,6 +102,7 @@ class SpectatorProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False, unique=True)
     favorite_horse_breed = Column(Unicode(50), nullable=True)
+    favorite_jockey = Column(Unicode(100), nullable=True)
     reward_points = Column(Integer, default=0, nullable=False)
     
     user = relationship("User", back_populates="spectator_profile")
@@ -108,6 +140,7 @@ class Tournament(Base):
     rounds = relationship("Round", back_populates="tournament", cascade="all, delete-orphan")
     registrations = relationship("Registration", back_populates="tournament", cascade="all, delete-orphan")
     invitations = relationship("JockeyInvitation", back_populates="tournament", cascade="all, delete-orphan")
+    prizes = relationship("Prize", back_populates="tournament", cascade="all, delete-orphan")
 
 class Round(Base):
     __tablename__ = 'Rounds'
@@ -145,7 +178,7 @@ class Registration(Base):
     horse_id = Column(Integer, ForeignKey('Horses.id'), nullable=False)
     jockey_id = Column(Integer, ForeignKey('JockeyProfiles.id'), nullable=False)
     status = Column(String(50), default="PENDING") # PENDING, APPROVED, REJECTED
-    registration_date = Column(DateTime, default=datetime.datetime.utcnow)
+    registration_date = Column(DateTime, default=get_vietnam_now_naive)
     
     tournament = relationship("Tournament", back_populates="registrations")
     horse = relationship("Horse", back_populates="registrations")
@@ -162,12 +195,28 @@ class JockeyInvitation(Base):
     tournament_id = Column(Integer, ForeignKey('Tournaments.id'), nullable=False)
     message = Column(UnicodeText, nullable=True)
     status = Column(String(50), default="PENDING") # PENDING, ACCEPTED, REJECTED
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=get_vietnam_now_naive)
     
     owner = relationship("HorseOwnerProfile", back_populates="invitations")
     jockey = relationship("JockeyProfile", back_populates="invitations")
     horse = relationship("Horse", back_populates="invitations")
     tournament = relationship("Tournament", back_populates="invitations")
+
+    @property
+    def owner_name(self):
+        return self.owner.user.full_name if self.owner and self.owner.user else None
+
+    @property
+    def horse_name(self):
+        return self.horse.name if self.horse else None
+
+    @property
+    def tournament_name(self):
+        return self.tournament.name if self.tournament else None
+
+    @property
+    def jockey_name(self):
+        return self.jockey.user.full_name if self.jockey and self.jockey.user else None
 
 class RaceParticipant(Base):
     __tablename__ = 'RaceParticipants'
@@ -205,7 +254,7 @@ class Violation(Base):
     description = Column(UnicodeText, nullable=False)
     penalty = Column(Unicode(100), nullable=True)
     fine_amount = Column(Numeric(10, 2), default=0.00)
-    violation_date = Column(DateTime, default=datetime.datetime.utcnow)
+    violation_date = Column(DateTime, default=get_vietnam_now_naive)
     
     participant = relationship("RaceParticipant", back_populates="violations")
 
@@ -217,7 +266,7 @@ class Ranking(Base):
     entity_id = Column(Integer, nullable=False)
     points = Column(Integer, nullable=False, default=0)
     rank = Column(Integer, nullable=False)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=get_vietnam_now_naive)
 
 class Prediction(Base):
     __tablename__ = 'Predictions'
@@ -226,7 +275,7 @@ class Prediction(Base):
     user_id = Column(Integer, ForeignKey('Users.id', ondelete="CASCADE"), nullable=False)
     race_participant_id = Column(Integer, ForeignKey('RaceParticipants.id'), nullable=False)
     predicted_rank = Column(Integer, nullable=False)
-    prediction_date = Column(DateTime, default=datetime.datetime.utcnow)
+    prediction_date = Column(DateTime, default=get_vietnam_now_naive)
     status = Column(String(50), default="PENDING") # PENDING, Won, Lost
     
     user = relationship("User", back_populates="predictions")
@@ -240,6 +289,40 @@ class RaceInspection(Base):
     weather = Column(Unicode(255), nullable=True)
     track_condition = Column(Unicode(255), nullable=True)
     horse_health = Column(UnicodeText, nullable=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=get_vietnam_now_naive)
     
     race = relationship("Race", back_populates="inspection")
+
+class Prize(Base):
+    """Giải thưởng được thiết kế trước cho một tournament."""
+    __tablename__ = 'Prizes'
+
+    id = Column(Integer, primary_key=True, index=True)
+    tournament_id = Column(Integer, ForeignKey('Tournaments.id', ondelete="CASCADE"), nullable=False)
+    position = Column(Integer, nullable=False)   # Hạng được trao giải (1=nhất, 2=nhì ...)
+    title = Column(Unicode(100), nullable=False)  # "Giải Nhất", "Giải Nhì", ...
+    prize_value = Column(Numeric(15, 2), default=0.00)
+    description = Column(UnicodeText, nullable=True)
+    created_at = Column(DateTime, default=get_vietnam_now_naive)
+
+    tournament = relationship("Tournament", back_populates="prizes")
+    award = relationship("Award", uselist=False, back_populates="prize", cascade="all, delete-orphan")
+
+class Award(Base):
+    """Bản ghi trao giải – tự động sinh ra khi Tournament COMPLETED."""
+    __tablename__ = 'Awards'
+
+    id = Column(Integer, primary_key=True, index=True)
+    prize_id = Column(Integer, ForeignKey('Prizes.id', ondelete="CASCADE"), nullable=False)
+    registration_id = Column(Integer, ForeignKey('Registrations.id'), nullable=False)
+    awarded_at = Column(DateTime, default=get_vietnam_now_naive)
+    total_points = Column(Integer, nullable=False, default=0)
+    notes = Column(UnicodeText, nullable=True)
+
+    prize = relationship("Prize", back_populates="award")
+    registration = relationship("Registration")
+
+    @property
+    def tournament(self):
+        """Convenience property – trả về tournament thông qua prize."""
+        return self.prize.tournament

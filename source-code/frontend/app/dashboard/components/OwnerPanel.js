@@ -4,12 +4,31 @@ import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
 
+const emptyOwnerProfileForm = {
+  full_name: "",
+  email: "",
+  phone_number: "",
+  company_name: "",
+  avatar: "",
+  age: "",
+  experience_years: "",
+  occupation: "",
+  address: "",
+  nationality: "",
+  social_link: "",
+  bio: ""
+};
+
 export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [horses, setHorses] = useState([]);
   const [jockeys, setJockeys] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [tournaments, setTournaments] = useState([]);
   const [registrations, setRegistrations] = useState([]);
+  const [ownerProfile, setOwnerProfile] = useState(null);
+  const [upcomingRaces, setUpcomingRaces] = useState([]);
+  const [resultHistory, setResultHistory] = useState([]);
+  const [profileForm, setProfileForm] = useState(emptyOwnerProfileForm);
   const [loading, setLoading] = useState(true);
 
   // Form states
@@ -19,6 +38,20 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [editHorseForm, setEditHorseForm] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
 
   const asArray = (data) => Array.isArray(data) ? data : data?.items || data?.data || [];
+  const getOwnerProfileForm = (profile) => ({
+    full_name: profile?.full_name || "",
+    email: profile?.email || "",
+    phone_number: profile?.phone_number || "",
+    company_name: profile?.company_name || "",
+    avatar: profile?.avatar || "",
+    age: profile?.age != null ? String(profile.age) : "",
+    experience_years: profile?.experience_years != null ? String(profile.experience_years) : "",
+    occupation: profile?.occupation || "",
+    address: profile?.address || "",
+    nationality: profile?.nationality || "",
+    social_link: profile?.social_link || "",
+    bio: profile?.bio || ""
+  });
   const getJockeyLabel = (jockey) => {
     const name = jockey.full_name || jockey.username || `Jockey #${jockey.id}`;
     const experience = Number.isFinite(Number(jockey.experience_years))
@@ -40,6 +73,16 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
 
       const tours = await api.get("/tournaments");
       setTournaments(asArray(tours));
+
+      const ownerProfileData = await api.get("/owners/profile");
+      setOwnerProfile(ownerProfileData);
+      setProfileForm(getOwnerProfileForm(ownerProfileData));
+
+      const races = await api.get("/owners/upcoming-races");
+      setUpcomingRaces(Array.isArray(races) ? races : []);
+
+      const results = await api.get("/owners/results");
+      setResultHistory(Array.isArray(results) ? results : []);
 
       // Fetch registrations for each tournament (Task 3 - Thuỳ Anh)
       const allRegistrations = [];
@@ -66,6 +109,58 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const saveOwnerProfile = async (e) => {
+    e.preventDefault();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const trimmedEmail = profileForm.email.trim();
+    const trimmedSocialLink = profileForm.social_link.trim();
+    const age = profileForm.age === "" ? null : Number(profileForm.age);
+    const experienceYears = profileForm.experience_years === "" ? null : Number(profileForm.experience_years);
+
+    if (!emailPattern.test(trimmedEmail)) {
+      showMsg("Email khong dung dinh dang!", "error");
+      return;
+    }
+    if (age !== null && (!Number.isInteger(age) || age < 18 || age > 100)) {
+      showMsg("Tuoi Owner phai la so nguyen tu 18 den 100!", "error");
+      return;
+    }
+    if (experienceYears !== null && (!Number.isInteger(experienceYears) || experienceYears < 0)) {
+      showMsg("Kinh nghiem phai la so nguyen khong am!", "error");
+      return;
+    }
+    if (trimmedSocialLink && !/^https?:\/\/.+\..+/.test(trimmedSocialLink)) {
+      showMsg("Website / mang xa hoi phai la URL bat dau bang http:// hoac https://", "error");
+      return;
+    }
+    if (profileForm.bio.length > 300) {
+      showMsg("Mo ta ngan khong duoc vuot qua 300 ky tu!", "error");
+      return;
+    }
+
+    try {
+      const updatedProfile = await api.put("/owners/profile", {
+        full_name: profileForm.full_name.trim(),
+        email: trimmedEmail,
+        phone_number: profileForm.phone_number.trim() || null,
+        company_name: profileForm.company_name.trim() || null,
+        avatar: profileForm.avatar.trim() || null,
+        age,
+        experience_years: experienceYears,
+        occupation: profileForm.occupation.trim() || null,
+        address: profileForm.address.trim() || null,
+        nationality: profileForm.nationality.trim() || null,
+        social_link: trimmedSocialLink || null,
+        bio: profileForm.bio.trim() || null
+      });
+      setOwnerProfile(updatedProfile);
+      setProfileForm(getOwnerProfileForm(updatedProfile));
+      showMsg("Cập nhật hồ sơ chủ sở hữu thành công!");
+    } catch (err) {
+      showMsg(err.message, "error");
+    }
+  };
 
   const createHorse = async (e) => {
     e.preventDefault();
@@ -218,9 +313,35 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
               </div>
               <div className="form-group">
                 <label>Giống ngựa</label>
-                <input type="text" className="input-field" placeholder="Thoroughbred, Arabian..." required
+                <select className="input-field" required
                   value={editingHorse ? editHorseForm.breed : newHorse.breed} 
-                  onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (editingHorse) {
+                      setEditHorseForm({ ...editHorseForm, breed: val });
+                    } else {
+                      setNewHorse({ ...newHorse, breed: val });
+                    }
+                  }}>
+                  <option value="">-- Chọn giống ngựa --</option>
+                  <option value="Thoroughbred">Thoroughbred</option>
+                  <option value="Arabian">Arabian</option>
+                  <option value="Quarter Horse">Quarter Horse</option>
+                  <option value="Appaloosa">Appaloosa</option>
+                  <option value="Morgan">Morgan</option>
+                  <option value="Standardbred">Standardbred</option>
+                  <option value="Warmblood">Warmblood</option>
+                  <option value="Paint Horse">Paint Horse</option>
+                  <option value="__other__">Khác</option>
+                </select>
+                {(editingHorse ? editHorseForm.breed !== "" && !["Thoroughbred","Arabian","Quarter Horse","Appaloosa","Morgan","Standardbred","Warmblood","Paint Horse"].includes(editHorseForm.breed) : newHorse.breed !== "" && !["Thoroughbred","Arabian","Quarter Horse","Appaloosa","Morgan","Standardbred","Warmblood","Paint Horse"].includes(newHorse.breed)) && (
+                  <>
+                    <input type="text" className="input-field" placeholder="Nhập giống ngựa khác..." style={{ marginTop: "8px" }} required
+                      value={editingHorse ? (editHorseForm.breed === "__other__" ? "" : editHorseForm.breed) : (newHorse.breed === "__other__" ? "" : newHorse.breed)}
+                      onChange={(e) => editingHorse ? setEditHorseForm({ ...editHorseForm, breed: e.target.value }) : setNewHorse({ ...newHorse, breed: e.target.value })} />
+                    <p style={{ color: "#eab308", fontSize: "12px", marginTop: "4px" }}>⚠️ Giống ngựa này chưa có trong hệ thống, vui lòng kiểm tra lại.</p>
+                  </>
+                )}
               </div>
               <div className="form-group">
                 <label>Giới tính</label>
@@ -476,6 +597,291 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Lịch thi đấu của Ngựa (Owner) */}
+      {activeTab === "upcoming-races" && (
+        <div style={styles.tabContent}>
+          <h2>📅 Lịch thi đấu của Ngựa</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>
+            Những trận đua sắp tới cho ngựa của bạn.
+          </p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Ngựa</th>
+                  <th>Giải đấu</th>
+                  <th>Ngày giờ</th>
+                  <th>Địa điểm</th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingRaces.length === 0 ? (
+                  <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Không có lịch thi đấu nào sắp tới</td></tr>
+                ) : (
+                  upcomingRaces.map(r => (
+                    <tr key={r.race_id}>
+                      <td style={{ fontWeight: "700" }}>{r.horse_name}</td>
+                      <td>{r.tournament_name}</td>
+                      <td>{formatDateTime(r.race_date)}</td>
+                      <td>{r.location || "Chưa rõ"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "results" && (
+        <div style={styles.tabContent}>
+          <h2>🏁 Kết quả thi đấu</h2>
+          <p style={{ color: "#94a3b8", marginBottom: "16px" }}>
+            Lịch sử xếp hạng và vi phạm của ngựa của bạn.
+          </p>
+          <div style={styles.tableWrapper}>
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th>Ngựa</th>
+                  <th>Cuộc đua</th>
+                  <th>Giải đấu</th>
+                  <th>Rank</th>
+                  <th>Điểm</th>
+                  <th>Ghi chú</th>
+                  <th>Vi phạm</th>
+                </tr>
+              </thead>
+              <tbody>
+                {resultHistory.length === 0 ? (
+                  <tr><td colSpan="7" style={{ textAlign: "center", color: "#64748b" }}>Chưa có kết quả nào</td></tr>
+                ) : (
+                  resultHistory.map(item => (
+                    <tr key={item.id}>
+                      <td style={{ fontWeight: "700" }}>{item.horse_name}</td>
+                      <td>{item.race_name}</td>
+                      <td>{item.tournament_name}</td>
+                      <td>{item.rank ?? "-"}</td>
+                      <td>{item.points ?? "-"}</td>
+                      <td>{item.notes || "-"}</td>
+                      <td>{item.violation_count > 0 ? item.violations : "Không có"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Hồ sơ cá nhân Owner */}
+      {activeTab === "profile" && (
+        <div style={styles.tabContent}>
+          <h2>👤 Hồ sơ cá nhân Chủ Sở Hữu</h2>
+          <div style={styles.splitLayout}>
+            <form onSubmit={saveOwnerProfile} style={styles.formPanel} className="glass">
+              <h3>Chỉnh sửa thông tin</h3>
+              <div className="form-group">
+                <label>Họ tên</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.full_name}
+                  onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  className="input-field"
+                  value={profileForm.email}
+                  onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Số điện thoại</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.phone_number}
+                  onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
+                />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
+                <div className="form-group">
+                  <label>Tuổi</label>
+                  <input
+                    type="number"
+                    className="input-field"
+                    min="18"
+                    max="100"
+                    value={profileForm.age}
+                    onChange={(e) => setProfileForm({ ...profileForm, age: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Kinh nghiệm (năm)</label>
+                  <input
+                    type="number"
+                    className="input-field"
+                    min="0"
+                    value={profileForm.experience_years}
+                    onChange={(e) => setProfileForm({ ...profileForm, experience_years: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Nghề nghiệp</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.occupation}
+                  onChange={(e) => setProfileForm({ ...profileForm, occupation: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Địa chỉ liên hệ</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.address}
+                  onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Quốc tịch</label>
+                <select
+                  className="input-field"
+                  value={profileForm.nationality}
+                  onChange={(e) => setProfileForm({ ...profileForm, nationality: e.target.value })}
+                >
+                  <option value="">-- Chọn quốc tịch --</option>
+                  <option value="Việt Nam">Việt Nam</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="France">France</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Thailand">Thailand</option>
+                  <option value="Malaysia">Malaysia</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Công ty / Tên đội</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.company_name}
+                  onChange={(e) => setProfileForm({ ...profileForm, company_name: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Avatar (URL)</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.avatar}
+                  onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Website / Mạng xã hội</label>
+                <input
+                  type="url"
+                  className="input-field"
+                  placeholder="https://example.com"
+                  value={profileForm.social_link}
+                  onChange={(e) => setProfileForm({ ...profileForm, social_link: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Mô tả ngắn (Bio)</label>
+                <textarea
+                  className="input-field"
+                  maxLength={300}
+                  value={profileForm.bio}
+                  onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
+                />
+                <div style={{ color: "#94a3b8", fontSize: "12px", marginTop: "4px" }}>
+                  {profileForm.bio.length}/300 ký tự
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Ngày tham gia hệ thống</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={`Thành viên từ ${formatDate(ownerProfile?.joined_date)}`}
+                  readOnly
+                />
+              </div>
+              <button type="submit" className="btn-primary">Lưu thay đổi</button>
+            </form>
+
+            <div style={{ flex: 1.2, minWidth: "280px" }}>
+              <div style={styles.formPanel} className="glass">
+                <h3>Thông tin hiện tại</h3>
+                {ownerProfile ? (
+                  <div style={{ display: "grid", gap: "12px" }}>
+                    <div><strong>Họ tên:</strong> {ownerProfile.full_name}</div>
+                    <div><strong>Email:</strong> {ownerProfile.email}</div>
+                    <div><strong>Thành viên từ:</strong> {formatDate(ownerProfile.joined_date)}</div>
+                    <div><strong>SĐT:</strong> {ownerProfile.phone_number || "Chưa có"}</div>
+                    <div><strong>Tuổi:</strong> {ownerProfile.age != null ? `${ownerProfile.age} tuổi` : "Chưa có"}</div>
+                    <div><strong>Kinh nghiệm:</strong> {ownerProfile.experience_years != null ? `${ownerProfile.experience_years} năm` : "Chưa có"}</div>
+                    <div><strong>Nghề nghiệp:</strong> {ownerProfile.occupation || "Chưa có"}</div>
+                    <div><strong>Địa chỉ:</strong> {ownerProfile.address || "Chưa có"}</div>
+                    <div><strong>Quốc tịch:</strong> {ownerProfile.nationality || "Chưa có"}</div>
+                    <div>
+                      <strong>Avatar:</strong>
+                      {ownerProfile.avatar ? (
+                        <img
+                          src={ownerProfile.avatar}
+                          alt="Owner Avatar"
+                          width={80}
+                          height={80}
+                          style={{
+                            display: "block",
+                            marginTop: "8px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            backgroundColor: "#f1f5f9"
+                          }}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/fallback-avatar.png";
+                          }}
+                        />
+                      ) : (
+                        <span>Chưa có</span>
+                      )}
+                    </div>
+                    <div><strong>Công ty:</strong> {ownerProfile.company_name || "Chưa có"}</div>
+                    <div>
+                      <strong>Website / Mạng xã hội:</strong>{" "}
+                      {ownerProfile.social_link ? (
+                        <a href={ownerProfile.social_link} target="_blank" rel="noreferrer">
+                          {ownerProfile.social_link}
+                        </a>
+                      ) : (
+                        "Chưa có"
+                      )}
+                    </div>
+                    <div><strong>Bio:</strong> {ownerProfile.bio || "Chưa có"}</div>
+                  </div>
+                ) : (
+                  <p style={{ color: "#94a3b8" }}>Đang tải thông tin hồ sơ...</p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

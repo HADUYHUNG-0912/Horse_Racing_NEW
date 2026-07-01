@@ -1,5 +1,6 @@
+from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 class Token(BaseModel):
     access_token: str
@@ -33,6 +34,22 @@ class JockeyProfileOut(JockeyProfileBase):
 
 class OwnerProfileBase(BaseModel):
     company_name: Optional[str] = None
+    age: Optional[int] = Field(default=None, ge=18, le=100)
+    experience_years: Optional[int] = Field(default=0, ge=0)
+    occupation: Optional[str] = None
+    address: Optional[str] = None
+    nationality: Optional[str] = None
+    social_link: Optional[str] = None
+    bio: Optional[str] = Field(default=None, max_length=300)
+
+    @field_validator("social_link")
+    @classmethod
+    def validate_social_link(cls, value):
+        if not value:
+            return value
+        if value.startswith("http://") or value.startswith("https://"):
+            return value
+        raise ValueError("Social link must start with http:// or https://")
 
 class OwnerProfileCreate(OwnerProfileBase):
     pass
@@ -40,6 +57,73 @@ class OwnerProfileCreate(OwnerProfileBase):
 class OwnerProfileOut(OwnerProfileBase):
     id: int
     user_id: int
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    joined_date: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class OwnerProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    company_name: Optional[str] = None
+    age: Optional[int] = Field(default=None, ge=18, le=100)
+    experience_years: Optional[int] = Field(default=None, ge=0)
+    occupation: Optional[str] = None
+    address: Optional[str] = None
+    nationality: Optional[str] = None
+    social_link: Optional[str] = None
+    bio: Optional[str] = Field(default=None, max_length=300)
+
+    @field_validator("social_link")
+    @classmethod
+    def validate_social_link(cls, value):
+        if not value:
+            return value
+        if value.startswith("http://") or value.startswith("https://"):
+            return value
+        raise ValueError("Social link must start with http:// or https://")
+
+class OwnerProfileDetailOut(OwnerProfileBase):
+    id: int
+    user_id: int
+    full_name: str
+    email: EmailStr
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    company_name: Optional[str] = None
+    joined_date: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class OwnerUpcomingRace(BaseModel):
+    race_id: int
+    race_name: str
+    horse_name: str
+    tournament_name: str
+    race_date: datetime
+    location: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class OwnerResultHistory(BaseModel):
+    id: int
+    rank: Optional[int] = None
+    points: Optional[int] = None
+    notes: Optional[str] = None
+    horse_name: str
+    race_name: str
+    tournament_name: str
+    race_date: datetime
+    violations: Optional[str] = None
+    violation_count: int = 0
 
     class Config:
         from_attributes = True
@@ -72,6 +156,32 @@ class SpectatorProfileOut(SpectatorProfileBase):
     class Config:
         from_attributes = True
 
+class SpectatorProfileUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    favorite_horse_breed: Optional[str] = None
+    favorite_jockey: Optional[str] = None
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+
+class SpectatorProfileDetailOut(BaseModel):
+    id: int
+    username: str
+    email: str
+    full_name: str
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    favorite_horse_breed: Optional[str] = None
+    favorite_jockey: Optional[str] = None
+    reward_points: int
+    current_rank: Optional[int] = None
+    total_predictions: Optional[int] = 0
+    correct_predictions: Optional[int] = 0
+    accuracy_rate: Optional[float] = 0.0
+
+    class Config:
+        from_attributes = True
+
 # User schemas
 class UserBase(BaseModel):
     username: str
@@ -87,8 +197,22 @@ class UserCreate(UserBase):
     height: Optional[float] = None
     experience_years: Optional[int] = 0
     company_name: Optional[str] = None
+    age: Optional[int] = Field(default=None, ge=18, le=100)
+    occupation: Optional[str] = None
+    address: Optional[str] = None
+    nationality: Optional[str] = None
+    social_link: Optional[str] = None
     certification_level: Optional[str] = None
     favorite_horse_breed: Optional[str] = None
+
+    @field_validator("social_link")
+    @classmethod
+    def validate_owner_social_link(cls, value):
+        if not value:
+            return value
+        if value.startswith("http://") or value.startswith("https://"):
+            return value
+        raise ValueError("Social link must start with http:// or https://")
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None

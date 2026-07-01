@@ -10,6 +10,9 @@ class PredictionCreate(PredictionBase):
     race_id: int
     horse_id: int
 
+class PredictionUpdate(BaseModel):
+    predicted_rank: int
+
 class PredictionOut(PredictionBase):
     id: int
     user_id: int
