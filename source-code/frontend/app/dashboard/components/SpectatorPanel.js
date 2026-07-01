@@ -163,9 +163,18 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
     }
   };
 
+  // Hàm tiện ích parse giờ VN an toàn
+  const parseVNTime = (dateStr) => {
+    if (!dateStr) return new Date();
+    // Nếu ngày chỉ là định dạng YYYY-MM-DD (length 10) thì giữ nguyên
+    if (dateStr.length === 10) return new Date(dateStr);
+    const tzStr = (dateStr.includes('Z') || dateStr.includes('+')) ? dateStr : `${dateStr}+07:00`;
+    return new Date(tzStr);
+  };
+
   const formatDateTime = (dateStr) => {
     if (!dateStr) return "—";
-    const d = new Date(dateStr);
+    const d = parseVNTime(dateStr);
     return d.toLocaleDateString("vi-VN", {
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit"
@@ -196,7 +205,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
   const completedRaces = filteredRaces.filter(rc => rc.status === "COMPLETED");
 
   const selectedRaceObj = races.find(rc => rc.id === parseInt(predictionForm.race_id));
-  const isLocked = selectedRaceObj ? (new Date(selectedRaceObj.race_time) - new Date()) < 15 * 60 * 1000 : false;
+  const isLocked = selectedRaceObj ? (parseVNTime(selectedRaceObj.race_time) - new Date()) < 15 * 60 * 1000 : false;
 
   return (
     <>
@@ -740,7 +749,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
                       <tr key={pred.id} style={{ borderBottom: "1px solid #1e293b" }}>
                         <td style={{ padding: "12px 8px" }}>{pred.race_name || `Trận #${pred.race_id}`}</td>
                         <td style={{ padding: "12px 8px" }}>{pred.horse_name || `Ngựa #${pred.horse_id}`}</td>
-                        <td style={{ padding: "12px 8px" }}>{pred.prediction_date ? new Date(pred.prediction_date).toLocaleString() : "—"}</td>
+                        <td style={{ padding: "12px 8px" }}>{pred.prediction_date ? parseVNTime(pred.prediction_date).toLocaleString("vi-VN") : "—"}</td>
                         <td style={{ padding: "12px 8px", color: statusColor, fontWeight: "600" }}>{statusText}</td>
                         <td style={{ padding: "12px 8px" }}>{pred.status === "Won" ? "+10" : "0"}</td>
                       </tr>
