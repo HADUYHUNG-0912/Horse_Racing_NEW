@@ -37,6 +37,13 @@ class JockeyProfileOut(JockeyProfileBase):
 
 class OwnerProfileBase(BaseModel):
     company_name: Optional[str] = None
+    age: Optional[int] = None
+    experience_years: Optional[int] = 0
+    occupation: Optional[str] = None
+    address: Optional[str] = None
+    nationality: Optional[str] = None
+    social_link: Optional[str] = None
+    bio: Optional[str] = None
 
 class OwnerProfileCreate(OwnerProfileBase):
     pass
@@ -53,6 +60,13 @@ class OwnerProfileUpdate(BaseModel):
     phone_number: Optional[str] = None
     avatar: Optional[str] = None
     company_name: Optional[str] = None
+    age: Optional[int] = None
+    experience_years: Optional[int] = None
+    occupation: Optional[str] = None
+    address: Optional[str] = None
+    nationality: Optional[str] = None
+    social_link: Optional[str] = None
+    bio: Optional[str] = None
 
 class OwnerProfileDetailOut(OwnerProfileBase):
     id: int
@@ -62,6 +76,13 @@ class OwnerProfileDetailOut(OwnerProfileBase):
     phone_number: Optional[str] = None
     avatar: Optional[str] = None
     company_name: Optional[str] = None
+    age: Optional[int] = None
+    experience_years: Optional[int] = 0
+    occupation: Optional[str] = None
+    address: Optional[str] = None
+    nationality: Optional[str] = None
+    social_link: Optional[str] = None
+    bio: Optional[str] = None
 
     class Config:
         from_attributes = True

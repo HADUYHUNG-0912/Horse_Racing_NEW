@@ -373,9 +373,9 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                   onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
                 >
                   <option value="">-- Chọn giới tính --</option>
-                  <option value="male">Nam</option>
-                  <option value="female">Nữ</option>
-                  <option value="other">Khác</option>
+                  <option value="Nam">Nam</option>
+                  <option value="Nữ">Nữ</option>
+                  <option value="Khác">Khác</option>
                 </select>
               </div>
 
