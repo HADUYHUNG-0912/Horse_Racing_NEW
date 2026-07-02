@@ -21,38 +21,54 @@
 \contentsline {section}{\numberline {3.1}Functional Requirements}{11}{section.3.1}%
 \contentsline {subsection}{\numberline {3.1.1}Horse Owner Registration Screen Flow}{11}{subsection.3.1.1}%
 \contentsline {subsection}{\numberline {3.1.2}Screen description}{12}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Web Application}{12}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Horse Owner}{12}{subsection.3.2.1}%
-\contentsline {subsubsection}{Login}{12}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Manage Horses}{13}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Invite Jockey}{14}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}Register Tournament}{15}{subsection.3.2.4}%
-\contentsline {subsection}{\numberline {3.2.5}Registered Tournaments}{16}{subsection.3.2.5}%
-\contentsline {subsection}{\numberline {3.2.6}Horse Schedule}{17}{subsection.3.2.6}%
-\contentsline {subsection}{\numberline {3.2.7}Race Results}{18}{subsection.3.2.7}%
-\contentsline {subsection}{\numberline {3.2.8}Owner Profile}{19}{subsection.3.2.8}%
-\contentsline {subsection}{\numberline {3.2.9}Ranking}{20}{subsection.3.2.9}%
-\contentsline {section}{\numberline {3.3}Non-Functional Requirements}{21}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}External Interfaces}{21}{subsection.3.3.1}%
-\contentsline {subsubsection}{User Interface}{21}{subsection.3.3.1}%
-\contentsline {subsubsection}{Authentication Interface}{22}{subsection.3.3.1}%
-\contentsline {subsubsection}{Database Interface}{22}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Quality Attributes}{22}{subsection.3.3.2}%
-\contentsline {subsubsection}{Usability}{22}{subsection.3.3.2}%
-\contentsline {subsubsection}{Reliability}{23}{subsection.3.3.2}%
-\contentsline {subsubsection}{Performance}{23}{subsection.3.3.2}%
-\contentsline {subsubsection}{Security}{23}{subsection.3.3.2}%
-\contentsline {subsubsection}{Maintainability}{24}{subsection.3.3.2}%
-\contentsline {subsubsection}{Portability}{24}{subsection.3.3.2}%
-\contentsline {section}{\numberline {3.4}Web Application}{24}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Horse Owner}{24}{subsection.3.4.1}%
-\contentsline {subsubsection}{Login}{24}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Manage Horses}{26}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}Invite Jockey}{27}{subsection.3.4.3}%
-\contentsline {subsection}{\numberline {3.4.4}Register Tournament}{28}{subsection.3.4.4}%
-\contentsline {subsection}{\numberline {3.4.5}Registered Tournaments}{29}{subsection.3.4.5}%
-\contentsline {subsection}{\numberline {3.4.6}Horse Schedule}{30}{subsection.3.4.6}%
-\contentsline {subsection}{\numberline {3.4.7}Race Results}{31}{subsection.3.4.7}%
-\contentsline {subsection}{\numberline {3.4.8}Owner Profile}{32}{subsection.3.4.8}%
-\contentsline {subsection}{\numberline {3.4.9}Ranking}{33}{subsection.3.4.9}%
-\contentsline {chapter}{\numberline {4}Software Design Description}{35}{chapter.4}%
+\contentsline {subsection}{\numberline {3.1.3}Non-Functional Requirements}{12}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}External Interfaces}{12}{subsection.3.1.4}%
+\contentsline {subsubsection}{User Interface}{12}{subsection.3.1.4}%
+\contentsline {subsubsection}{Authentication Interface}{12}{subsection.3.1.4}%
+\contentsline {subsubsection}{Database Interface}{13}{subsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.1.5}Quality Attributes}{13}{subsection.3.1.5}%
+\contentsline {subsubsection}{Usability}{13}{subsection.3.1.5}%
+\contentsline {subsubsection}{Reliability}{13}{subsection.3.1.5}%
+\contentsline {subsubsection}{Performance}{14}{subsection.3.1.5}%
+\contentsline {subsubsection}{Security}{14}{subsection.3.1.5}%
+\contentsline {subsubsection}{Maintainability}{14}{subsection.3.1.5}%
+\contentsline {subsubsection}{Portability}{16}{subsection.3.1.5}%
+\contentsline {section}{\numberline {3.2}Web Application}{16}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Horse Owner Login}{16}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Manage Horses}{17}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Invite Jockey}{18}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Register Tournament}{19}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.5}Registered Tournaments}{20}{subsection.3.2.5}%
+\contentsline {subsection}{\numberline {3.2.6}Horse Schedule}{21}{subsection.3.2.6}%
+\contentsline {subsection}{\numberline {3.2.7}Race Results}{22}{subsection.3.2.7}%
+\contentsline {subsection}{\numberline {3.2.8}Owner Profile}{23}{subsection.3.2.8}%
+\contentsline {subsection}{\numberline {3.2.9}Ranking}{24}{subsection.3.2.9}%
+\contentsline {subsection}{\numberline {3.2.10}Admin}{25}{subsection.3.2.10}%
+\contentsline {subsubsection}{Login}{25}{subsection.3.2.10}%
+\contentsline {subsection}{\numberline {3.2.11}System Overview}{26}{subsection.3.2.11}%
+\contentsline {subsection}{\numberline {3.2.12}Manage Tournaments}{27}{subsection.3.2.12}%
+\contentsline {subsection}{\numberline {3.2.13}Schedule Races}{28}{subsection.3.2.13}%
+\contentsline {subsection}{\numberline {3.2.14}Manage Rewards}{29}{subsection.3.2.14}%
+\contentsline {subsection}{\numberline {3.2.15}User Management}{30}{subsection.3.2.15}%
+\contentsline {subsection}{\numberline {3.2.16}Confirm Registrations}{31}{subsection.3.2.16}%
+\contentsline {subsection}{\numberline {3.2.17}Leaderboard}{32}{subsection.3.2.17}%
+\contentsline {section}{\numberline {3.3}Web Application}{33}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Admin}{33}{subsection.3.3.1}%
+\contentsline {subsubsection}{Login}{33}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}System Overview}{34}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Manage Tournaments}{35}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Schedule Races}{36}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.5}Manage Rewards}{37}{subsection.3.3.5}%
+\contentsline {subsection}{\numberline {3.3.6}User Management}{38}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {3.3.7}Confirm Registrations}{39}{subsection.3.3.7}%
+\contentsline {subsection}{\numberline {3.3.8}Leaderboard}{40}{subsection.3.3.8}%
+\contentsline {subsection}{\numberline {3.3.9}Horse Owner Login}{41}{subsection.3.3.9}%
+\contentsline {subsection}{\numberline {3.3.10}Manage Horses}{42}{subsection.3.3.10}%
+\contentsline {subsection}{\numberline {3.3.11}Invite Jockey}{43}{subsection.3.3.11}%
+\contentsline {subsection}{\numberline {3.3.12}Register Tournament}{44}{subsection.3.3.12}%
+\contentsline {subsection}{\numberline {3.3.13}Registered Tournaments}{45}{subsection.3.3.13}%
+\contentsline {subsection}{\numberline {3.3.14}Horse Schedule}{46}{subsection.3.3.14}%
+\contentsline {subsection}{\numberline {3.3.15}Race Results}{47}{subsection.3.3.15}%
+\contentsline {subsection}{\numberline {3.3.16}Owner Profile}{48}{subsection.3.3.16}%
+\contentsline {subsection}{\numberline {3.3.17}Ranking}{49}{subsection.3.3.17}%
+\contentsline {chapter}{\numberline {4}Software Design Description}{51}{chapter.4}%
