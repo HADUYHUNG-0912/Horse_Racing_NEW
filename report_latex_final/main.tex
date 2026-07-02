@@ -1,10 +1,5 @@
 \documentclass[12pt,a4paper]{report}
 
-% ============================================================
-%  ENCODING / FONTS
-%  (No Vietnamese diacritics anywhere in this file anymore,
-%   so plain T1 + lmodern is enough — no vntex/T5 needed)
-% ============================================================
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -18,6 +13,15 @@
 \usepackage{hyperref}
 \usepackage{geometry}
 \geometry{a4paper, margin=1in}
+\usepackage{float}
+\usepackage{titlesec}
+
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\input{styles/colors}
+\input{styles/commands}
+\input{tables/table_template}
 
 \begin{document}
 
@@ -41,18 +45,18 @@
 \hline
 \textbf{Group Members} &
 \begin{tabular}[t]{@{}l@{}}
-Ha Duy Hung \textit{(Team Leader)} \\
-Dinh Thuy Anh \\
-Ho Nguyen Thai Chau \\
-Le Thi My Hue \\
-Bui Le Quang Huy \\
-Nguyen Gia Huy \\
-Doan Thi Thu May
+Ha Duy Hung - 074206002060 \textit{(Team Leader)} \\
+Dinh Thuy Anh - 068306011497 \\
+Ho Nguyen Thai Chau - 054206003685 \\
+Le Thi My Hue - 052306012275 \\
+Bui Le Quang Huy - 231206000064 \\
+Nguyen Gia Huy - 2251120017 \\
+Doan Thi Thu May - 068306004742
 \end{tabular} \\
 \hline
-\textbf{Supervisor} & [Enter supervisor's name] \\
+\textbf{Supervisor} & Lecturer Nguyen Van Chien \\
 \hline
-\textbf{Capstone Project code} & [Enter project code] \\
+\textbf{Capstone Project code} & Hourse Racing Tournament \\
 \hline
 \end{tabular}
 \end{center}
@@ -82,7 +86,7 @@ Doan Thi Thu May
 \newpage
 
 % ============================================================
-%  MAIN CONTENT — 4 CHAPTERS
+%  MAIN CONTENT
 % ============================================================
 \include{documents/project_introduction}
 \include{documents/project_management_plan}

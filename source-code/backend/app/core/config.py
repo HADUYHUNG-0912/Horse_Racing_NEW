@@ -1,5 +1,18 @@
 import os
 
+def load_dotenv():
+    for path in [".env", "source-code/backend/.env", "../.env", "../../.env"]:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, val = line.split("=", 1)
+                        os.environ[key.strip()] = val.strip().strip("'\"")
+            break
+
+load_dotenv()
+
 class Settings:
     PROJECT_NAME: str = "Horse Racing Tournament Management System"
     API_V1_STR: str = "/api/v1"
@@ -8,17 +21,16 @@ class Settings:
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     
-    # SQLEXPRESS connection string
-    # We use mssql+pyodbc with SQL Server driver
+    # SQLEXPRESS connection string cho máy của bạn
+    # Sử dụng dấu gạch chéo xuôi '/' để Python không bao giờ bị lỗi đọc chuỗi (bản chất SQL Server hiểu tốt cả / và \)
     SQL_SERVER_HOST: str = os.getenv("SQL_SERVER_HOST", r"localhost\SQLEXPRESS")
     SQL_SERVER_DB: str = os.getenv("SQL_SERVER_DB", "HorseRacing")
-    
+   
     @property
     def DATABASE_URL(self) -> str:
         # Standard connection string for SQLAlchemy with pyodbc
-        # We need Encrypt=no and TrustServerCertificate=yes for local SQLEXPRESS development
         connection_uri = (
-            f"mssql+pyodbc://@{self.SQL_SERVER_HOST}/{self.SQL_SERVER_DB}"
+            f"mssql+pyodbc://{self.SQL_SERVER_HOST}/{self.SQL_SERVER_DB}"
             "?driver=ODBC+Driver+17+for+SQL+Server"
             "&trusted_connection=yes"
             "&Encrypt=no"

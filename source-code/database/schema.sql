@@ -11,6 +11,9 @@ USE HorseRacing;
 GO
 
 -- Drop tables if they exist to allow clean recreations
+IF OBJECT_ID('Awards', 'U') IS NOT NULL DROP TABLE Awards;
+IF OBJECT_ID('Prizes', 'U') IS NOT NULL DROP TABLE Prizes;
+IF OBJECT_ID('RaceInspections', 'U') IS NOT NULL DROP TABLE RaceInspections;
 IF OBJECT_ID('Predictions', 'U') IS NOT NULL DROP TABLE Predictions;
 IF OBJECT_ID('Rankings', 'U') IS NOT NULL DROP TABLE Rankings;
 IF OBJECT_ID('Violations', 'U') IS NOT NULL DROP TABLE Violations;
@@ -43,7 +46,10 @@ CREATE TABLE Users (
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     full_name VARCHAR(100) NOT NULL,
-    role_id INT NOT NULL FOREIGN KEY REFERENCES Roles(id)
+    phone_number VARCHAR(20) NULL,
+    avatar VARCHAR(255) NULL,
+    role_id INT NOT NULL FOREIGN KEY REFERENCES Roles(id),
+    is_active BIT DEFAULT 1
 );
 
 -- 3. JockeyProfiles table
@@ -74,7 +80,9 @@ CREATE TABLE RefereeProfiles (
 CREATE TABLE SpectatorProfiles (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(id) ON DELETE CASCADE,
-    favorite_horse_breed NVARCHAR(50) NULL
+    favorite_horse_breed NVARCHAR(50) NULL,
+    favorite_jockey NVARCHAR(100) NULL,
+    reward_points INT NOT NULL DEFAULT 0
 );
 
 -- 7. Horses table
@@ -173,6 +181,16 @@ CREATE TABLE Violations (
     violation_date DATETIME DEFAULT GETDATE()
 );
 
+-- 15.5. RaceInspections table
+CREATE TABLE RaceInspections (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    race_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Races(id) ON DELETE CASCADE,
+    weather NVARCHAR(255) NULL,
+    track_condition NVARCHAR(255) NULL,
+    horse_health NVARCHAR(MAX) NULL,
+    created_at DATETIME DEFAULT GETDATE()
+);
+
 -- 16. Rankings table
 CREATE TABLE Rankings (
     id INT IDENTITY(1,1) PRIMARY KEY,
@@ -194,6 +212,29 @@ CREATE TABLE Predictions (
 );
 GO
 
+-- 18. Prizes table (Giải thưởng của tournament)
+CREATE TABLE Prizes (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    tournament_id INT NOT NULL FOREIGN KEY REFERENCES Tournaments(id) ON DELETE CASCADE,
+    position INT NOT NULL,               -- Hạng được trao giải (1 = nhất, 2 = nhì, ...)
+    title NVARCHAR(100) NOT NULL,         -- Tên giải: "Giải Nhất", "Giải Nhì", ...
+    prize_value DECIMAL(15,2) DEFAULT 0.00, -- Giá trị giải thưởng (tiền/hiện vật)
+    description NVARCHAR(MAX) NULL,       -- Mô tả thêm về giải thưởng
+    created_at DATETIME DEFAULT GETDATE(),
+    CONSTRAINT UC_Prize_Position UNIQUE (tournament_id, position)
+);
+
+-- 19. Awards table (Bản ghi trao giải – tự động tạo khi Tournament COMPLETED)
+CREATE TABLE Awards (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    prize_id INT NOT NULL FOREIGN KEY REFERENCES Prizes(id) ON DELETE CASCADE,
+    registration_id INT NOT NULL FOREIGN KEY REFERENCES Registrations(id),
+    awarded_at DATETIME DEFAULT GETDATE(),
+    total_points INT NOT NULL DEFAULT 0,  -- Tổng điểm tích lũy trong tournament
+    notes NVARCHAR(MAX) NULL
+);
+GO
+
 -- Create Indexes for performance optimization
 CREATE INDEX IX_Users_Role ON Users(role_id);
 CREATE INDEX IX_Horses_Owner ON Horses(owner_id);
@@ -202,4 +243,7 @@ CREATE INDEX IX_Races_Round ON Races(round_id);
 CREATE INDEX IX_Registrations_Tournament ON Registrations(tournament_id);
 CREATE INDEX IX_RaceParticipants_Race ON RaceParticipants(race_id);
 CREATE INDEX IX_Rankings_Entity ON Rankings(entity_type, entity_id);
+CREATE INDEX IX_Prizes_Tournament ON Prizes(tournament_id);
+CREATE INDEX IX_Awards_Prize ON Awards(prize_id);
+CREATE INDEX IX_Awards_Registration ON Awards(registration_id);
 GO

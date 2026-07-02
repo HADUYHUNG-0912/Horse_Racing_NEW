@@ -2,12 +2,25 @@ import os
 import pyodbc
 import bcrypt
 
+def load_dotenv():
+    for path in [".env", "source-code/backend/.env", "../.env", "../../.env"]:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, val = line.split("=", 1)
+                        os.environ[key.strip()] = val.strip().strip("'\"")
+            break
+
+load_dotenv()
+
 def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
     return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
 def main():
-    server = r'localhost\SQLEXPRESS'
+    server = os.getenv("SQL_SERVER_HOST", r"localhost\SQLEXPRESS")
     
     # 1. Connect to master to create the database if not exists
     print("Connecting to SQL Server Master...")
@@ -296,9 +309,75 @@ def main():
         if cursor.fetchone()[0] == 0:
             print("Seeding Predictions...")
             cursor.execute("INSERT INTO Predictions (user_id, race_participant_id, predicted_rank, status) VALUES (?, ?, ?, ?)",
-                           (user_map["spectator1"], participant_map[("Grand Final", "Windrunner")], 1, "CORRECT"))
+                           (user_map["spectator1"], participant_map[("Grand Final", "Windrunner")], 1, "Won"))
             cursor.execute("INSERT INTO Predictions (user_id, race_participant_id, predicted_rank, status) VALUES (?, ?, ?, ?)",
                            (user_map["spectator1"], participant_map[("Heat 1", "Thunderbolt")], 1, "PENDING"))
+
+            # Trao reward points cho spectator1 (đã dự đoán đúng)
+            cursor.execute("UPDATE SpectatorProfiles SET reward_points = 10 WHERE user_id = ?",
+                           (user_map["spectator1"],))
+
+        # Prizes (Giải thưởng cho Spring Derby 2026 – đã COMPLETED)
+        cursor.execute("SELECT COUNT(*) FROM Prizes")
+        if cursor.fetchone()[0] == 0:
+            print("Seeding Prizes...")
+            spring_tid = tournament_map["Spring Derby 2026"]
+            cursor.execute(
+                "INSERT INTO Prizes (tournament_id, position, title, prize_value, description) VALUES (?, ?, ?, ?, ?)",
+                (spring_tid, 1, "Giải Nhất", 50000000.00, "Hàng vàng + Bằng chứng nhận")
+            )
+            cursor.execute(
+                "INSERT INTO Prizes (tournament_id, position, title, prize_value, description) VALUES (?, ?, ?, ?, ?)",
+                (spring_tid, 2, "Giải Nhì", 20000000.00, "Hàng bạc + Bằng chứng nhận")
+            )
+            cursor.execute(
+                "INSERT INTO Prizes (tournament_id, position, title, prize_value, description) VALUES (?, ?, ?, ?, ?)",
+                (spring_tid, 3, "Giải Ba", 10000000.00, "Hàng đồng")
+            )
+
+            # Summer Championship 2026 – UPCOMING nên chỉ định nghĩa giải, chưa trao
+            summer_tid = tournament_map["Summer Championship 2026"]
+            cursor.execute(
+                "INSERT INTO Prizes (tournament_id, position, title, prize_value, description) VALUES (?, ?, ?, ?, ?)",
+                (summer_tid, 1, "Grand Prize", 100000000.00, "Giải thưởng lớn nhất giải Hè")
+            )
+            cursor.execute(
+                "INSERT INTO Prizes (tournament_id, position, title, prize_value, description) VALUES (?, ?, ?, ?, ?)",
+                (summer_tid, 2, "Runner-up Prize", 40000000.00, "Giải Á Quân Hè")
+            )
+
+        # Awards (tự động trao cho Spring Derby 2026 dựa trên kết quả)
+        cursor.execute("SELECT COUNT(*) FROM Awards")
+        if cursor.fetchone()[0] == 0:
+            print("Seeding Awards...")
+            # Lấy prize IDs của Spring Derby
+            cursor.execute(
+                "SELECT position, id FROM Prizes WHERE tournament_id = ?",
+                (tournament_map["Spring Derby 2026"],)
+            )
+            prize_rows = cursor.fetchall()
+            prize_pos_map = {pos: pid for pos, pid in prize_rows}
+
+            # Registration map Spring Derby
+            spring_reg_map = {
+                horse_map["Windrunner"]: registration_map[(tournament_map["Spring Derby 2026"], horse_map["Windrunner"])],
+                horse_map["Pegasus"]:    registration_map[(tournament_map["Spring Derby 2026"], horse_map["Pegasus"])],
+            }
+
+            # Windrunner hạng 1 → Giải Nhất
+            if 1 in prize_pos_map:
+                cursor.execute(
+                    "INSERT INTO Awards (prize_id, registration_id, total_points, notes) VALUES (?, ?, ?, ?)",
+                    (prize_pos_map[1], spring_reg_map[horse_map["Windrunner"]], 10,
+                     "Tự động trao giải khi tournament 'Spring Derby 2026' hoàn thành.")
+                )
+            # Pegasus hạng 2 → Giải Nhì
+            if 2 in prize_pos_map:
+                cursor.execute(
+                    "INSERT INTO Awards (prize_id, registration_id, total_points, notes) VALUES (?, ?, ?, ?)",
+                    (prize_pos_map[2], spring_reg_map[horse_map["Pegasus"]], 6,
+                     "Tự động trao giải khi tournament 'Spring Derby 2026' hoàn thành.")
+                )
 
         cursor.close()
         conn.close()
