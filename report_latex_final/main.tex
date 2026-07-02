@@ -1,0 +1,92 @@
+\documentclass[12pt,a4paper]{report}
+
+% ============================================================
+%  ENCODING / FONTS
+%  (No Vietnamese diacritics anywhere in this file anymore,
+%   so plain T1 + lmodern is enough — no vntex/T5 needed)
+% ============================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+
+% ============================================================
+%  GENERAL PACKAGES
+% ============================================================
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\begin{document}
+
+% ============================================================
+%  TITLE PAGE
+% ============================================================
+\begin{titlepage}
+\centering
+
+{\large HO CHI MINH CITY UNIVERSITY OF TRANSPORT (UTH)}\\[0.2cm]
+{\large FACULTY OF INFORMATION TECHNOLOGY}\\[2.5cm]  % update faculty name if needed
+
+\rule{\linewidth}{0.6pt}\\[0.4cm]
+{\huge \bfseries Capstone Project Document}\\[0.2cm]
+{\Large Horse Racing Tournament Management System}\\[0.4cm]
+\rule{\linewidth}{0.6pt}\\[2cm]
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{4cm}|p{8.5cm}|}
+\hline
+\textbf{Group Members} &
+\begin{tabular}[t]{@{}l@{}}
+Ha Duy Hung \textit{(Team Leader)} \\
+Dinh Thuy Anh \\
+Ho Nguyen Thai Chau \\
+Le Thi My Hue \\
+Bui Le Quang Huy \\
+Nguyen Gia Huy \\
+Doan Thi Thu May
+\end{tabular} \\
+\hline
+\textbf{Supervisor} & [Enter supervisor's name] \\
+\hline
+\textbf{Capstone Project code} & [Enter project code] \\
+\hline
+\end{tabular}
+\end{center}
+
+\vfill
+{\large - Ho Chi Minh City, July 2026 -}
+
+\end{titlepage}
+
+% ============================================================
+%  TABLE OF CONTENTS
+% ============================================================
+\tableofcontents
+\newpage
+
+% ============================================================
+%  FRONT MATTER
+% ============================================================
+\chapter*{Acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+\input{sections/front_matter/acknowledgement}
+\newpage
+
+\chapter*{Definition and Acronyms}
+\addcontentsline{toc}{chapter}{Definition and Acronyms}
+\input{sections/front_matter/definitions}
+\newpage
+
+% ============================================================
+%  MAIN CONTENT — 4 CHAPTERS
+% ============================================================
+\include{documents/project_introduction}
+\include{documents/project_management_plan}
+\include{documents/software_requirement_specification}
+\include{documents/software_design_description}
+
+\end{document}
