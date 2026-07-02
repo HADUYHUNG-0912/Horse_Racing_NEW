@@ -276,6 +276,22 @@ def change_tournament_status(
 
     # ----- Tự động trao giải khi COMPLETED -----
     if new_status == "COMPLETED":
+        # Bug 3 fix: Kiểm tra phải có ít nhất 1 trận đua đã hoàn thành với kết quả
+        has_results = db.execute(text("""
+            SELECT COUNT(*) AS cnt
+            FROM Results res
+            JOIN RaceParticipants rp ON res.race_participant_id = rp.id
+            JOIN Registrations reg ON rp.registration_id = reg.id
+            WHERE reg.tournament_id = :tid
+        """), {"tid": tournament.id}).scalar()
+
+        if not has_results or has_results == 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Không thể hoàn thành giải đấu khi chưa có kết quả trận đua nào. "
+                       "Vui lòng nhập kết quả ít nhất một trận đua trước khi chuyển sang COMPLETED."
+            )
+
         _auto_award(db, tournament)
 
     db.commit()
@@ -301,29 +317,25 @@ def _auto_award(db: Session, tournament: Tournament) -> None:
     if not prizes:
         return  # Không có prize nào được thiết lập → bỏ qua
 
-    # Lấy tổng điểm theo từng registration trong tournament
+    # Bug 1 fix: Thêm tiêu chí tie-break (số lần về nhất, rồi reg.id) để
+    # kết quả xếp hạng luôn nhất quán khi có hòa điểm.
+    # Bug 3 fix: Loại bỏ fallback trao giải cho registration 0 điểm khi không có kết quả.
     rows = db.execute(text("""
-        SELECT reg.id AS registration_id, COALESCE(SUM(res.points), 0) AS total_points
+        SELECT
+            reg.id AS registration_id,
+            COALESCE(SUM(res.points), 0) AS total_points,
+            COALESCE(SUM(CASE WHEN res.rank = 1 THEN 1 ELSE 0 END), 0) AS total_wins
         FROM Registrations reg
         JOIN RaceParticipants rp ON rp.registration_id = reg.id
         JOIN Results res ON res.race_participant_id = rp.id
         WHERE reg.tournament_id = :tid
           AND reg.status = 'APPROVED'
         GROUP BY reg.id
-        ORDER BY total_points DESC
+        ORDER BY total_points DESC, total_wins DESC, reg.id ASC
     """), {"tid": tournament.id}).fetchall()
 
-    # Nếu không có kết quả nào, xếp hạng dựa trên registrations đã approved
     if not rows:
-        approved_regs = (
-            db.query(Registration)
-            .filter(
-                Registration.tournament_id == tournament.id,
-                Registration.status == "APPROVED"
-            )
-            .all()
-        )
-        rows = [(r.id, 0) for r in approved_regs]
+        return  # Không có kết quả → bỏ qua (đã kiểm tra ở change_tournament_status)
 
     # Xóa awards cũ của tournament này (nếu có – re-run safe)
     old_awards = (

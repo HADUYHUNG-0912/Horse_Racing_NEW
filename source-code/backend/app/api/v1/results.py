@@ -191,7 +191,7 @@ def read_rankings(db: Session = Depends(get_db), tournament_id: Optional[int] = 
             .join(Round, Race.round_id == Round.id)
             .filter(Round.tournament_id == tournament_id)
             .group_by(Registration.horse_id)
-            .order_by(text("total_points DESC"))
+            .order_by(text("total_points DESC"), Registration.horse_id.asc())
             .all()
         )
 
@@ -206,7 +206,7 @@ def read_rankings(db: Session = Depends(get_db), tournament_id: Optional[int] = 
             .join(Round, Race.round_id == Round.id)
             .filter(Round.tournament_id == tournament_id)
             .group_by(Registration.jockey_id)
-            .order_by(text("total_points DESC"))
+            .order_by(text("total_points DESC"), Registration.jockey_id.asc())
             .all()
         )
 
@@ -214,7 +214,7 @@ def read_rankings(db: Session = Depends(get_db), tournament_id: Optional[int] = 
         for idx, (horse_id, points) in enumerate(horse_points, start=1):
             horse = db.query(Horse).filter(Horse.id == horse_id).first()
             rankings.append(RankingOut(
-                id=idx,
+                id=horse_id,
                 entity_type="HORSE",
                 entity_id=horse_id,
                 entity_name=horse.name if horse else "Unknown Horse",
@@ -226,7 +226,7 @@ def read_rankings(db: Session = Depends(get_db), tournament_id: Optional[int] = 
         for idx, (jockey_id, points) in enumerate(jockey_points, start=1):
             jockey = db.query(JockeyProfile).filter(JockeyProfile.id == jockey_id).first()
             rankings.append(RankingOut(
-                id=idx + 1000,
+                id=jockey_id + 100000,
                 entity_type="JOCKEY",
                 entity_id=jockey_id,
                 entity_name=jockey.user.full_name if jockey and jockey.user else "Unknown Jockey",
@@ -263,13 +263,13 @@ def recalculate_rankings(db: Session, tournament_id: Optional[int] = None):
             {horse_query.text}
             WHERE rd.tournament_id = {tournament_id}
             GROUP BY reg.horse_id
-            ORDER BY total_points DESC
+            ORDER BY total_points DESC, reg.horse_id ASC
         """)
     else:
         horse_query = text(f"""
             {horse_query.text}
             GROUP BY reg.horse_id
-            ORDER BY total_points DESC
+            ORDER BY total_points DESC, reg.horse_id ASC
         """)
     cursor = db.execute(horse_query)
     horse_points = cursor.fetchall()
@@ -289,13 +289,13 @@ def recalculate_rankings(db: Session, tournament_id: Optional[int] = None):
             {jockey_query.text}
             WHERE rd.tournament_id = {tournament_id}
             GROUP BY reg.jockey_id
-            ORDER BY total_points DESC
+            ORDER BY total_points DESC, reg.jockey_id ASC
         """)
     else:
         jockey_query = text(f"""
             {jockey_query.text}
             GROUP BY reg.jockey_id
-            ORDER BY total_points DESC
+            ORDER BY total_points DESC, reg.jockey_id ASC
         """)
     cursor = db.execute(jockey_query)
     jockey_points = cursor.fetchall()
