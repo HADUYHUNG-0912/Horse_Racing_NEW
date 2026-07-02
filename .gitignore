@@ -228,3 +228,6 @@ jira_import_tasks.csv
 team-checklist.md
 team_task_assignment.md
 test.tex
+*.pdf
+*.out
+*.fls

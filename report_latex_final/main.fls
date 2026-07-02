@@ -110,6 +110,40 @@ INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\generic\iftex\if
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.cfg
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.cfg
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\geometry\geometry.cfg
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\float\float.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\float\float.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\titlesec\titlesec.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\titlesec\titlesec.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\xcolor\xcolor.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\xcolor\xcolor.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\color.cfg
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\color.cfg
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\graphics-cfg\color.cfg
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\graphics\mathcolor.ltx
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\graphics\mathcolor.ltx
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\graphics\mathcolor.ltx
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\colortbl\colortbl.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\colortbl\colortbl.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\tools\array.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\tools\array.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\graphics\color.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\booktabs\booktabs.sty
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\booktabs\booktabs.sty
+INPUT .\styles\colors.tex
+INPUT .\styles\colors.tex
+INPUT .\styles\colors.tex
+INPUT .\styles\colors.tex
+INPUT styles\colors.tex
+INPUT .\styles\commands.tex
+INPUT .\styles\commands.tex
+INPUT .\styles\commands.tex
+INPUT .\styles\commands.tex
+INPUT styles\commands.tex
+INPUT .\tables\table_template.tex
+INPUT .\tables\table_template.tex
+INPUT .\tables\table_template.tex
+INPUT .\tables\table_template.tex
+INPUT tables\table_template.tex
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmr.fd
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmr.fd
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmr.fd
@@ -178,6 +212,8 @@ INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmri12.tfm
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmr17.tfm
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
 INPUT .\main.toc
 INPUT .\main.toc
 INPUT main.toc
@@ -198,24 +234,352 @@ OUTPUT documents\project_introduction.aux
 INPUT .\documents\project_introduction.tex
 INPUT .\documents\project_introduction.tex
 INPUT documents\project_introduction.tex
+INPUT .\sections\project_introduction\overview.tex
+INPUT .\sections\project_introduction\overview.tex
+INPUT .\sections\project_introduction\overview.tex
+INPUT .\sections\project_introduction\overview.tex
+INPUT sections\project_introduction\overview.tex
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\ts1lmr.fd
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\ts1lmr.fd
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\ts1lmr.fd
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ts1-lmr12.tfm
+INPUT .\sections\project_introduction\background.tex
+INPUT .\sections\project_introduction\background.tex
+INPUT .\sections\project_introduction\background.tex
+INPUT .\sections\project_introduction\background.tex
+INPUT sections\project_introduction\background.tex
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-ts1.enc
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\tex\latex\lm\t1lmtt.fd
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmtt12.tfm
+INPUT .\sections\project_introduction\opportunities.tex
+INPUT .\sections\project_introduction\opportunities.tex
+INPUT .\sections\project_introduction\opportunities.tex
+INPUT .\sections\project_introduction\opportunities.tex
+INPUT sections\project_introduction\opportunities.tex
+INPUT .\sections\project_introduction\vision.tex
+INPUT .\sections\project_introduction\vision.tex
+INPUT .\sections\project_introduction\vision.tex
+INPUT .\sections\project_introduction\vision.tex
+INPUT sections\project_introduction\vision.tex
+INPUT .\sections\project_introduction\scope.tex
+INPUT .\sections\project_introduction\scope.tex
+INPUT .\sections\project_introduction\scope.tex
+INPUT .\sections\project_introduction\scope.tex
+INPUT sections\project_introduction\scope.tex
 INPUT .\documents\project_management_plan.tex
 INPUT .\documents\project_management_plan.tex
 OUTPUT documents\project_management_plan.aux
 INPUT .\documents\project_management_plan.tex
 INPUT .\documents\project_management_plan.tex
 INPUT documents\project_management_plan.tex
+INPUT .\sections\project_management\overview.tex
+INPUT .\sections\project_management\overview.tex
+INPUT .\sections\project_management\overview.tex
+INPUT .\sections\project_management\overview.tex
+INPUT sections\project_management\overview.tex
+INPUT .\sections\project_management\scope_estimation.tex
+INPUT .\sections\project_management\scope_estimation.tex
+INPUT .\sections\project_management\scope_estimation.tex
+INPUT .\sections\project_management\scope_estimation.tex
+INPUT sections\project_management\scope_estimation.tex
+INPUT .\sections\project_management\objectives.tex
+INPUT .\sections\project_management\objectives.tex
+INPUT .\sections\project_management\objectives.tex
+INPUT .\sections\project_management\objectives.tex
+INPUT sections\project_management\objectives.tex
+INPUT .\sections\project_management\risks.tex
+INPUT .\sections\project_management\risks.tex
+INPUT .\sections\project_management\risks.tex
+INPUT .\sections\project_management\risks.tex
+INPUT sections\project_management\risks.tex
+INPUT .\sections\project_management\management_approach.tex
+INPUT .\sections\project_management\management_approach.tex
+INPUT .\sections\project_management\management_approach.tex
+INPUT .\sections\project_management\management_approach.tex
+INPUT sections\project_management\management_approach.tex
+INPUT .\sections\project_management\deliverables_schedule.tex
+INPUT .\sections\project_management\deliverables_schedule.tex
+INPUT .\sections\project_management\deliverables_schedule.tex
+INPUT .\sections\project_management\deliverables_schedule.tex
+INPUT sections\project_management\deliverables_schedule.tex
+INPUT .\sections\project_management\rasi_table.tex
+INPUT .\sections\project_management\rasi_table.tex
+INPUT .\sections\project_management\rasi_table.tex
+INPUT .\sections\project_management\rasi_table.tex
+INPUT sections\project_management\rasi_table.tex
+INPUT .\sections\project_management\communication.tex
+INPUT .\sections\project_management\communication.tex
+INPUT .\sections\project_management\communication.tex
+INPUT .\sections\project_management\communication.tex
+INPUT sections\project_management\communication.tex
+INPUT .\sections\project_management\configuration\document_management.tex
+INPUT .\sections\project_management\configuration\document_management.tex
+INPUT .\sections\project_management\configuration\document_management.tex
+INPUT .\sections\project_management\configuration\document_management.tex
+INPUT sections\project_management\configuration\document_management.tex
+INPUT .\sections\project_management\configuration\source_code_management.tex
+INPUT .\sections\project_management\configuration\source_code_management.tex
+INPUT .\sections\project_management\configuration\source_code_management.tex
+INPUT .\sections\project_management\configuration\source_code_management.tex
+INPUT sections\project_management\configuration\source_code_management.tex
+INPUT .\sections\project_management\configuration\tools_infrastructure.tex
+INPUT .\sections\project_management\configuration\tools_infrastructure.tex
+INPUT .\sections\project_management\configuration\tools_infrastructure.tex
+INPUT .\sections\project_management\configuration\tools_infrastructure.tex
+INPUT sections\project_management\configuration\tools_infrastructure.tex
 INPUT .\documents\software_requirement_specification.tex
 INPUT .\documents\software_requirement_specification.tex
 OUTPUT documents\software_requirement_specification.aux
 INPUT .\documents\software_requirement_specification.tex
 INPUT .\documents\software_requirement_specification.tex
 INPUT documents\software_requirement_specification.tex
+INPUT .\sections\srs\product_overview.tex
+INPUT .\sections\srs\product_overview.tex
+INPUT .\sections\srs\product_overview.tex
+INPUT .\sections\srs\product_overview.tex
+INPUT sections\srs\product_overview.tex
+INPUT .\sections\srs\actors.tex
+INPUT .\sections\srs\actors.tex
+INPUT .\sections\srs\actors.tex
+INPUT .\sections\srs\actors.tex
+INPUT sections\srs\actors.tex
+INPUT .\sections\srs\usecase_diagram_overview.tex
+INPUT .\sections\srs\usecase_diagram_overview.tex
+INPUT .\sections\srs\usecase_diagram_overview.tex
+INPUT .\sections\srs\usecase_diagram_overview.tex
+INPUT sections\srs\usecase_diagram_overview.tex
+INPUT .\sections\srs\usecase_description.tex
+INPUT .\sections\srs\usecase_description.tex
+INPUT .\sections\srs\usecase_description.tex
+INPUT .\sections\srs\usecase_description.tex
+INPUT sections\srs\usecase_description.tex
+INPUT .\sections\srs\flows\horse_owner_registration\screen_flow.tex
+INPUT .\sections\srs\flows\horse_owner_registration\screen_flow.tex
+INPUT .\sections\srs\flows\horse_owner_registration\screen_flow.tex
+INPUT .\sections\srs\flows\horse_owner_registration\screen_flow.tex
+INPUT sections\srs\flows\horse_owner_registration\screen_flow.tex
+INPUT .\figures\srs\owner_screen.png
+INPUT .\figures\srs\owner_screen.png
+INPUT .\figures\srs\owner_screen.png
+INPUT .\figures\srs\owner_screen.png
+INPUT .\figures\srs\owner_screen.png
+INPUT .\figures\srs\owner_screen.png
+INPUT .\figures\srs\owner_screen.png
+INPUT .\sections\srs\web_application\horse_owner.tex
+INPUT .\sections\srs\web_application\horse_owner.tex
+INPUT .\sections\srs\web_application\horse_owner.tex
+INPUT .\sections\srs\web_application\horse_owner.tex
+INPUT sections\srs\web_application\horse_owner.tex
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\sections\srs\web_application\jockey.tex
+INPUT .\sections\srs\web_application\jockey.tex
+INPUT .\sections\srs\web_application\jockey.tex
+INPUT .\sections\srs\web_application\jockey.tex
+INPUT sections\srs\web_application\jockey.tex
+INPUT .\sections\srs\web_application\spectator.tex
+INPUT .\sections\srs\web_application\spectator.tex
+INPUT .\sections\srs\web_application\spectator.tex
+INPUT .\sections\srs\web_application\spectator.tex
+INPUT sections\srs\web_application\spectator.tex
+INPUT .\sections\srs\web_application\race_referee.tex
+INPUT .\sections\srs\web_application\race_referee.tex
+INPUT .\sections\srs\web_application\race_referee.tex
+INPUT .\sections\srs\web_application\race_referee.tex
+INPUT sections\srs\web_application\race_referee.tex
+INPUT .\sections\srs\web_application\admin.tex
+INPUT .\sections\srs\web_application\admin.tex
+INPUT .\sections\srs\web_application\admin.tex
+INPUT .\sections\srs\web_application\admin.tex
+INPUT sections\srs\web_application\admin.tex
+INPUT .\sections\srs\non_functional.tex
+INPUT .\sections\srs\non_functional.tex
+INPUT .\sections\srs\non_functional.tex
+INPUT .\sections\srs\non_functional.tex
+INPUT sections\srs\non_functional.tex
+INPUT .\sections\srs\web_application\web_app_roles.tex
+INPUT .\sections\srs\web_application\web_app_roles.tex
+INPUT .\sections\srs\web_application\web_app_roles.tex
+INPUT .\sections\srs\web_application\web_app_roles.tex
+INPUT sections\srs\web_application\web_app_roles.tex
+INPUT sections\srs\web_application\admin.tex
+INPUT sections\srs\web_application\horse_owner.tex
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\login.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\manage_horse.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\invite_jockey.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\register_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\registered_tournament.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\schedule.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\results.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\profile.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT .\figures\web_application\owner\ranking.png
+INPUT sections\srs\web_application\jockey.tex
+INPUT sections\srs\web_application\spectator.tex
+INPUT sections\srs\web_application\race_referee.tex
 INPUT .\documents\software_design_description.tex
 INPUT .\documents\software_design_description.tex
 OUTPUT documents\software_design_description.aux
 INPUT .\documents\software_design_description.tex
 INPUT .\documents\software_design_description.tex
 INPUT documents\software_design_description.tex
+INPUT .\sections\design\architecture.tex
+INPUT .\sections\design\architecture.tex
+INPUT .\sections\design\architecture.tex
+INPUT .\sections\design\architecture.tex
+INPUT sections\design\architecture.tex
+INPUT .\sections\design\package_diagram.tex
+INPUT .\sections\design\package_diagram.tex
+INPUT .\sections\design\package_diagram.tex
+INPUT .\sections\design\package_diagram.tex
+INPUT sections\design\package_diagram.tex
+INPUT .\sections\design\class_diagram_overall.tex
+INPUT .\sections\design\class_diagram_overall.tex
+INPUT .\sections\design\class_diagram_overall.tex
+INPUT .\sections\design\class_diagram_overall.tex
+INPUT sections\design\class_diagram_overall.tex
+INPUT .\sections\design\erd.tex
+INPUT .\sections\design\erd.tex
+INPUT .\sections\design\erd.tex
+INPUT .\sections\design\erd.tex
+INPUT sections\design\erd.tex
+INPUT .\figures\chuong4_erd.png
+INPUT .\figures\chuong4_erd.png
+INPUT .\figures\chuong4_erd.png
+INPUT .\figures\chuong4_erd.png
+INPUT .\figures\chuong4_erd.png
+INPUT .\figures\chuong4_erd.png
+INPUT .\figures\chuong4_erd.png
+INPUT .\sections\design\detailed_design\horse_owner_registration\activity_diagram.tex
+INPUT .\sections\design\detailed_design\horse_owner_registration\activity_diagram.tex
+INPUT .\sections\design\detailed_design\horse_owner_registration\activity_diagram.tex
+INPUT .\sections\design\detailed_design\horse_owner_registration\activity_diagram.tex
+INPUT sections\design\detailed_design\horse_owner_registration\activity_diagram.tex
+INPUT .\sections\design\detailed_design\horse_owner_registration\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\horse_owner_registration\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\horse_owner_registration\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\horse_owner_registration\sequence_diagram.tex
+INPUT sections\design\detailed_design\horse_owner_registration\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\activity_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\activity_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\activity_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\activity_diagram.tex
+INPUT sections\design\detailed_design\jockey_invitation\activity_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\jockey_invitation\sequence_diagram.tex
+INPUT sections\design\detailed_design\jockey_invitation\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\activity_diagram.tex
+INPUT sections\design\detailed_design\race_scheduling\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_scheduling\sequence_diagram.tex
+INPUT sections\design\detailed_design\race_scheduling\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\activity_diagram.tex
+INPUT sections\design\detailed_design\race_result_ranking\activity_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\sequence_diagram.tex
+INPUT .\sections\design\detailed_design\race_result_ranking\sequence_diagram.tex
+INPUT sections\design\detailed_design\race_result_ranking\sequence_diagram.tex
 INPUT main.aux
 INPUT .\documents\project_introduction.aux
 INPUT .\documents\project_introduction.aux
@@ -239,3 +603,5 @@ INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\type1\public\l
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr17.pfb
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri12.pfb
 INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri12.pfb
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt12.pfb
+INPUT C:\Users\Nguyen Gia Huy\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt12.pfb
