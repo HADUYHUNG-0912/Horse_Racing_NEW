@@ -1,0 +1,35 @@
+% tables/table_template.tex
+% Shared table helper commands for the report.
+% Use \tableHeader inside a tabular environment to color the header row.
+
+\newcommand{\tableHeader}{%
+    \rowcolor{HeaderPink}
+}
+
+% Optional helpers for consistent table captions:
+\newcommand{\TableCaption}[2]{%
+    \begin{table}[H]
+    \centering
+    \caption{#1}
+    \label{#2}
+}
+
+\newcommand{\EndTable}{%
+    \end{table}
+}
+
+\newcommand{\TableStart}[1]{%
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{#1}
+    \hline
+    \tableHeader
+}
+
+\newcommand{\TableFinish}[2]{%
+    \hline
+    \end{tabular}
+    \caption{#1}
+    \label{#2}
+    \end{table}
+}
