@@ -148,6 +148,7 @@ class SpectatorProfileUpdate(BaseModel):
     favorite_jockey: Optional[str] = None
     phone_number: Optional[str] = None
     avatar: Optional[str] = None
+    gender: Optional[str] = None
 
 class SpectatorProfileDetailOut(BaseModel):
     id: int
@@ -158,6 +159,7 @@ class SpectatorProfileDetailOut(BaseModel):
     avatar: Optional[str] = None
     favorite_horse_breed: Optional[str] = None
     favorite_jockey: Optional[str] = None
+    gender: Optional[str] = None
     reward_points: int
     current_rank: Optional[int] = None
     total_predictions: Optional[int] = 0

@@ -17,6 +17,9 @@ def evaluate_predictions_for_completed_race(db: Session, race_id: int):
     ).all()
     
     for pred in predictions:
+        if pred.status != "PENDING":
+            continue
+            
         part = pred.participant
         result = db.query(Result).filter(Result.race_participant_id == part.id).first()
         if result:
