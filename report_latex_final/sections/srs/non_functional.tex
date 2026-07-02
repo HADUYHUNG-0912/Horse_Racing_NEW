@@ -1,0 +1,175 @@
+%====================================================
+% NON-FUNCTIONAL REQUIREMENTS
+%====================================================
+
+\section{Non-Functional Requirements}
+
+\subsection{External Interfaces}
+
+To ensure effective communication between users and external systems, the following interfaces shall be supported.
+
+\subsubsection{User Interface}
+
+\begin{itemize}
+    \item The system shall provide a user-friendly and intuitive interface for Horse Owners, Jockeys, Referees, and Administrators.
+    
+    \item The graphical interface shall follow modern web design standards and support responsive layouts.
+    
+    \item Users shall be able to access the system through desktop computers, tablets, and mobile devices.
+    
+    \item Navigation menus and functions shall remain consistent throughout the system.
+\end{itemize}
+
+\subsubsection{Authentication Interface}
+
+\begin{itemize}
+    \item The system shall support secure authentication using username and password.
+    
+    \item Role-based access control shall restrict system functions according to user roles.
+    
+    \item User sessions shall be managed securely to prevent unauthorized access.
+\end{itemize}
+
+\subsubsection{Database Interface}
+
+\begin{itemize}
+    \item The application shall communicate with the database system to store and retrieve information.
+    
+    \item Data synchronization between the application server and database server shall be maintained.
+    
+    \item The database shall support CRUD operations for horses, tournaments, registrations, invitations, and users.
+\end{itemize}
+
+%----------------------------------------------------
+
+\subsection{Quality Attributes}
+
+\subsubsection{Usability}
+
+\textbf{User-Friendly Interface}
+
+\begin{itemize}
+    \item The system shall provide a simple and intuitive interface.
+    
+    \item Functions such as tournament registration and jockey invitation shall require minimal user actions.
+    
+    \item The interface shall be easy to understand for both novice and experienced users.
+\end{itemize}
+
+\textbf{Training and Familiarization Time}
+
+\begin{itemize}
+    \item Horse Owners and Jockeys shall require less than 30 minutes to learn the basic functions.
+    
+    \item Administrators shall require approximately 1--2 hours to understand management operations.
+\end{itemize}
+
+\textbf{Usability Metrics}
+
+\begin{itemize}
+    \item Tournament registration shall be completed within 3 minutes.
+    
+    \item Error messages shall clearly guide users to correct invalid input.
+    
+    \item User feedback shall be collected to improve usability.
+\end{itemize}
+
+%----------------------------------------------------
+
+\subsubsection{Reliability}
+
+\textbf{Availability}
+
+\begin{itemize}
+    \item The system shall maintain at least 99\% availability.
+    
+    \item Maintenance shall be scheduled during low-traffic periods.
+\end{itemize}
+
+\textbf{Data Integrity}
+
+\begin{itemize}
+    \item Registration and tournament information shall be stored accurately.
+    
+    \item Duplicate registrations shall be prevented.
+    
+    \item Data consistency shall be maintained across all modules.
+\end{itemize}
+
+\textbf{Error Handling}
+
+\begin{itemize}
+    \item The system shall display meaningful error messages.
+    
+    \item Critical system errors shall be logged for administrators.
+    
+    \item The system shall recover from failures with minimal data loss.
+\end{itemize}
+
+%----------------------------------------------------
+
+\subsubsection{Performance}
+
+\textbf{Response Time}
+
+\begin{itemize}
+    \item Normal user requests shall respond within 2 seconds.
+    
+    \item Under heavy load conditions, response time shall not exceed 5 seconds.
+\end{itemize}
+
+\textbf{Concurrent Users}
+
+\begin{itemize}
+    \item The system shall support at least 500 concurrent users.
+    
+    \item Multiple users shall access the system simultaneously without significant performance degradation.
+\end{itemize}
+
+\textbf{Database Performance}
+
+\begin{itemize}
+    \item Search operations shall complete within 3 seconds.
+    
+    \item Registration transactions shall be processed efficiently.
+\end{itemize}
+
+%----------------------------------------------------
+
+\subsubsection{Security}
+
+\begin{itemize}
+    \item Passwords shall be encrypted before storage.
+    
+    \item Unauthorized access attempts shall be logged.
+    
+    \item Session timeout mechanisms shall automatically log out inactive users.
+    
+    \item Input validation shall prevent invalid data submission.
+\end{itemize}
+
+%----------------------------------------------------
+
+\subsubsection{Maintainability}
+
+\begin{itemize}
+    \item The system shall follow a modular architecture.
+    
+    \item Source code shall comply with coding standards.
+    
+    \item New features shall be added with minimal impact on existing modules.
+    
+    \item API endpoints and database structures shall be documented.
+\end{itemize}
+
+%----------------------------------------------------
+
+\subsubsection{Portability}
+
+\begin{itemize}
+    \item The system shall support Google Chrome, Microsoft Edge, and Mozilla Firefox.
+    
+    \item The application shall operate on both Windows and Linux servers.
+    
+    \item Users shall access the system without additional software installation.
+\end{itemize}
