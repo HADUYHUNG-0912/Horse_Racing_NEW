@@ -47,12 +47,12 @@
 \contentsline {section}{\numberline {3.4}Web Application}{24}{section.3.4}%
 \contentsline {subsection}{\numberline {3.4.1}Horse Owner}{24}{subsection.3.4.1}%
 \contentsline {subsubsection}{Login}{24}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Manage Horses}{25}{subsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.4.3}Invite Jockey}{26}{subsection.3.4.3}%
-\contentsline {subsection}{\numberline {3.4.4}Register Tournament}{27}{subsection.3.4.4}%
-\contentsline {subsection}{\numberline {3.4.5}Registered Tournaments}{28}{subsection.3.4.5}%
-\contentsline {subsection}{\numberline {3.4.6}Horse Schedule}{29}{subsection.3.4.6}%
-\contentsline {subsection}{\numberline {3.4.7}Race Results}{30}{subsection.3.4.7}%
-\contentsline {subsection}{\numberline {3.4.8}Owner Profile}{31}{subsection.3.4.8}%
-\contentsline {subsection}{\numberline {3.4.9}Ranking}{32}{subsection.3.4.9}%
-\contentsline {chapter}{\numberline {4}Software Design Description}{34}{chapter.4}%
+\contentsline {subsection}{\numberline {3.4.2}Manage Horses}{26}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Invite Jockey}{27}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Register Tournament}{28}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Registered Tournaments}{29}{subsection.3.4.5}%
+\contentsline {subsection}{\numberline {3.4.6}Horse Schedule}{30}{subsection.3.4.6}%
+\contentsline {subsection}{\numberline {3.4.7}Race Results}{31}{subsection.3.4.7}%
+\contentsline {subsection}{\numberline {3.4.8}Owner Profile}{32}{subsection.3.4.8}%
+\contentsline {subsection}{\numberline {3.4.9}Ranking}{33}{subsection.3.4.9}%
+\contentsline {chapter}{\numberline {4}Software Design Description}{35}{chapter.4}%
