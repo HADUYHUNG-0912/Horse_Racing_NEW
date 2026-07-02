@@ -34,24 +34,24 @@
 \contentsline {subsubsection}{Maintainability}{14}{subsection.3.1.5}%
 \contentsline {subsubsection}{Portability}{16}{subsection.3.1.5}%
 \contentsline {section}{\numberline {3.2}Web Application}{16}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Horse Owner Login}{16}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Manage Horses}{17}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Invite Jockey}{18}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}Register Tournament}{19}{subsection.3.2.4}%
-\contentsline {subsection}{\numberline {3.2.5}Registered Tournaments}{20}{subsection.3.2.5}%
-\contentsline {subsection}{\numberline {3.2.6}Horse Schedule}{21}{subsection.3.2.6}%
-\contentsline {subsection}{\numberline {3.2.7}Race Results}{22}{subsection.3.2.7}%
-\contentsline {subsection}{\numberline {3.2.8}Owner Profile}{23}{subsection.3.2.8}%
-\contentsline {subsection}{\numberline {3.2.9}Ranking}{24}{subsection.3.2.9}%
-\contentsline {subsection}{\numberline {3.2.10}Admin}{25}{subsection.3.2.10}%
-\contentsline {subsubsection}{Login}{25}{subsection.3.2.10}%
-\contentsline {subsection}{\numberline {3.2.11}System Overview}{26}{subsection.3.2.11}%
-\contentsline {subsection}{\numberline {3.2.12}Manage Tournaments}{27}{subsection.3.2.12}%
-\contentsline {subsection}{\numberline {3.2.13}Schedule Races}{28}{subsection.3.2.13}%
-\contentsline {subsection}{\numberline {3.2.14}Manage Rewards}{29}{subsection.3.2.14}%
-\contentsline {subsection}{\numberline {3.2.15}User Management}{30}{subsection.3.2.15}%
-\contentsline {subsection}{\numberline {3.2.16}Confirm Registrations}{31}{subsection.3.2.16}%
-\contentsline {subsection}{\numberline {3.2.17}Leaderboard}{32}{subsection.3.2.17}%
+\contentsline {subsection}{\numberline {3.2.1}Admin}{16}{subsection.3.2.1}%
+\contentsline {subsubsection}{Login}{16}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}System Overview}{17}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Manage Tournaments}{18}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Schedule Races}{19}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.5}Manage Rewards}{20}{subsection.3.2.5}%
+\contentsline {subsection}{\numberline {3.2.6}User Management}{21}{subsection.3.2.6}%
+\contentsline {subsection}{\numberline {3.2.7}Confirm Registrations}{22}{subsection.3.2.7}%
+\contentsline {subsection}{\numberline {3.2.8}Leaderboard}{23}{subsection.3.2.8}%
+\contentsline {subsection}{\numberline {3.2.9}Horse Owner Login}{24}{subsection.3.2.9}%
+\contentsline {subsection}{\numberline {3.2.10}Manage Horses}{25}{subsection.3.2.10}%
+\contentsline {subsection}{\numberline {3.2.11}Invite Jockey}{26}{subsection.3.2.11}%
+\contentsline {subsection}{\numberline {3.2.12}Register Tournament}{27}{subsection.3.2.12}%
+\contentsline {subsection}{\numberline {3.2.13}Registered Tournaments}{28}{subsection.3.2.13}%
+\contentsline {subsection}{\numberline {3.2.14}Horse Schedule}{29}{subsection.3.2.14}%
+\contentsline {subsection}{\numberline {3.2.15}Race Results}{30}{subsection.3.2.15}%
+\contentsline {subsection}{\numberline {3.2.16}Owner Profile}{31}{subsection.3.2.16}%
+\contentsline {subsection}{\numberline {3.2.17}Ranking}{32}{subsection.3.2.17}%
 \contentsline {section}{\numberline {3.3}Web Application}{33}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Admin}{33}{subsection.3.3.1}%
 \contentsline {subsubsection}{Login}{33}{subsection.3.3.1}%
