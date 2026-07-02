@@ -76,20 +76,35 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     }
   };
 
+  // Chỉ fetch danh sách tournaments khi mount — rankings được load riêng theo selectedTournament
   const loadRankings = async () => {
     try {
-      const [rankData, tourData] = await Promise.all([
-        api.get("/results/rankings"),
-        api.get("/tournaments"),
-      ]);
-      setRankings(Array.isArray(rankData) ? rankData : []);
+      const tourData = await api.get("/tournaments");
       setTournaments(Array.isArray(tourData) ? tourData : []);
     } catch (err) {
-      // rankings không critical
-    } finally {
-      setRankingsLoading(false);
+      // tournaments không critical
     }
   };
+
+  // FIX (Bug 2): Fetch rankings từ backend mỗi khi selectedTournament thay đổi
+  // thay vì lọc client-side theo r.tournament_id (vốn luôn là null)
+  useEffect(() => {
+    const loadRankingsFiltered = async () => {
+      try {
+        setRankingsLoading(true);
+        const url = selectedTournament === "all"
+          ? "/results/rankings"
+          : `/results/rankings?tournament_id=${selectedTournament}`;
+        const rankData = await api.get(url);
+        setRankings(Array.isArray(rankData) ? rankData : []);
+      } catch (err) {
+        // rankings không critical
+      } finally {
+        setRankingsLoading(false);
+      }
+    };
+    loadRankingsFiltered();
+  }, [selectedTournament]);
 
   useEffect(() => {
     loadData();
@@ -475,11 +490,14 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
             <div style={styles.loading}>Đang tải dữ liệu giải thưởng...</div>
           ) : (() => {
             // Lọc chỉ lấy ranking của Jockey hiện tại
-            const myRankings = rankings.filter(r =>
-              r.entity_type === "JOCKEY" &&
-              r.entity_name === user?.full_name &&
-              (selectedTournament === "all" || String(r.tournament_id) === selectedTournament)
-            );
+            // (Backend đã lọc theo tournament_id nếu có query param,
+            //  nên ở đây chỉ cần lọc theo entity)
+            const myRankings = rankings
+              .filter(r => r.entity_type === "JOCKEY" && r.entity_name === user?.full_name)
+              .map(r => ({
+                ...r,
+                tournament_id: selectedTournament !== "all" ? Number(selectedTournament) : r.tournament_id
+              }));
 
             // Thống kê tổng hợp
             const totalPoints = myRankings.reduce((sum, r) => sum + (r.points || 0), 0);
