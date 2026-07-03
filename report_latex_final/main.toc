@@ -52,59 +52,63 @@
 \contentsline {subsubsection}{Screen description for Race Scheduling}{30}{figure.3.5}%
 \contentsline {subsubsection}{Spectator Screen Flow}{31}{table.3.5}%
 \contentsline {subsubsection}{Spectator Screen description}{32}{figure.3.6}%
-\contentsline {subsection}{\numberline {3.3.2}Web Application}{32}{subsection.3.3.2}%
-\contentsline {subsubsection}{Horse Owner Login}{32}{subsection.3.3.2}%
-\contentsline {subsubsection}{Manage Horses}{33}{figure.3.7}%
-\contentsline {subsubsection}{Invite Jockey}{34}{figure.3.8}%
-\contentsline {subsubsection}{Register Tournament}{35}{figure.3.9}%
-\contentsline {subsubsection}{Registered Tournaments}{36}{figure.3.10}%
-\contentsline {subsubsection}{Horse Schedule}{37}{figure.3.11}%
-\contentsline {subsubsection}{Race Results}{38}{figure.3.12}%
-\contentsline {subsubsection}{Owner Profile}{39}{figure.3.13}%
-\contentsline {subsubsection}{Ranking}{40}{figure.3.14}%
-\contentsline {subsubsection}{Jockey Login}{41}{figure.3.15}%
-\contentsline {subsubsection}{Invitations Inbox}{42}{figure.3.16}%
-\contentsline {subsubsection}{Race Schedule}{43}{figure.3.17}%
-\contentsline {subsubsection}{Jockey Profile}{44}{figure.3.18}%
-\contentsline {subsubsection}{Rewards \& Achievements}{45}{figure.3.19}%
-\contentsline {subsubsection}{Leaderboard}{46}{figure.3.20}%
-\contentsline {subsubsection}{Spectator Login}{47}{figure.3.21}%
-\contentsline {subsubsection}{Prediction Management}{48}{figure.3.22}%
-\contentsline {subsubsection}{View Schedule and Results}{49}{figure.3.23}%
-\contentsline {subsubsection}{Personal Profile}{49}{figure.3.24}%
-\contentsline {subsubsection}{Leaderboard}{50}{figure.3.25}%
-\contentsline {subsubsection}{Admin Login}{52}{figure.3.27}%
-\contentsline {subsubsection}{System Overview}{53}{figure.3.28}%
-\contentsline {subsubsection}{Manage Tournaments}{54}{figure.3.29}%
-\contentsline {subsubsection}{Schedule Races}{55}{figure.3.30}%
-\contentsline {subsubsection}{Manage Rewards}{56}{figure.3.31}%
-\contentsline {subsubsection}{User Management}{57}{figure.3.32}%
-\contentsline {subsubsection}{Confirm Registrations}{58}{figure.3.33}%
-\contentsline {subsubsection}{Leaderboard}{59}{figure.3.34}%
-\contentsline {section}{\numberline {3.4}Non-Functional Requirements}{60}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}External Interfaces}{60}{subsection.3.4.1}%
-\contentsline {subsubsection}{User Interface}{60}{subsection.3.4.1}%
-\contentsline {subsubsection}{Authentication Interface}{60}{subsection.3.4.1}%
-\contentsline {subsubsection}{Database Interface}{61}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Quality Attributes}{61}{subsection.3.4.2}%
-\contentsline {subsubsection}{Usability}{61}{subsection.3.4.2}%
-\contentsline {subsubsection}{Reliability}{61}{subsection.3.4.2}%
-\contentsline {subsubsection}{Performance}{62}{subsection.3.4.2}%
-\contentsline {subsubsection}{Security}{62}{subsection.3.4.2}%
-\contentsline {subsubsection}{Maintainability}{62}{subsection.3.4.2}%
-\contentsline {subsubsection}{Portability}{63}{subsection.3.4.2}%
-\contentsline {section}{\numberline {3.5}Requirement Appendix}{63}{section.3.5}%
-\contentsline {chapter}{\numberline {4}Software Design Description}{64}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Overall Design}{64}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Detailed Design}{65}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Admin Login}{65}{subsection.4.2.1}%
-\contentsline {subsubsection}{Sequence Diagram}{65}{subsection.4.2.1}%
-\contentsline {subsubsection}{Class Diagram}{66}{figure.4.2}%
-\contentsline {subsubsection}{Class Specification}{67}{figure.4.3}%
-\contentsline {subsection}{\numberline {4.2.2}Horse Owner Login and Registration}{68}{subsection.4.2.2}%
-\contentsline {subsubsection}{Sequence Diagram}{68}{subsection.4.2.2}%
-\contentsline {subsubsection}{Class Diagram}{69}{figure.4.4}%
-\contentsline {subsubsection}{Class Specification}{70}{figure.4.5}%
-\contentsline {subsection}{\numberline {4.2.3}Jockey}{70}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {4.2.4}Spectator}{70}{subsection.4.2.4}%
-\contentsline {subsection}{\numberline {4.2.5}Referee}{70}{subsection.4.2.5}%
+\contentsline {subsubsection}{Referee Screen Flow}{33}{table.3.6}%
+\contentsline {subsubsection}{Referee Screen Description}{34}{figure.3.7}%
+\contentsline {subsection}{\numberline {3.3.2}Web Application}{34}{subsection.3.3.2}%
+\contentsline {subsubsection}{Horse Owner Login}{34}{subsection.3.3.2}%
+\contentsline {subsubsection}{Manage Horses}{35}{figure.3.8}%
+\contentsline {subsubsection}{Invite Jockey}{36}{figure.3.9}%
+\contentsline {subsubsection}{Register Tournament}{37}{figure.3.10}%
+\contentsline {subsubsection}{Registered Tournaments}{38}{figure.3.11}%
+\contentsline {subsubsection}{Horse Schedule}{39}{figure.3.12}%
+\contentsline {subsubsection}{Race Results}{40}{figure.3.13}%
+\contentsline {subsubsection}{Owner Profile}{41}{figure.3.14}%
+\contentsline {subsubsection}{Ranking}{42}{figure.3.15}%
+\contentsline {subsubsection}{Jockey Login}{43}{figure.3.16}%
+\contentsline {subsubsection}{Invitations Inbox}{44}{figure.3.17}%
+\contentsline {subsubsection}{Race Schedule}{45}{figure.3.18}%
+\contentsline {subsubsection}{Jockey Profile}{46}{figure.3.19}%
+\contentsline {subsubsection}{Rewards \& Achievements}{47}{figure.3.20}%
+\contentsline {subsubsection}{Leaderboard}{48}{figure.3.21}%
+\contentsline {subsubsection}{Spectator Login}{49}{figure.3.22}%
+\contentsline {subsubsection}{Prediction Management}{50}{figure.3.23}%
+\contentsline {subsubsection}{View Schedule and Results}{51}{figure.3.24}%
+\contentsline {subsubsection}{Personal Profile}{51}{figure.3.25}%
+\contentsline {subsubsection}{Leaderboard}{52}{figure.3.26}%
+\contentsline {subsubsection}{Admin Login}{54}{figure.3.28}%
+\contentsline {subsubsection}{System Overview}{55}{figure.3.29}%
+\contentsline {subsubsection}{Manage Tournaments}{56}{figure.3.30}%
+\contentsline {subsubsection}{Schedule Races}{57}{figure.3.31}%
+\contentsline {subsubsection}{Manage Rewards}{58}{figure.3.32}%
+\contentsline {subsubsection}{User Management}{59}{figure.3.33}%
+\contentsline {subsubsection}{Confirm Registrations}{60}{figure.3.34}%
+\contentsline {subsubsection}{Leaderboard}{61}{figure.3.35}%
+\contentsline {section}{\numberline {3.4}Non-Functional Requirements}{62}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}External Interfaces}{62}{subsection.3.4.1}%
+\contentsline {subsubsection}{User Interface}{62}{subsection.3.4.1}%
+\contentsline {subsubsection}{Authentication Interface}{62}{subsection.3.4.1}%
+\contentsline {subsubsection}{Database Interface}{63}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Quality Attributes}{63}{subsection.3.4.2}%
+\contentsline {subsubsection}{Usability}{63}{subsection.3.4.2}%
+\contentsline {subsubsection}{Reliability}{63}{subsection.3.4.2}%
+\contentsline {subsubsection}{Performance}{64}{subsection.3.4.2}%
+\contentsline {subsubsection}{Security}{64}{subsection.3.4.2}%
+\contentsline {subsubsection}{Maintainability}{64}{subsection.3.4.2}%
+\contentsline {subsubsection}{Portability}{65}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Requirement Appendix}{65}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Application Messages}{65}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Message Type Definitions}{65}{subsection.3.6.1}%
+\contentsline {chapter}{\numberline {4}Software Design Description}{70}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Overall Design}{70}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Detailed Design}{71}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Admin Login}{71}{subsection.4.2.1}%
+\contentsline {subsubsection}{Sequence Diagram}{71}{subsection.4.2.1}%
+\contentsline {subsubsection}{Class Diagram}{72}{figure.4.2}%
+\contentsline {subsubsection}{Class Specification}{73}{figure.4.3}%
+\contentsline {subsection}{\numberline {4.2.2}Horse Owner Login and Registration}{74}{subsection.4.2.2}%
+\contentsline {subsubsection}{Sequence Diagram}{74}{subsection.4.2.2}%
+\contentsline {subsubsection}{Class Diagram}{75}{figure.4.4}%
+\contentsline {subsubsection}{Class Specification}{76}{figure.4.5}%
+\contentsline {subsection}{\numberline {4.2.3}Jockey}{76}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Spectator}{76}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Referee}{76}{subsection.4.2.5}%
