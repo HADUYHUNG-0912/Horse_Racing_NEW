@@ -1,5 +1,5 @@
 % sections/srs/screen_authorization.tex
-% [REVISED BY ANTIGRAVITY - OPTIMIZED WIDTH AND PADDING TO PREVENT HORIZONTAL OVERFLOW]
+% [REVISED BY ANTIGRAVITY - ALIGNED 100% WITH SYSTEM CODEBASE IMPLEMENTATION]
 
 \subsection{Screen Authorization}
 
@@ -16,7 +16,7 @@ This section defines the access control matrix for the Horse Racing Tournament M
 \textbf{\#} & \textbf{Web Module / Screen} & \textbf{Typical Actions (C-R-U-D / Special)} & \textbf{Admin} & \textbf{Owner} & \textbf{Jockey} & \textbf{Referee} & \textbf{Spectator} \\ \hline
 1 & Authentication & C-R-U (Login, Register, Logout) & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
 2 & Dashboard Overview & R (Role-specific overview \& stats) & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
-3 & Personal Profile & R-U (Update weight, experience, contact) & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\ \hline
+3 & Personal Profile & R-U (Update weight, experience, contact) & & $\checkmark$ & $\checkmark$ & & $\checkmark$ \\ \hline
 4 & User Management & C-R-U / Lock (Account administration) & $\checkmark$ & & & & \\ \hline
 5 & Horse Management & C-R-U-D (Manage horse profile \& health) & R & $\checkmark$ & R & R & R \\ \hline
 6 & Jockey Invitation & C-R-U (Invite Jockeys to race pairs) & R & $\checkmark$ & $\checkmark$ & & \\ \hline
@@ -26,7 +26,7 @@ This section defines the access control matrix for the Horse Racing Tournament M
 10 & Pre-Race Inspection & C-R-U (Track, weather \& health check) & R & & & $\checkmark$ & \\ \hline
 11 & Race Results \& Violations & C-R-U / Confirm (Confirm results \& rank) & R & R & R & $\checkmark$ & R \\ \hline
 12 & Prediction Management & C-R-U (Predict race outcomes with points) & & & & & $\checkmark$ \\ \hline
-13 & Rewards Management & C-R-U-D / Convert (Claim virtual rewards) & $\checkmark$ & & & & R-U \\ \hline
+13 & Prize \& Award Management & C-R-U-D / R (Manage cash prizes \& awards) & $\checkmark$ & & R & & \\ \hline
 14 & Leaderboard \& Rankings & R (View horse, jockey \& prediction ranks) & R & R & R & R & R \\ \hline
 \end{tabular}
 \caption{Screen Authorization Matrix}
