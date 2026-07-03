@@ -1,6 +1,6 @@
-PWD E:\CNPM\Project\Horse_Racing_NEW\report_latex_final
+PWD e:\CNPM\Project\Horse_Racing_NEW\report_latex_final
 INPUT C:\Users\USER\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
-INPUT main.tex
+INPUT e:\CNPM\Project\Horse_Racing_NEW\report_latex_final\main.tex
 OUTPUT main.log
 INPUT C:\Program Files\MiKTeX\tex\latex\base\report.cls
 INPUT C:\Program Files\MiKTeX\tex\latex\base\report.cls
@@ -342,11 +342,25 @@ INPUT .\sections\srs\product_overview.tex
 INPUT .\sections\srs\product_overview.tex
 INPUT .\sections\srs\product_overview.tex
 INPUT sections\srs\product_overview.tex
+INPUT .\figures\context_diagram.png
+INPUT .\figures\context_diagram.png
+INPUT .\figures\context_diagram.png
+INPUT .\figures\context_diagram.png
+INPUT .\figures\context_diagram.png
+INPUT .\figures\context_diagram.png
+INPUT .\figures\context_diagram.png
 INPUT .\sections\srs\user_requirements.tex
 INPUT .\sections\srs\user_requirements.tex
 INPUT .\sections\srs\user_requirements.tex
 INPUT .\sections\srs\user_requirements.tex
 INPUT sections\srs\user_requirements.tex
+INPUT .\figures\srs\User Requirements\use_case_diagram.png
+INPUT .\figures\srs\User Requirements\use_case_diagram.png
+INPUT .\figures\srs\User Requirements\use_case_diagram.png
+INPUT .\figures\srs\User Requirements\use_case_diagram.png
+INPUT .\figures\srs\User Requirements\use_case_diagram.png
+INPUT .\figures\srs\User Requirements\use_case_diagram.png
+INPUT .\figures\srs\User Requirements\use_case_diagram.png
 INPUT .\sections\srs\usecase_diagram_overview.tex
 INPUT .\sections\srs\usecase_diagram_overview.tex
 INPUT .\sections\srs\usecase_diagram_overview.tex
