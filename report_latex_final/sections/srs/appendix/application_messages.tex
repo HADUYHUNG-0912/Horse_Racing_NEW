@@ -1,0 +1,363 @@
+\section{Application Messages}
+
+This section defines all standard messages displayed by the Horse Racing
+Tournament Management System. Messages are categorized by type and context
+to ensure consistent user communication across all features.
+
+%----------------------------------------------------
+\subsection{Message Type Definitions}
+
+\begin{itemize}
+	 \item \textbf{Inline} --- Displayed directly below a field or section
+			 (neutral information).
+	 \item \textbf{Inline (Red)} --- Displayed below a field when validation
+			 fails (error highlight).
+	 \item \textbf{Toast (Success)} --- Floating notification (green) shown
+			 after a successful action.
+	 \item \textbf{Toast (Error)} --- Floating notification (red) shown when
+			 an action fails.
+	 \item \textbf{Toast (Warning)} --- Floating notification (yellow) shown
+			 as a caution before an action.
+\end{itemize}
+
+%----------------------------------------------------
+\subsection{Message List}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{|p{0.04\textwidth}|p{0.10\textwidth}|p{0.17\textwidth}
+					 |p{0.20\textwidth}|p{0.36\textwidth}|}
+\hline
+\tableHeader
+\textbf{\#} & \textbf{Code} & \textbf{Message Type}
+				& \textbf{Context}    & \textbf{Content} \\
+\hline
+
+%--- GENERAL ---
+1 & MSG01 & Inline
+  & Search result empty
+  & No search results found. \\
+\hline
+2 & MSG02 & Inline (Red)
+  & Form validation
+  & The \texttt{\{field\_name\}} field is required. \\
+\hline
+3 & MSG03 & Toast (Success)
+  & Data update
+  & Update \texttt{\{entity\_name\}} successfully. \\
+\hline
+4 & MSG04 & Toast (Success)
+  & Data creation
+  & Add new \texttt{\{entity\_name\}} successfully. \\
+\hline
+5 & MSG05 & Toast (Error)
+  & Data deletion
+  & Delete \texttt{\{entity\_name\}} failed. Please try again. \\
+\hline
+6 & MSG06 & Toast (Success)
+  & Email action
+  & A confirmation email has been sent to \texttt{\{email\_address\}}. \\
+\hline
+
+%--- AUTHENTICATION ---
+7 & MSG07 & Inline (Red)
+  & Login -- wrong credentials
+  & Invalid username or password. Please try again. \\
+\hline
+8 & MSG08 & Toast (Error)
+  & Login -- account locked
+  & Your account has been locked. Please contact the administrator. \\
+\hline
+9 & MSG09 & Toast (Warning)
+  & Session expired
+  & Your session has expired. Please log in again. \\
+\hline
+10 & MSG10 & Toast (Error)
+	& Unauthorized access
+	& You do not have permission to access this page. \\
+\hline
+11 & MSG11 & Toast (Success)
+	& Password reset
+	& Password reset instructions sent to your email. \\
+\hline
+
+%--- HORSE OWNER REGISTRATION ---
+12 & MSG12 & Inline (Red)
+	& Registration -- duplicate
+	& This horse has already been registered for the selected race. \\
+\hline
+13 & MSG13 & Toast (Success)
+	& Registration -- submitted
+	& Your registration has been submitted successfully. \\
+\hline
+14 & MSG14 & Toast (Warning)
+	& Registration -- deadline
+	& The registration deadline for this race has passed. \\
+\hline
+15 & MSG15 & Toast (Error)
+	& Registration -- capacity full
+	& This race has reached its maximum number of participants. \\
+\hline
+
+%--- JOCKEY INVITATION ---
+16 & MSG16 & Toast (Success)
+	& Invitation sent
+	& Your invitation has been sent successfully. Status: Pending. \\
+\hline
+17 & MSG17 & Toast (Error)
+	& Invitation -- duplicate
+	& You have already sent an invitation to this jockey for the selected race. \\
+\hline
+18 & MSG18 & Toast (Error)
+	& Invitation -- jockey unavailable
+	& This jockey is not available for the selected race date. \\
+\hline
+19 & MSG19 & Toast (Error)
+	& Invitation -- deadline passed
+	& The invitation deadline has passed for this race. \\
+\hline
+20 & MSG20 & Toast (Success)
+	& Invitation accepted (Jockey)
+	& You have accepted the invitation. The race has been added to your
+	  upcoming races. \\
+\hline
+21 & MSG21 & Toast (Success)
+	& Invitation declined (Jockey)
+	& You have declined the invitation. \\
+\hline
+22 & MSG22 & Toast (Success)
+	& Invitation accepted (Owner)
+	& The jockey has accepted your invitation. \\
+\hline
+23 & MSG23 & Toast (Warning)
+	& Invitation declined (Owner)
+	& The jockey has declined your invitation. \\
+\hline
+24 & MSG24 & Inline
+	& Invitation status
+	& This invitation is still pending. The jockey has not responded yet. \\
+\hline
+
+%--- RACE SCHEDULING ---
+25 & MSG25 & Toast (Success)
+	& Race created
+	& The race has been created and published successfully. \\
+\hline
+26 & MSG26 & Toast (Error)
+	& Race scheduling -- conflict
+	& A race is already scheduled at the selected date and track. \\
+\hline
+27 & MSG27 & Toast (Warning)
+	& Race cancelled
+	& This race has been cancelled. All registered participants have been
+	  notified. \\
+\hline
+28 & MSG28 & Toast (Success)
+	& Race updated
+	& Race information has been updated successfully. \\
+\hline
+
+%--- RACE RESULT \& RANKING ---
+29 & MSG29 & Toast (Success)
+	& Result submitted
+	& Race results have been recorded successfully. \\
+\hline
+30 & MSG30 & Toast (Error)
+	& Result -- already exists
+	& Results for this race have already been submitted. \\
+\hline
+31 & MSG31 & Toast (Warning)
+	& Result -- incomplete
+	& Please enter the result for all participating horses before submitting. \\
+\hline
+32 & MSG32 & Toast (Success)
+	& Ranking updated
+	& Rankings have been updated based on the latest race results. \\
+\hline
+
+%--- GENERAL SYSTEM ---
+33 & MSG33 & Toast (Error)
+	& Server error
+	& An unexpected error occurred. Please refresh the page or contact support. \\
+\hline
+34 & MSG34 & Inline (Red)
+	& Not found
+	& The requested resource was not found. \\
+\hline
+35 & MSG35 & Toast (Warning)
+	& Unsaved changes
+	& You have unsaved changes. Are you sure you want to leave this page? \\
+\hline
+
+%--- HORSE MANAGEMENT ---
+36 & MSG36 & Toast (Success)
+	& Horse added
+	& Horse \texttt{\{horse\_name\}} has been added successfully. \\
+\hline
+37 & MSG37 & Toast (Success)
+	& Horse updated
+	& Horse information has been updated successfully. \\
+\hline
+38 & MSG38 & Toast (Error)
+	& Horse -- not found
+	& The selected horse could not be found. Please refresh and try again. \\
+\hline
+39 & MSG39 & Toast (Warning)
+	& Horse -- health not verified
+	& This horse has not passed the health check. It cannot be registered
+	  for a race. \\
+\hline
+40 & MSG40 & Inline (Red)
+	& Horse -- duplicate name
+	& A horse with this name already exists in your account. \\
+\hline
+
+%--- JOCKEY PROFILE ---
+41 & MSG41 & Toast (Error)
+	& Jockey -- license expired
+	& This jockey's license has expired. Please update the license before
+	  sending an invitation. \\
+\hline
+42 & MSG42 & Toast (Warning)
+	& Jockey -- no upcoming races
+	& You have no upcoming races at this time. \\
+\hline
+43 & MSG43 & Toast (Success)
+	& Profile updated
+	& Your profile has been updated successfully. \\
+\hline
+44 & MSG44 & Inline (Red)
+	& Profile -- invalid phone
+	& Please enter a valid phone number. \\
+\hline
+45 & MSG45 & Inline (Red)
+	& Profile -- invalid email format
+	& Please enter a valid email address. \\
+\hline
+
+%--- ADMIN / TOURNAMENT MANAGEMENT ---
+46 & MSG46 & Toast (Success)
+	& Tournament created
+	& The tournament has been created and is now open for registration. \\
+\hline
+47 & MSG47 & Toast (Success)
+	& Tournament updated
+	& Tournament information has been updated successfully. \\
+\hline
+48 & MSG48 & Toast (Error)
+	& Tournament -- cannot delete
+	& This tournament cannot be deleted because it has active registrations. \\
+\hline
+49 & MSG49 & Toast (Warning)
+	& Tournament -- closing soon
+	& Registration for this tournament closes in \texttt{\{X\}} day(s). \\
+\hline
+50 & MSG50 & Toast (Success)
+	& Tournament closed
+	& Registration has been closed for this tournament. \\
+\hline
+
+%--- REGISTRATION APPROVAL (ADMIN) ---
+51 & MSG51 & Toast (Success)
+	& Registration approved
+	& The registration has been approved successfully. \\
+\hline
+52 & MSG52 & Toast (Success)
+	& Registration rejected
+	& The registration has been rejected. The owner has been notified. \\
+\hline
+53 & MSG53 & Toast (Warning)
+	& Registration -- pending review
+	& This registration is awaiting admin approval. \\
+\hline
+54 & MSG54 & Toast (Success)
+	& Approval notified (Owner)
+	& Your registration has been approved. You may now proceed. \\
+\hline
+55 & MSG55 & Toast (Error)
+	& Rejection notified (Owner)
+	& Your registration has been rejected. Please contact the administrator
+	  for more details. \\
+\hline
+
+%--- REFEREE ACTIONS ---
+56 & MSG56 & Toast (Success)
+	& Result confirmed
+	& The race result has been confirmed by the referee. \\
+\hline
+57 & MSG57 & Toast (Error)
+	& Result -- conflict detected
+	& A ranking conflict has been detected. Please review and re-submit
+	  the results. \\
+\hline
+58 & MSG58 & Toast (Warning)
+	& Protest received
+	& A protest has been filed for this race. Results are temporarily
+	  on hold. \\
+\hline
+59 & MSG59 & Toast (Success)
+	& Protest resolved
+	& The protest has been reviewed and resolved. Final results have been
+	  published. \\
+\hline
+
+%--- NOTIFICATION SYSTEM ---
+60 & MSG60 & Inline
+	& No notifications
+	& You have no new notifications. \\
+\hline
+61 & MSG61 & Toast (Success)
+	& Notifications cleared
+	& All notifications have been marked as read. \\
+\hline
+62 & MSG62 & Inline
+	& Notification -- new invitation
+	& You have a new race invitation. Please review the details. \\
+\hline
+63 & MSG63 & Inline
+	& Notification -- race reminder
+	& Reminder: your race \texttt{\{race\_name\}} is scheduled in
+	  \texttt{\{X\}} day(s). \\
+\hline
+
+%--- FILE UPLOAD ---
+64 & MSG64 & Inline (Red)
+	& Upload -- file too large
+	& The uploaded file exceeds the maximum allowed size of 5MB. \\
+\hline
+65 & MSG65 & Inline (Red)
+	& Upload -- invalid format
+	& Invalid file format. Only JPG, PNG, and PDF files are accepted. \\
+\hline
+66 & MSG66 & Toast (Success)
+	& Upload -- success
+	& File uploaded successfully. \\
+\hline
+67 & MSG67 & Toast (Error)
+	& Upload -- failed
+	& File upload failed. Please check your connection and try again. \\
+\hline
+
+%--- WEIGHT CHECK ---
+68 & MSG68 & Toast (Warning)
+	& Weight -- out of range
+	& The jockey's weight does not meet the requirements for this race
+	  category. \\
+\hline
+69 & MSG69 & Toast (Success)
+	& Weight check passed
+	& Weight check passed. The jockey is eligible for this race. \\
+\hline
+
+%--- SYSTEM / NETWORK ---
+70 & MSG70 & Toast (Error)
+	& Network error
+	& Unable to connect to the server. Please check your internet
+	  connection. \\
+\hline
+
+\end{tabular}
+\caption{Application Messages List}
+\label{tab:application_messages}
+\end{table}
