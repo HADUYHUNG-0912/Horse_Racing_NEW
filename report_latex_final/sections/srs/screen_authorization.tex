@@ -1,5 +1,5 @@
 % sections/srs/screen_authorization.tex
-% [REVISED BY ANTIGRAVITY - COMPACT SINGLE-LINE TABLE TO FIT PAGE]
+% [REVISED BY ANTIGRAVITY - OPTIMIZED WIDTH AND PADDING TO PREVENT HORIZONTAL OVERFLOW]
 
 \subsection{Screen Authorization}
 
@@ -9,7 +9,8 @@ This section defines the access control matrix for the Horse Racing Tournament M
 \centering
 \small
 \renewcommand{\arraystretch}{1.25}
-\begin{tabular}{|c|p{4.2cm}|p{4.2cm}|c|c|c|c|c|}
+\setlength{\tabcolsep}{4.5pt} % Adjust padding to fit page margins perfectly
+\begin{tabular}{|c|p{3.6cm}|p{3.6cm}|c|c|c|c|c|}
 \hline
 \tableHeader
 \textbf{\#} & \textbf{Web Module / Screen} & \textbf{Typical Actions (C-R-U-D / Special)} & \textbf{Admin} & \textbf{Owner} & \textbf{Jockey} & \textbf{Referee} & \textbf{Spectator} \\ \hline
