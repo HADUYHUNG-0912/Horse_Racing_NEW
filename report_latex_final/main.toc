@@ -75,40 +75,48 @@
 \contentsline {subsubsection}{View Schedule and Results}{51}{figure.3.24}%
 \contentsline {subsubsection}{Personal Profile}{51}{figure.3.25}%
 \contentsline {subsubsection}{Leaderboard}{52}{figure.3.26}%
-\contentsline {subsubsection}{Admin Login}{54}{figure.3.28}%
-\contentsline {subsubsection}{System Overview}{55}{figure.3.29}%
-\contentsline {subsubsection}{Manage Tournaments}{56}{figure.3.30}%
-\contentsline {subsubsection}{Schedule Races}{57}{figure.3.31}%
-\contentsline {subsubsection}{Manage Rewards}{58}{figure.3.32}%
-\contentsline {subsubsection}{User Management}{59}{figure.3.33}%
-\contentsline {subsubsection}{Confirm Registrations}{60}{figure.3.34}%
+\contentsline {subsubsection}{Referee Login}{54}{figure.3.28}%
+\contentsline {subsubsection}{Assigned Race List}{55}{figure.3.29}%
+\contentsline {subsubsection}{Race Inspection}{56}{figure.3.30}%
+\contentsline {subsubsection}{Input Result Form}{57}{figure.3.31}%
+\contentsline {subsubsection}{Violation Report}{58}{figure.3.32}%
+\contentsline {subsubsection}{Result Confirmed}{59}{figure.3.33}%
+\contentsline {subsubsection}{Ranking Board}{60}{figure.3.34}%
 \contentsline {subsubsection}{Leaderboard}{61}{figure.3.35}%
-\contentsline {section}{\numberline {3.4}Non-Functional Requirements}{62}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}External Interfaces}{62}{subsection.3.4.1}%
-\contentsline {subsubsection}{User Interface}{62}{subsection.3.4.1}%
-\contentsline {subsubsection}{Authentication Interface}{62}{subsection.3.4.1}%
-\contentsline {subsubsection}{Database Interface}{63}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Quality Attributes}{63}{subsection.3.4.2}%
-\contentsline {subsubsection}{Usability}{63}{subsection.3.4.2}%
-\contentsline {subsubsection}{Reliability}{63}{subsection.3.4.2}%
-\contentsline {subsubsection}{Performance}{64}{subsection.3.4.2}%
-\contentsline {subsubsection}{Security}{64}{subsection.3.4.2}%
-\contentsline {subsubsection}{Maintainability}{64}{subsection.3.4.2}%
-\contentsline {subsubsection}{Portability}{65}{subsection.3.4.2}%
-\contentsline {section}{\numberline {3.5}Requirement Appendix}{65}{section.3.5}%
-\contentsline {section}{\numberline {3.6}Application Messages}{65}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Message Type Definitions}{65}{subsection.3.6.1}%
-\contentsline {chapter}{\numberline {4}Software Design Description}{70}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Overall Design}{70}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Detailed Design}{71}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Admin Login}{71}{subsection.4.2.1}%
-\contentsline {subsubsection}{Sequence Diagram}{71}{subsection.4.2.1}%
-\contentsline {subsubsection}{Class Diagram}{72}{figure.4.2}%
-\contentsline {subsubsection}{Class Specification}{73}{figure.4.3}%
-\contentsline {subsection}{\numberline {4.2.2}Horse Owner Login and Registration}{74}{subsection.4.2.2}%
-\contentsline {subsubsection}{Sequence Diagram}{74}{subsection.4.2.2}%
-\contentsline {subsubsection}{Class Diagram}{75}{figure.4.4}%
-\contentsline {subsubsection}{Class Specification}{76}{figure.4.5}%
-\contentsline {subsection}{\numberline {4.2.3}Jockey}{76}{subsection.4.2.3}%
-\contentsline {subsection}{\numberline {4.2.4}Spectator}{76}{subsection.4.2.4}%
-\contentsline {subsection}{\numberline {4.2.5}Referee}{76}{subsection.4.2.5}%
+\contentsline {subsubsection}{Admin Login}{62}{figure.3.36}%
+\contentsline {subsubsection}{System Overview}{63}{figure.3.37}%
+\contentsline {subsubsection}{Manage Tournaments}{64}{figure.3.38}%
+\contentsline {subsubsection}{Schedule Races}{65}{figure.3.39}%
+\contentsline {subsubsection}{Manage Rewards}{66}{figure.3.40}%
+\contentsline {subsubsection}{User Management}{67}{figure.3.41}%
+\contentsline {subsubsection}{Confirm Registrations}{68}{figure.3.42}%
+\contentsline {subsubsection}{Leaderboard}{69}{figure.3.43}%
+\contentsline {section}{\numberline {3.4}Non-Functional Requirements}{70}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}External Interfaces}{70}{subsection.3.4.1}%
+\contentsline {subsubsection}{User Interface}{70}{subsection.3.4.1}%
+\contentsline {subsubsection}{Authentication Interface}{70}{subsection.3.4.1}%
+\contentsline {subsubsection}{Database Interface}{71}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Quality Attributes}{71}{subsection.3.4.2}%
+\contentsline {subsubsection}{Usability}{71}{subsection.3.4.2}%
+\contentsline {subsubsection}{Reliability}{71}{subsection.3.4.2}%
+\contentsline {subsubsection}{Performance}{72}{subsection.3.4.2}%
+\contentsline {subsubsection}{Security}{72}{subsection.3.4.2}%
+\contentsline {subsubsection}{Maintainability}{72}{subsection.3.4.2}%
+\contentsline {subsubsection}{Portability}{73}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Requirement Appendix}{73}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Application Messages}{73}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Message Type Definitions}{73}{subsection.3.6.1}%
+\contentsline {chapter}{\numberline {4}Software Design Description}{78}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Overall Design}{78}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Detailed Design}{79}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Admin Login}{79}{subsection.4.2.1}%
+\contentsline {subsubsection}{Sequence Diagram}{79}{subsection.4.2.1}%
+\contentsline {subsubsection}{Class Diagram}{80}{figure.4.2}%
+\contentsline {subsubsection}{Class Specification}{81}{figure.4.3}%
+\contentsline {subsection}{\numberline {4.2.2}Horse Owner Login and Registration}{82}{subsection.4.2.2}%
+\contentsline {subsubsection}{Sequence Diagram}{82}{subsection.4.2.2}%
+\contentsline {subsubsection}{Class Diagram}{83}{figure.4.4}%
+\contentsline {subsubsection}{Class Specification}{84}{figure.4.5}%
+\contentsline {subsection}{\numberline {4.2.3}Jockey}{84}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Spectator}{84}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.5}Referee}{84}{subsection.4.2.5}%
