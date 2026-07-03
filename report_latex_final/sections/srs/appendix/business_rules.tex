@@ -34,3 +34,42 @@
     \caption{Business Rules for Admin Role in Horse Racing Management System}
     \label{tab:admin_business_rules}
 \end{table}
+
+\vspace{1em}
+
+\subsection{Business Rules for Horse Owner Role}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{12cm}|}
+        \hline
+        \textbf{ID} & \textbf{Rule Definition} \\
+        \hline
+        BR-01 & Only an authenticated Horse Owner with the OWNER role may access the owner dashboard and perform owner-related operations. \\
+        \hline
+        BR-02 & The Horse Owner may register a horse only when all required horse information, including name, age, breed, and gender, has been provided. \\
+        \hline
+        BR-03 & A horse record may be updated or deleted only by its owner and only when the horse is not currently involved in an active or locked registration. \\
+        \hline
+        BR-04 & The Horse Owner may send a jockey invitation only when both the selected jockey and the selected horse are valid and belong to an eligible tournament context. \\
+        \hline
+        BR-05 & A jockey invitation must contain valid invitation details and may be accepted or rejected by the recipient before it can be used for tournament registration. \\
+        \hline
+        BR-06 & Tournament registration is allowed only when the Horse Owner has an accepted jockey invitation and the selected horse-jockey pair is valid for the chosen tournament. \\
+        \hline
+        BR-07 & The system must prevent duplicate tournament registrations for the same horse-jockey pair in the same tournament. \\
+        \hline
+        BR-08 & The Horse Owner may view the current registration status and approval result of each submitted registration request from the registered tournaments screen. \\
+        \hline
+        BR-09 & The Horse Owner may view upcoming race schedules and completed race results for owned horses, including rankings, scores, remarks, and violations. \\
+        \hline
+        BR-10 & The Horse Owner may update personal profile information, including contact and organization details, only after valid input is provided and saved successfully. \\
+        \hline
+        BR-11 & The system must display clear success or error messages after each owner action, such as horse registration, invitation sending, registration submission, or profile update. \\
+        \hline
+        BR-12 & The Horse Owner must be able to view rankings and performance summaries for horses and jockeys through the ranking page. \\
+        \hline
+    \end{tabular}
+    \caption{Business Rules for Horse Owner Role in Horse Racing Management System}
+    \label{tab:horse_owner_business_rules}
+\end{table}
