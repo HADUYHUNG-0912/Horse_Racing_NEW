@@ -60,7 +60,9 @@ CREATE TABLE JockeyProfiles (
     bio NVARCHAR(MAX),
     weight DECIMAL(5,2),
     height DECIMAL(5,2),
-    experience_years INT DEFAULT 0
+    experience_years INT DEFAULT 0,
+    phone VARCHAR(20) NULL,
+    gender VARCHAR(10) NULL
 );
 
 -- 4. HorseOwnerProfiles table
