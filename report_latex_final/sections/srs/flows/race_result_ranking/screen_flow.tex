@@ -1,6 +1,36 @@
+\subsubsection{Referee Screen Flow}
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{figures/race_result_ranking_screen_flow}
-	\caption*{Figure 3.1.1.2. Race Referee screen flow}
+	\includegraphics[width=0.9\textwidth]{figures/srs/Referee_Requirements/ref_race_result_ranking_screen_flow.png}
+	\caption{Referee screen flow}
 	\label{fig:race_result_ranking_screen_flow}
 \end{figure}
+
+\subsubsection{Referee Screen Description}
+
+\TableStart{|p{0.05\textwidth}|p{0.18\textwidth}|p{0.20\textwidth}|p{0.47\textwidth}|}
+\textbf{\#} & \textbf{Feature} & \textbf{Screen} & \textbf{Description} \\
+\hline
+1 & General & Login & Authenticate the referee and enter the Referee Dashboard. \\
+\hline
+2 & Dashboard & Referee Dashboard & Main hub for the referee with navigation to assigned races, results management, and profile. \\
+\hline
+3 & Race Management & Assigned Race List & Display all races assigned to the referee, including tournament, date, venue, and current status. \\
+\hline
+4 & Race Management & Race Detail & Show detailed information of the selected race, including participating horses, jockeys, and schedule. \\
+\hline
+5 & Result Entry & Input Result Form & Allow the referee to enter finishing positions, times, and relevant notes for each horse in the race. \\
+\hline
+6 & Result Entry & Result Preview & Display a summary of the entered results for the referee to review before submission. \\
+\hline
+7 & Result Submission & Pending Result & Hold the submitted result in a pending state awaiting approval from the administrator. \\
+\hline
+8 & Result Review & Admin Review & Administrator reviews the submitted result and either confirms or rejects it. \\
+\hline
+9 & Result Correction & Edit Result & Allow the referee to correct and update the result after it has been rejected by the administrator. \\
+\hline
+10 & Ranking & Ranking Board & Display the official race ranking after the result has been confirmed by the administrator. \\
+\hline
+11 & Ranking & Leaderboard & Show the overall tournament leaderboard updated with the latest confirmed race results. \\
+\TableFinish{Referee screen descriptions}{tab:referee_screen_screens}
