@@ -1,0 +1,36 @@
+\subsection{Business Rules for Admin Role}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{12cm}|}
+        \hline
+        \textbf{ID} & \textbf{Rule Definition} \\
+        \hline
+        BR-01 & Only an authenticated Administrator with the ADMIN role may access the admin management screens and perform administrative operations. \\
+        \hline
+        BR-02 & The Administrator must create or update a tournament only when all required information, including name, dates, location, and round structure, has been provided. \\
+        \hline
+        BR-03 & A tournament cannot be deleted while it still contains active races, registered participants, or reward definitions that depend on it. \\
+        \hline
+        BR-04 & Every race must be associated with an existing tournament round, and its scheduled date and time must remain within the valid round timeframe. \\
+        \hline
+        BR-05 & The Administrator must assign a unique lane number to each horse-jockey pair within the same race heat. \\
+        \hline
+        BR-06 & The system must prevent the Administrator from creating duplicate lane assignments or scheduling a horse into overlapping races. \\
+        \hline
+        BR-07 & A referee may be assigned to a race only when the referee is available and has no conflicting assignment within the allowed time window. \\
+        \hline
+        BR-08 & The Administrator may define rewards only for an existing tournament, and prize ranks must be unique within that tournament. \\
+        \hline
+        BR-09 & User account management by the Administrator must validate role assignment and allow create, update, lock, or delete actions only for valid account records. \\
+        \hline
+        BR-10 & The system must reject invalid administrative input and display a clear error message when tournament, race, reward, or user data is incomplete or inconsistent. \\
+        \hline
+        BR-11 & A successful create, update, or delete action by the Administrator must immediately refresh the relevant list or dashboard so the latest system state is visible. \\
+        \hline
+        BR-12 & The Administrator must be able to review current tournament status, race schedules, rewards, and user records from the admin overview and management screens. \\
+        \hline
+    \end{tabular}
+    \caption{Business Rules for Admin Role in Horse Racing Management System}
+    \label{tab:admin_business_rules}
+\end{table}
