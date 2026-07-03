@@ -1,0 +1,27 @@
+\subsection{Tools and Infrastructure}
+
+The development and execution environment for the Horse Racing Tournament Management System utilizes the following tech stack, tools, and local infrastructure:
+\begin{itemize}
+    \item \textbf{Programming Languages \& Frameworks}:
+    \begin{itemize}
+        \item \textbf{Backend}: Python 3 utilizing the FastAPI framework for clean architecture REST APIs.
+        \item \textbf{Frontend}: JavaScript/React.js utilizing Next.js (App Router) for the web application UI.
+    \end{itemize}
+    \item \textbf{Database Management}: 
+    \begin{itemize}
+        \item Local Microsoft SQL Server Express instance (\texttt{localhost\textbackslash SQLEXPRESS}) with database named \texttt{HorseRacing}.
+        \item Connection library: \texttt{pyodbc} (ODBC Driver 17 for SQL Server) and SQLAlchemy ORM.
+    \end{itemize}
+    \item \textbf{Development Platforms}:
+    \begin{itemize}
+        \item \textbf{Operating System}: Windows 10/11 workstation.
+        \item \textbf{Integrated Development Environment (IDE)}: VS Code equipped with LaTeX Workshop extension.
+        \item \textbf{Git Client}: Git for Windows / Git Bash.
+        \item \textbf{LaTeX Compiler}: MiKTeX or TeX Live for generating report PDFs locally.
+    \end{itemize}
+    \item \textbf{Local Hosting Configuration}:
+    \begin{itemize}
+        \item Backend server running locally on \texttt{http://127.0.0.1:8000} (API Client configured directly to IP address to prevent connections dropouts).
+        \item Frontend Next.js development server running locally on \texttt{http://localhost:3000}.
+    \end{itemize}
+\end{itemize}

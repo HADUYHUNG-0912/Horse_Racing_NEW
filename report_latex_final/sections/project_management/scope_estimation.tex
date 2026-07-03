@@ -1,0 +1,58 @@
+\section{Scope \& Estimation}
+
+To ensure the project is delivered successfully within the constraints of time and resources, the project scope has been broken down into a detailed Work Breakdown Structure (WBS). The WBS divides the Horse Racing Tournament Management System into 7 distinct modules, covering administrative tasks, core infrastructure, and functional components for various user roles.
+
+Each work item is assessed for complexity (Simple, Medium, or Complex) based on the database interactions, business logic density, and interface requirements:
+\begin{itemize}
+    \item \textbf{Simple}: Basic CRUD operations, simple UI layouts, or minor configurations requiring 5 to 6 man-days.
+    \item \textbf{Medium}: Standard functional features with moderate business logic (e.g., forms validation, standard data list with filters) requiring 7 to 8 man-days.
+    \item \textbf{Complex}: Critical components involving advanced logic, multiple integrations, or strict constraints (e.g., conflict checking algorithms, two-step referee verification, real-time leaderboard calculations) requiring 9 to 15 man-days.
+\end{itemize}
+
+The table below outlines the estimated effort in man-days for each WBS item based on these parameters:
+
+\TableStart{|p{0.06\textwidth}|p{0.54\textwidth}|p{0.18\textwidth}|p{0.20\textwidth}|}
+\textbf{No.} & \textbf{WBS Item} & \textbf{Complexity} & \textbf{Est. Effort (man-days)} \\
+\hline
+1 & \textbf{PM01. Project Management \& Administration} & & \textbf{20} \\
+\hline
+1.1 & Project Setup \& Git Workflow Config & Simple & 5 \\
+\hline
+1.2 & Code Review, Integration \& Conflict Support & Complex & 15 \\
+\hline
+2 & \textbf{DB01. Database \& Infrastructure} & & \textbf{12} \\
+\hline
+2.1 & Database Schema Setup \& ERD Design & Medium & 7 \\
+\hline
+2.2 & API Core Config \& DB Connection & Simple & 5 \\
+\hline
+3 & \textbf{FE01. Authentication \& User Management} & & \textbf{14} \\
+\hline
+3.1 & Login, Registration \& Authorization UI/API & Medium & 8 \\
+\hline
+3.2 & User Management Panel (Pagination/Search) & Medium & 6 \\
+\hline
+4 & \textbf{FE02. Horse \& Jockey Management} & & \textbf{23} \\
+\hline
+4.1 & Horse Owner Profile Update \& Registration & Medium & 8 \\
+\hline
+4.2 & Jockey Profile Update \& Invitation UI/API & Complex & 15 \\
+\hline
+5 & \textbf{FE03. Tournament \& Race Scheduling} & & \textbf{23} \\
+\hline
+5.1 & Tournament Management \& Race Creation & Medium & 8 \\
+\hline
+5.2 & Race Scheduling \& Conflict Validation & Complex & 15 \\
+\hline
+6 & \textbf{FE04. Race Execution \& Results} & & \textbf{24} \\
+\hline
+6.1 & Referee Two-step Result Submission & Complex & 12 \\
+\hline
+6.2 & Real-time Leaderboard \& Prize Config & Complex & 12 \\
+\hline
+7 & \textbf{FE05. Spectator Portal} & & \textbf{14} \\
+\hline
+7.1 & Schedules \& Live Results UI/API & Simple & 6 \\
+\hline
+7.2 & Place Prediction Form \& Timer Lock & Complex & 8 \\
+\TableFinish{Work Breakdown Structure (WBS) and Effort Estimation}{tab:wbs_estimation}

@@ -1,0 +1,13 @@
+\subsection{Document Management}
+
+To ensure consistent document formatting and prevent conflicts during collaborative writing, the team follows a structured LaTeX document management workflow on GitHub:
+\begin{itemize}
+    \item \textbf{Three-Tier Architecture}: The document structure is divided into three tiers:
+    \begin{enumerate}
+        \item \texttt{main.tex}: The root file that only handles package imports and includes document wrappers.
+        \item \texttt{documents/}: Wrapper files for each chapter (e.g., \texttt{project\_management\_plan.tex}).
+        \item \texttt{sections/}: The folder containing the actual content files divided by section and assignee.
+    \end{enumerate}
+    \item \textbf{Conflict Avoidance}: Team members are strictly restricted to editing files under their assigned sections. Editing \texttt{main.tex} or files in the \texttt{documents/} folder is prohibited without prior team alignment.
+    \item \textbf{Figure Convention}: Figures must be stored in the \texttt{figures/} directory and named according to the format: \texttt{<chapter>\_<content>.<ext>} (e.g., \texttt{figures/srs\_erd.png}). Generic names like \texttt{image1.png} are avoided.
+\end{itemize}

@@ -1,0 +1,60 @@
+\subsection{System Actors}
+
+\begin{center}
+\begin{tabular}{|p{3cm}|p{2.5cm}|p{8cm}|}
+\hline
+\textbf{Actor} & \textbf{Type} & \textbf{Description / Responsibilities} \\
+\hline
+Admin & Human & Responsible for platform administration: user and role management, system configuration, approvals, and overall system monitoring. \\
+\hline
+Referee & Human & Manages race supervision and validation: verifies race results, resolves disputes, and updates official results (backend endpoints in `results.py` / `referees.py`). \\
+\hline
+Jockey & Human & Represents the rider; manages jockey profile information and race assignments. \\
+\hline
+Horse Owner & Human & Registers and manages horse profiles, submits horses to races, and maintains horse-related records and health information. \\
+\hline
+Spectator & Human & Views race schedules, results, leaderboards, and (optionally) places bets or follows favorite horses/jockeys via the frontend panels. \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Use Cases}
+\subsubsection{Use Case Diagram}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/srs/User Requirements/use_case_diagram.png}
+    \label{fig:use_case_diagram}
+\end{figure}
+
+\subsubsection{Use Case Description}
+
+The table below summarizes the main use cases extracted from the use‑case diagram.
+\begin{center}
+\begin{tabular}{|p{0.9cm}|p{4.5cm}|p{2.8cm}|p{6cm}|}
+\hline
+\textbf{ID} & \textbf{Use Case} & \textbf{Primary Actor} & \textbf{Brief Description} \\
+\hline
+UC-01 & Manage Horses & Horse Owner & Create, update and maintain horse profiles and related health records. \\
+\hline
+UC-02 & Register Horses for Tournaments & Horse Owner & Submit horses to tournament participation and view registration status. \\
+\hline
+UC-03 & Manage Jockey Profile & Jockey & Create and update jockey personal/profile information and availability. \\
+\hline
+UC-04 & Confirm / Decline Race Participation & Jockey & Accept or decline invitations to participate in assigned races. \\
+\hline
+UC-05 & View Race Schedule & Spectator & Browse upcoming races, schedules and basic race information. \\
+\hline
+UC-06 & View Race Results & Spectator & View final results, rankings and statistics after a race is published. \\
+\hline
+UC-07 & Predict / View Prediction Results & Spectator & Submit predictions (if supported) and view prediction outcomes. \\
+\hline
+UC-08 & Inspect Horses / Monitor Race & Referee & Inspect horses before the race, monitor the race and record any violations. \\
+\hline
+UC-09 & Enter / Confirm Race Results & Referee & Enter raw race results and confirm official results for publication. \\
+\hline
+UC-10 & Manage Races and Tournaments & Admin & Create and schedule races/tournaments, assign referees and publish results. \\
+\hline
+UC-11 & Manage Users and Roles & Admin & Manage platform users, roles and permissions (admin panel). \\
+\hline
+\end{tabular}
+\end{center}
