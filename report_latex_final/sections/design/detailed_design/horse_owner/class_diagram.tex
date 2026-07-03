@@ -1,0 +1,32 @@
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/horse_owner/login_class_diagram.png}
+    \caption{Horse Owner Login Class Diagram}
+    \label{fig:horse_owner_login_class_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+LoginPage & username, password, handleLogin() & state / action & UI component that collects login credentials and calls the API. \\
+\hline
+Api & login(), post(), getHeaders() & service / helper & Calls \texttt{POST /auth/token}, stores JWT, and prepares request headers. \\
+\hline
+AuthRouter & login\_for\_access\_token(), read\_users\_me() & controller / route & Validates username/password and issues bearer tokens. \\
+\hline
+User & id, username, password\_hash, email, full\_name, role\_id, is\_active & entity & Database entity representing an application user. \\
+\hline
+Role & id, name & entity & Defines user roles, including \texttt{OWNER}. \\
+\hline
+Token & access\_token, token\_type & DTO & Response payload returned after successful login. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Owner-specific profile linked to the User entity. \\
+\TableFinish{Horse Owner Login class specification}{tab:horse_owner_login_class_spec}
+\endgroup

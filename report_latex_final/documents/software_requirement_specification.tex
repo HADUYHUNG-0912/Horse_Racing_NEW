@@ -1,15 +1,24 @@
 \chapter{Software Requirement Specification}
 
+\section{Product Overview}
+
 \input{sections/srs/product_overview}
-\input{sections/srs/actors}
-\input{sections/srs/usecase_diagram_overview}
-\input{sections/srs/usecase_description}
+\input{sections/srs/screen_authorization}
+
+\section{User Requirements}
+
+\input{sections/srs/user_requirements}
 
 \section{Functional Requirements}
+\subsection{System Functional Overview}
 
+\input{sections/srs/flows/admin_flow/screen_flow}
 \input{sections/srs/flows/horse_owner_registration/screen_flow}
+\input{sections/srs/flows/jockey_invitation/screen_flow}
+\input{sections/srs/flows/race_scheduling/screen_flow}
+\input{sections/srs/flows/spectator/screen_flow}
 
-\section{Web Application}
+\subsection{Web Application}
 
 \input{sections/srs/web_application/horse_owner}
 \input{sections/srs/web_application/jockey}
@@ -19,23 +28,4 @@
 
 \input{sections/srs/non_functional}
 
-% Overall design
-\input{sections/design/architecture}
-\input{sections/design/package_diagram}
-\input{sections/design/class_diagram_overall}
-\input{sections/design/erd}
-
-% Detailed design
-\input{sections/design/detailed_design/horse_owner_registration/activity_diagram}
-\input{sections/design/detailed_design/horse_owner_registration/sequence_diagram}
-
-\input{sections/design/detailed_design/jockey_invitation/activity_diagram}
-\input{sections/design/detailed_design/jockey_invitation/sequence_diagram}
-
-\input{sections/design/detailed_design/race_scheduling/activity_diagram}
-\input{sections/design/detailed_design/race_scheduling/sequence_diagram}
-
-\input{sections/design/detailed_design/race_result_ranking/activity_diagram}
-\input{sections/design/detailed_design/race_result_ranking/sequence_diagram}
-
-\input{sections/srs/web_application/web_app_roles}
+\section{Requirement Appendix}

@@ -1,0 +1,182 @@
+
+\subsubsection{Jockey Login}
+
+\textbf{Role:} Jockey
+
+\begin{itemize}
+	\item \textbf{Function trigger:} The jockey enters account credentials to log in.
+
+	\item \textbf{Function description:}
+	\begin{itemize}
+		\item \textbf{Purpose:} Allow a jockey to authenticate and access the Jockey Dashboard where they can view invitations, schedules, results and manage their profile.
+		\item \textbf{Pre-conditions:} User has a registered jockey account. Internet connection available.
+		\item \textbf{Post-conditions:} Successful login redirects to the Jockey Dashboard. Failed login shows an error message.
+	\end{itemize}
+
+	\item \textbf{Function details:}
+	\begin{itemize}
+		\item Enter username/email and password.
+		\item Support for "Forgot password" flow.
+		\item Role-based redirect to jockey views after authentication.
+	\end{itemize}
+\end{itemize}
+
+\textbf{Screen layout:}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figures/web_application/jockey/login.png}
+	\caption{Jockey Login}
+\end{figure}
+
+
+\subsubsection{Invitations Inbox}
+
+\textbf{Role:} Jockey
+
+\begin{itemize}
+	\item \textbf{Function trigger:} Select "Invitations" or open dashboard inbox.
+
+	\item \textbf{Function description:}
+	\begin{itemize}
+		\item \textbf{Purpose:} Show invitations sent by horse owners with horse, tournament and message details so the jockey can accept or reject.
+		\item \textbf{Pre-conditions:} Owner has sent an invitation to this jockey.
+		\item \textbf{Post-conditions:} Accepting an invitation registers the jockey/horse pair for registration flows; rejecting notifies the owner.
+	\end{itemize}
+
+	\item \textbf{Function details:}
+	\begin{itemize}
+		\item List invitations with columns: Owner, Horse, Tournament, Message, Status, Actions.
+		\item Actions: Accept, Reject, View details.
+		\item Status badges: PENDING, ACCEPTED, REJECTED.
+	\end{itemize}
+\end{itemize}
+
+\textbf{Screen layout:}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/web_application/jockey/invitations.png}
+	\caption{Jockey Invitations Inbox}
+\end{figure}
+
+
+\subsubsection{Race Schedule}
+
+\textbf{Role:} Jockey
+
+\begin{itemize}
+	\item \textbf{Function trigger:} Select "Schedule" or view upcoming races on dashboard.
+
+	\item \textbf{Function description:}
+	\begin{itemize}
+		\item \textbf{Purpose:} Display upcoming races the jockey is registered for, with date, time, distance, track and assigned horse.
+		\item \textbf{Pre-conditions:} Jockey has accepted invitations and registrations are processed.
+		\item \textbf{Post-conditions:} Jockey can prepare for races and view race details.
+	\end{itemize}
+
+	\item \textbf{Function details:}
+	\begin{itemize}
+		\item Show list grouped by tournament and date.
+		\item Provide quick links to race details and results (if available).
+	\end{itemize}
+\end{itemize}
+
+\textbf{Screen layout:}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/web_application/jockey/schedule.png}
+	\caption{Jockey Upcoming Races}
+\end{figure}
+
+
+\subsubsection{Jockey Profile}
+
+\textbf{Role:} Jockey
+
+\begin{itemize}
+	\item \textbf{Function trigger:} Select "Profile" from the dashboard.
+
+	\item \textbf{Function description:}
+	\begin{itemize}
+		\item \textbf{Purpose:} View and update personal information: full name, email, phone, gender, weight, height, experience years and bio.
+		\item \textbf{Pre-conditions:} Jockey is authenticated.
+		\item \textbf{Post-conditions:} Changes are saved and shown across the application.
+	\end{itemize}
+
+	\item \textbf{Function details:}
+	\begin{itemize}
+		\item Editable fields with validation for required fields.
+		\item Avatar upload support.
+		\item Save changes with confirmation message.
+	\end{itemize}
+\end{itemize}
+
+\textbf{Screen layout:}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/web_application/jockey/profile.jpg}
+	\caption{Jockey Personal Profile}
+\end{figure}
+
+
+\subsubsection{Rewards \& Achievements}
+
+\textbf{Role:} Jockey
+
+\begin{itemize}
+	\item \textbf{Function trigger:} Select "Rewards" or "Achievements" from the dashboard.
+
+	\item \textbf{Function description:}
+	\begin{itemize}
+		\item \textbf{Purpose:} Show accumulated points, awards and historical results for the jockey across tournaments.
+		\item \textbf{Pre-conditions:} Race results have been recorded in the system.
+		\item \textbf{Post-conditions:} Jockey can filter awards by tournament and view details.
+	\end{itemize}
+
+	\item \textbf{Function details:}
+	\begin{itemize}
+		\item Summary cards for total points, best ranking and number of participations.
+		\item Table of awards per tournament with dates and points.
+	\end{itemize}
+\end{itemize}
+
+\textbf{Screen layout:}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/web_application/jockey/achievements.png}
+	\caption{Jockey Rewards and Achievements}
+\end{figure}
+
+
+\subsubsection{Leaderboard}
+
+\textbf{Role:} Jockey
+
+\begin{itemize}
+	\item \textbf{Function trigger:} Select "Leaderboard" from the navigation.
+
+	\item \textbf{Function description:}
+	\begin{itemize}
+		\item \textbf{Purpose:} Display rankings for jockeys (and horses) with filtering by tournament.
+		\item \textbf{Pre-conditions:} Results and scores have been computed.
+		\item \textbf{Post-conditions:} User can view overall and tournament-specific leaderboards.
+	\end{itemize}
+
+	\item \textbf{Function details:}
+	\begin{itemize}
+		\item Two panels: Horse ranking and Jockey ranking.
+		\item Filter dropdown for tournaments and tabs for category selection.
+	\end{itemize}
+\end{itemize}
+
+\textbf{Screen layout:}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/web_application/jockey/ranking.png}
+	\caption{Leaderboard (Jockey and Horse Rankings)}
+\end{figure}

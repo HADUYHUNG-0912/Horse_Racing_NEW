@@ -218,7 +218,16 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# LaTeX build artifacts
+# LaTeX build files
+*.aux
+*.log
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.out
+
+# LaTeX build artifacts (project-specific)
 report_latex_final/**/*.aux
 report_latex_final/**/*.bbl
 report_latex_final/**/*.blg
@@ -228,7 +237,6 @@ report_latex_final/**/*.lof
 report_latex_final/**/*.log
 report_latex_final/**/*.lot
 report_latex_final/**/*.out
-report_latex_final/**/*.pdf
 report_latex_final/**/*.synctex.gz
 report_latex_final/**/*.toc
 
@@ -243,5 +251,14 @@ team-checklist.md
 team_task_assignment.md
 test.tex
 *.pdf
-*.out
-*.fls
+
+# Optional
+*.pdf
+# Node dependencies
+node_modules/
+source-code/frontend/node_modules/
+*.synctex.gz
+
+# Temporary files
+*.tmp
+>>>>>>> f0b46831b7354977e7a08fb1bca9c64135975d8f
