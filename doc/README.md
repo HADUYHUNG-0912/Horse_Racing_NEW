@@ -14,7 +14,8 @@ doc/
 │
 ├── git/               # Quản lý Git
 │   ├── branching_plan.md            — Chiến lược phân nhánh Git
-│   └── git_rules.md                 — Quy tắc Git & commit message
+│   ├── git_rules.md                 — Quy tắc Git & commit message
+│   └── branch_migration_guide.md    — Hướng dẫn di chuyển nhánh khi lệch base
 │
 ├── task/              # Phân công nhiệm vụ
 │   ├── team_task_assignment.md      — Bảng phân công nhiệm vụ tổng thể
