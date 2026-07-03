@@ -1,47 +1,37 @@
-\subsection{Race Scheduling Management Screen Flow}
-
+\subsubsection{Race Scheduling Management Screen Flow}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{figures/race_scheduling_screenflow.png}
+	\includegraphics[width=0.9\textwidth]{figures/srs/Functional Requirements/race_scheduling_screenflow.png}
 	\caption{Race scheduling management screen flow}
 	\label{fig:race_scheduling_flow}
 \end{figure}
-
-\subsection{Screen description}
-
-\begin{table}[H]
-	\centering
-	\begin{tabular}{|p{0.05\textwidth}|p{0.18\textwidth}|p{0.22\textwidth}|p{0.45\textwidth}|}
-		\hline
-		\textbf{\#} & \textbf{Feature} & \textbf{Screen} & \textbf{Description} \\
-		\hline
-		1 & General & Home & The main landing page of the system, acting as the entry point before authentication. \\
-		\hline
-		2 & Authentication & Login Admin & The dedicated login interface restricted to authorized Administrator accounts. \\
-		\hline
-		3 & General & Admin Dashboard & The landing page post-login; displays the ongoing tournament list to select a specific workspace. \\
-		\hline
-		4 & Configuration & Create Race Schedule Form & Main input interface to set up tournament stage, race name, time, track conditions, referee assignment, and lane allocation. \\
-		\hline
-		5 & Configuration & Enter race information & Step where detailed race attributes are inputted before the system initiates the validation process. \\
-		\hline
-		6 & Validation & Validate data & Automated backend process triggered to verify the validity of data and check for any constraints or scheduling conflicts. \\
-		\hline
-		7 & Validation & Invalid Time Alert & Validation error state triggered if the selected race time falls outside the boundaries of the tournament start and end dates. \\
-		\hline
-		8 & Validation & Lane Conflict Alert & Validation error state triggered if multiple horses are mistakenly assigned to the exact same lane number. \\
-		\hline
-		9 & Validation & Duplicate Horse Alert & Validation error state triggered if a single horse is selected more than once within the same race setup. \\
-		\hline
-		10 & Validation & Referee Conflict Alert & Validation error state triggered if the assigned referee has another active commitment within a 2-hour window. \\
-		\hline
-		11 & Validation & Scheduling Successful & System state confirming that the schedule data passed all validations and has been successfully recorded. \\
-		\hline
-		12 & Validation & Display Success Alert Banner & A success banner prompted at the top of the form displaying: ``Race created successfully!''. \\
-		\hline
-		13 & Feedback & Update Match Schedule Table & Persistent historical data table below the form that appends and displays the newly scheduled race details instantly. \\
-		\hline
-	\end{tabular}
-	\caption{Race Scheduling screen descriptions}
-	\label{tab:raceschedulingscreens}
-\end{table}
+\subsubsection{Screen description for Race Scheduling}
+\TableStart{|p{0.05\textwidth}|p{0.18\textwidth}|p{0.20\textwidth}|p{0.47\textwidth}|}
+\textbf{\#} & \textbf{Feature} & \textbf{Screen} & \textbf{Description} \\
+\hline
+1 & General & Home & The main landing page of the system, acting as the entry point before authentication. \\
+\hline
+2 & Authentication & Login Admin & The dedicated login interface restricted to authorized Administrator accounts. \\
+\hline
+3 & General & Admin Dashboard & The landing page post-login; displays the ongoing tournament list to select a specific workspace. \\
+\hline
+4 & Configuration & Create Race Schedule Form & Main input interface to set up tournament stage, race name, time, track conditions, referee assignment, and lane allocation. \\
+\hline
+5 & Configuration & Enter race information & Step where detailed race attributes are inputted before the system initiates the validation process. \\
+\hline
+6 & Validation & Validate data & Automated backend process triggered to verify the validity of data and check for any constraints or scheduling conflicts. \\
+\hline
+7 & Validation & Invalid Time Alert & Validation error state triggered if the selected race time falls outside the boundaries of the tournament start and end dates. \\
+\hline
+8 & Validation & Lane Conflict Alert & Validation error state triggered if multiple horses are mistakenly assigned to the exact same lane number. \\
+\hline
+9 & Validation & Duplicate Horse Alert & Validation error state triggered if a single horse is selected more than once within the same race setup. \\
+\hline
+10 & Validation & Referee Conflict Alert & Validation error state triggered if the assigned referee has another active commitment within a 2-hour window. \\
+\hline
+11 & Validation & Scheduling Successful & System state confirming that the schedule data passed all validations and has been successfully recorded. \\
+\hline
+12 & Validation & Display Success Alert Banner & A success banner prompted at the top of the form displaying: ``Race created successfully!''. \\
+\hline
+13 & Feedback & Update Match Schedule Table & Persistent historical data table below the form that appends and displays the newly scheduled race details instantly. \\
+\TableFinish{Race Scheduling screen descriptions}{tab:raceschedulingscreens}
