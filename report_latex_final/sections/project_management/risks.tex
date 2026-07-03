@@ -1,0 +1,19 @@
+\section{Risk Management}
+
+To ensure the smooth execution of the Horse Racing Tournament Management System development, the team has identified potential technical, operational, and managerial risks. Managing these risks involves analyzing their probability of occurrence, potential impact, and establishing proactive mitigation and contingency plans.
+
+The table below presents the key risks identified during the project lifecycle and the corresponding response strategies:
+
+\TableStart{|p{0.05\textwidth}|p{0.30\textwidth}|p{0.13\textwidth}|p{0.11\textwidth}|p{0.39\textwidth}|}
+\textbf{No.} & \textbf{Risk Description} & \textbf{Probability} & \textbf{Impact} & \textbf{Mitigation / Response Plan} \\
+\hline
+1 & \textbf{Git Merge Conflicts}: Code integration conflicts due to multiple developers working on adjacent modules (e.g., dashboard panels). & High & Major & Split large files (like \texttt{dashboard/page.js}) into smaller components. Enforce strict branching guidelines: pull changes from \texttt{dev-GiaHuy} before coding, and create pull requests for review. \\
+\hline
+2 & \textbf{Vietnamese Encoding Errors}: Vietnamese names and text showing as \texttt{?} in UI or database due to non-Unicode configurations in SQL Server. & Medium & Moderate & Change string definitions to \texttt{Unicode} and text to \texttt{UnicodeText} in SQLAlchemy models (\texttt{database\_models.py}) to map to \texttt{NVARCHAR} columns in SQL Server. \\
+\hline
+3 & \textbf{Race Scheduling Conflicts}: Double-booking of referees, jockeys, or horses in overlapping races or tournaments. & Medium & Major & Implement robust backend validations (\texttt{Conflict Validation}) for schedule updates and referee assignments before persisting to the database. \\
+\hline
+4 & \textbf{React Hooks Rule Violations}: Frontend crashes and rendering bugs caused by calling Hooks inside loops or conditional statements (e.g., in Admin panels). & Medium & Major & Perform mandatory code reviews and utilize ESLint static analysis to identify Hook violations prior to code integration. \\
+\hline
+5 & \textbf{Inconsistent Local Databases}: Out-of-sync local database schemas among team members causing API integration failures. & High & Major & Provide a centralized database setup and seeding script (\texttt{db\_setup.py}). Enforce running the script immediately after git pulls. \\
+\TableFinish{Project Risk Analysis and Mitigation Plans}{tab:risks}

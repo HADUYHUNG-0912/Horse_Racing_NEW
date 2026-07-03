@@ -1,0 +1,24 @@
+\subsection{Source Code Management}
+
+The project source code is hosted on GitHub and managed using a customized feature-branching workflow to guarantee code quality and repository stability:
+\begin{itemize}
+    \item \textbf{Branching Strategy}:
+    \begin{itemize}
+        \item \texttt{main}: Reserved for the final, production-ready release used for demos.
+        \item \texttt{dev-GiaHuy}: The main integration branch where all validated feature branches are merged.
+        \item \texttt{feature/*}: Temporary branches used by developers to work on assigned tasks (e.g., \texttt{feature/auth-user}, \texttt{feature/spectator-view}).
+    \end{itemize}
+    \item \textbf{Development Protocol}:
+    \begin{enumerate}
+        \item Pull the latest updates from the remote integration branch before coding: \texttt{git pull origin dev-GiaHuy}.
+        \item Develop the feature on a separate \texttt{feature/*} branch.
+        \item Push the feature branch to the remote repository.
+        \item Open a Pull Request (PR) from the feature branch to \texttt{dev-GiaHuy}. Direct pushes to \texttt{dev-GiaHuy} or \texttt{main} are disabled.
+    \end{enumerate}
+    \item \textbf{Commit Message Convention}: Commit messages must clearly state the scope of the change. For example:
+    \begin{itemize}
+        \item \texttt{git commit -m "Add login API"}
+        \item \texttt{git commit -m "Create horse management page"}
+    \end{itemize}
+    \item \textbf{Review \& Merge}: The Team Leader reviews all PRs, checks for build errors, resolves conflicts, and merges the code into the integration branch.
+\end{itemize}
