@@ -133,6 +133,8 @@ INPUT D:\Miktex\tex\latex\amsfonts\amsfonts.sty
 INPUT D:\Miktex\tex\latex\amsfonts\amsfonts.sty
 INPUT D:\Miktex\tex\latex\booktabs\booktabs.sty
 INPUT D:\Miktex\tex\latex\booktabs\booktabs.sty
+INPUT D:\Miktex\tex\latex\tools\longtable.sty
+INPUT D:\Miktex\tex\latex\tools\longtable.sty
 INPUT .\styles\colors.tex
 INPUT .\styles\colors.tex
 INPUT .\styles\colors.tex
