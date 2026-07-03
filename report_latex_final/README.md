@@ -52,61 +52,22 @@ Horse_Racing_Report/
 │   │   ├── flows/                                  <- moi flow = 1 nguoi
 │   │   │   ├── horse_owner_registration/           <- Thuy Anh
 │   │   │   │   ├── screen_flow.tex
-│   │   │   │
+│   │   │   │   
 │   │   │   │
 │   │   │   ├── jockey_invitation/                  <- Ho Nguyen Thai Chau
 │   │   │   │   ├── screen_flow.tex
-│   │   │   │
+│   │   │   │  
 │   │   │   ├── race_scheduling/                    <- My Hue
 │   │   │   │   ├── screen_flow.tex
-│   │   │   │
+│   │   │   │   
 │   │   │   │
 │   │   │   └── race_result_ranking/                <- Bui Huy
 │   │   │       ├── screen_flow.tex
-│   │   │
+│   │   │    
 │   │   │
 │   │   ├── screen_authorization.tex                (Duy Hung)
 │   │   ├── non_functional.tex                      (Thuy Anh)
-│   │   │
-│   │   ├── web_application/                        <- PHAN 3.2
-│   │   │   ├── admin.tex                           <- My Hue, Gia Huy
-│   │   │   │   ├── Login
-│   │   │   │   ├── Manage Users
-│   │   │   │   ├── Manage Tournaments
-│   │   │   │   └── Approve Registrations
-│   │   │   │
-│   │   │   ├── horse_owner.tex                     <- Thuy Anh
-│   │   │   │   ├── Login
-│   │   │   │   ├── Manage Horses
-│   │   │   │   ├── Invite Jockey
-│   │   │   │   ├── Register Tournament
-│   │   │   │   ├── Registered Tournaments
-│   │   │   │   ├── Horse Schedule
-│   │   │   │   ├── Race Results
-│   │   │   │   ├── Owner Profile
-│   │   │   │   └── Ranking
-│   │   │   │
-│   │   │   ├── jockey.tex                          <- Ho Nguyen Thai Chau
-│   │   │   │   ├── Login
-│   │   │   │   ├── View Invitations
-│   │   │   │   ├── Accept Invitations
-│   │   │   │   ├── Assigned Horses
-│   │   │   │   └── Tournament Participation
-│   │   │   │
-│   │   │   ├── spectator.tex                       <- Thu May
-│   │   │   │   ├── View Tournaments
-│   │   │   │   ├── View Schedules
-│   │   │   │   ├── View Rankings
-│   │   │   │   └── View Race Results
-│   │   │   │
-│   │   │   ├── race_referee.tex                    <- Bui Huy
-│   │   │   │   ├── Login
-│   │   │   │   ├── View Assigned Races
-│   │   │   │   ├── Record Results
-│   │   │   │   └── Confirm Rankings
-│   │   │   │
-│   │   │   └── web_app_roles.tex                   <- Duy Hung
-│   │   │       (Role x Functionality matrix)
+│   │   ├── web_app_roles.tex                       (bang Role x Functionality)
 │   │   │
 │   │   └── appendix/
 │   │       ├── business_rules.tex                  (Gia Huy, My Hue)
@@ -119,18 +80,18 @@ Horse_Racing_Report/
 │       ├── class_diagram_overall.tex               <- THU MAY
 │       └── erd.tex                                 <- THU MAY
 │       └── detailed_design/
-├── horse_owner_registration/
-│   ├── activity_diagram.tex
-│   └── sequence_diagram.tex
-├── jockey_invitation/
-│   ├── activity_diagram.tex
-│   └── sequence_diagram.tex
-├── race_scheduling/
-│   ├── activity_diagram.tex
-│   └── sequence_diagram.tex
-└── race_result_ranking/
-├── activity_diagram.tex
-└── sequence_diagram.tex
+            ├── horse_owner_registration/
+            │   ├── activity_diagram.tex
+            │   └── sequence_diagram.tex
+            ├── jockey_invitation/
+            │   ├── activity_diagram.tex
+            │   └── sequence_diagram.tex
+            ├── race_scheduling/
+            │   ├── activity_diagram.tex
+            │   └── sequence_diagram.tex
+            └── race_result_ranking/
+                ├── activity_diagram.tex
+                └── sequence_diagram.tex    
 ├── figures/                                        # Hình ảnh, sơ đồ (.png/.jpg/.pdf)
 ├── tables/                                         # Bảng LaTeX dài/dùng chung nhiều nơi
 └── appendix/                                       # Phụ lục chung (nếu có)
