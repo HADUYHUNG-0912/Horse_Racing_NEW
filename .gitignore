@@ -228,7 +228,6 @@ report_latex_final/**/*.lof
 report_latex_final/**/*.log
 report_latex_final/**/*.lot
 report_latex_final/**/*.out
-report_latex_final/**/*.pdf
 report_latex_final/**/*.synctex.gz
 report_latex_final/**/*.toc
 
