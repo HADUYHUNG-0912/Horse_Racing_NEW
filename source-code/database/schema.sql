@@ -49,7 +49,8 @@ CREATE TABLE Users (
     phone_number VARCHAR(20) NULL,
     avatar VARCHAR(255) NULL,
     role_id INT NOT NULL FOREIGN KEY REFERENCES Roles(id),
-    is_active BIT DEFAULT 1
+    is_active BIT DEFAULT 1,
+    created_at DATETIME DEFAULT GETDATE()
 );
 
 -- 3. JockeyProfiles table
@@ -66,7 +67,15 @@ CREATE TABLE JockeyProfiles (
 CREATE TABLE HorseOwnerProfiles (
     id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT NOT NULL UNIQUE FOREIGN KEY REFERENCES Users(id) ON DELETE CASCADE,
-    company_name NVARCHAR(100) NULL
+    company_name NVARCHAR(100) NULL,
+
+    age INT NULL,
+    experience_years INT NULL,
+    occupation NVARCHAR(255) NULL,
+    address NVARCHAR(255) NULL,
+    nationality NVARCHAR(100) NULL,
+    social_link NVARCHAR(255) NULL,
+    bio NVARCHAR(MAX) NULL
 );
 
 -- 5. RefereeProfiles table

@@ -4,6 +4,21 @@ import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
 
+const emptyOwnerProfileForm = {
+  full_name: "",
+  email: "",
+  phone_number: "",
+  company_name: "",
+  avatar: "",
+  age: "",
+  experience_years: "",
+  occupation: "",
+  address: "",
+  nationality: "",
+  social_link: "",
+  bio: ""
+};
+
 export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [horses, setHorses] = useState([]);
   const [jockeys, setJockeys] = useState([]);
@@ -13,7 +28,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [ownerProfile, setOwnerProfile] = useState(null);
   const [upcomingRaces, setUpcomingRaces] = useState([]);
   const [resultHistory, setResultHistory] = useState([]);
-  const [profileForm, setProfileForm] = useState({ full_name: "", phone_number: "", company_name: "", avatar: "" });
+  const [profileForm, setProfileForm] = useState(emptyOwnerProfileForm);
   const [loading, setLoading] = useState(true);
 
   // Form states
@@ -23,6 +38,20 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [editHorseForm, setEditHorseForm] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
 
   const asArray = (data) => Array.isArray(data) ? data : data?.items || data?.data || [];
+  const getOwnerProfileForm = (profile) => ({
+    full_name: profile?.full_name || "",
+    email: profile?.email || "",
+    phone_number: profile?.phone_number || "",
+    company_name: profile?.company_name || "",
+    avatar: profile?.avatar || "",
+    age: profile?.age != null ? String(profile.age) : "",
+    experience_years: profile?.experience_years != null ? String(profile.experience_years) : "",
+    occupation: profile?.occupation || "",
+    address: profile?.address || "",
+    nationality: profile?.nationality || "",
+    social_link: profile?.social_link || "",
+    bio: profile?.bio || ""
+  });
   const getJockeyLabel = (jockey) => {
     const name = jockey.full_name || jockey.username || `Jockey #${jockey.id}`;
     const experience = Number.isFinite(Number(jockey.experience_years))
@@ -47,12 +76,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
 
       const ownerProfileData = await api.get("/owners/profile");
       setOwnerProfile(ownerProfileData);
-      setProfileForm({
-        full_name: ownerProfileData.full_name || "",
-        phone_number: ownerProfileData.phone_number || "",
-        company_name: ownerProfileData.company_name || "",
-        avatar: ownerProfileData.avatar || ""
-      });
+      setProfileForm(getOwnerProfileForm(ownerProfileData));
 
       const races = await api.get("/owners/upcoming-races");
       setUpcomingRaces(Array.isArray(races) ? races : []);
@@ -88,20 +112,50 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
 
   const saveOwnerProfile = async (e) => {
     e.preventDefault();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const trimmedEmail = profileForm.email.trim();
+    const trimmedSocialLink = profileForm.social_link.trim();
+    const age = profileForm.age === "" ? null : Number(profileForm.age);
+    const experienceYears = profileForm.experience_years === "" ? null : Number(profileForm.experience_years);
+
+    if (!emailPattern.test(trimmedEmail)) {
+      showMsg("Email khong dung dinh dang!", "error");
+      return;
+    }
+    if (age !== null && (!Number.isInteger(age) || age < 18 || age > 100)) {
+      showMsg("Tuoi Owner phai la so nguyen tu 18 den 100!", "error");
+      return;
+    }
+    if (experienceYears !== null && (!Number.isInteger(experienceYears) || experienceYears < 0)) {
+      showMsg("Kinh nghiem phai la so nguyen khong am!", "error");
+      return;
+    }
+    if (trimmedSocialLink && !/^https?:\/\/.+\..+/.test(trimmedSocialLink)) {
+      showMsg("Website / mang xa hoi phai la URL bat dau bang http:// hoac https://", "error");
+      return;
+    }
+    if (profileForm.bio.length > 300) {
+      showMsg("Mo ta ngan khong duoc vuot qua 300 ky tu!", "error");
+      return;
+    }
+
     try {
       const updatedProfile = await api.put("/owners/profile", {
-        full_name: profileForm.full_name,
-        phone_number: profileForm.phone_number,
-        company_name: profileForm.company_name,
-        avatar: profileForm.avatar
+        full_name: profileForm.full_name.trim(),
+        email: trimmedEmail,
+        phone_number: profileForm.phone_number.trim() || null,
+        company_name: profileForm.company_name.trim() || null,
+        avatar: profileForm.avatar.trim() || null,
+        age,
+        experience_years: experienceYears,
+        occupation: profileForm.occupation.trim() || null,
+        address: profileForm.address.trim() || null,
+        nationality: profileForm.nationality.trim() || null,
+        social_link: trimmedSocialLink || null,
+        bio: profileForm.bio.trim() || null
       });
       setOwnerProfile(updatedProfile);
-      setProfileForm({
-        full_name: updatedProfile.full_name || "",
-        phone_number: updatedProfile.phone_number || "",
-        company_name: updatedProfile.company_name || "",
-        avatar: updatedProfile.avatar || ""
-      });
+      setProfileForm(getOwnerProfileForm(updatedProfile));
       showMsg("Cập nhật hồ sơ chủ sở hữu thành công!");
     } catch (err) {
       showMsg(err.message, "error");
@@ -642,6 +696,16 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                 />
               </div>
               <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  className="input-field"
+                  value={profileForm.email}
+                  onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
                 <label>Số điện thoại</label>
                 <input
                   type="text"
@@ -649,6 +713,66 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                   value={profileForm.phone_number}
                   onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
                 />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "12px" }}>
+                <div className="form-group">
+                  <label>Tuổi</label>
+                  <input
+                    type="number"
+                    className="input-field"
+                    min="18"
+                    max="100"
+                    value={profileForm.age}
+                    onChange={(e) => setProfileForm({ ...profileForm, age: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Kinh nghiệm (năm)</label>
+                  <input
+                    type="number"
+                    className="input-field"
+                    min="0"
+                    value={profileForm.experience_years}
+                    onChange={(e) => setProfileForm({ ...profileForm, experience_years: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Nghề nghiệp</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.occupation}
+                  onChange={(e) => setProfileForm({ ...profileForm, occupation: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Địa chỉ liên hệ</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={profileForm.address}
+                  onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Quốc tịch</label>
+                <select
+                  className="input-field"
+                  value={profileForm.nationality}
+                  onChange={(e) => setProfileForm({ ...profileForm, nationality: e.target.value })}
+                >
+                  <option value="">-- Chọn quốc tịch --</option>
+                  <option value="Việt Nam">Việt Nam</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="France">France</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Thailand">Thailand</option>
+                  <option value="Malaysia">Malaysia</option>
+                </select>
               </div>
               <div className="form-group">
                 <label>Công ty / Tên đội</label>
@@ -668,6 +792,37 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                   onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
                 />
               </div>
+              <div className="form-group">
+                <label>Website / Mạng xã hội</label>
+                <input
+                  type="url"
+                  className="input-field"
+                  placeholder="https://example.com"
+                  value={profileForm.social_link}
+                  onChange={(e) => setProfileForm({ ...profileForm, social_link: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Mô tả ngắn (Bio)</label>
+                <textarea
+                  className="input-field"
+                  maxLength={300}
+                  value={profileForm.bio}
+                  onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
+                />
+                <div style={{ color: "#94a3b8", fontSize: "12px", marginTop: "4px" }}>
+                  {profileForm.bio.length}/300 ký tự
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Ngày tham gia hệ thống</label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={`Thành viên từ ${formatDate(ownerProfile?.joined_date)}`}
+                  readOnly
+                />
+              </div>
               <button type="submit" className="btn-primary">Lưu thay đổi</button>
             </form>
 
@@ -678,7 +833,13 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                   <div style={{ display: "grid", gap: "12px" }}>
                     <div><strong>Họ tên:</strong> {ownerProfile.full_name}</div>
                     <div><strong>Email:</strong> {ownerProfile.email}</div>
+                    <div><strong>Thành viên từ:</strong> {formatDate(ownerProfile.joined_date)}</div>
                     <div><strong>SĐT:</strong> {ownerProfile.phone_number || "Chưa có"}</div>
+                    <div><strong>Tuổi:</strong> {ownerProfile.age != null ? `${ownerProfile.age} tuổi` : "Chưa có"}</div>
+                    <div><strong>Kinh nghiệm:</strong> {ownerProfile.experience_years != null ? `${ownerProfile.experience_years} năm` : "Chưa có"}</div>
+                    <div><strong>Nghề nghiệp:</strong> {ownerProfile.occupation || "Chưa có"}</div>
+                    <div><strong>Địa chỉ:</strong> {ownerProfile.address || "Chưa có"}</div>
+                    <div><strong>Quốc tịch:</strong> {ownerProfile.nationality || "Chưa có"}</div>
                     <div>
                       <strong>Avatar:</strong>
                       {ownerProfile.avatar ? (
@@ -704,6 +865,17 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                       )}
                     </div>
                     <div><strong>Công ty:</strong> {ownerProfile.company_name || "Chưa có"}</div>
+                    <div>
+                      <strong>Website / Mạng xã hội:</strong>{" "}
+                      {ownerProfile.social_link ? (
+                        <a href={ownerProfile.social_link} target="_blank" rel="noreferrer">
+                          {ownerProfile.social_link}
+                        </a>
+                      ) : (
+                        "Chưa có"
+                      )}
+                    </div>
+                    <div><strong>Bio:</strong> {ownerProfile.bio || "Chưa có"}</div>
                   </div>
                 ) : (
                   <p style={{ color: "#94a3b8" }}>Đang tải thông tin hồ sơ...</p>
