@@ -1,4 +1,4 @@
-\subsection{Business Rules for Admin Role}
+\subsection{Business Rules}
 
 \begin{table}[H]
     \centering
@@ -31,154 +31,134 @@
         BR-12 & The Administrator must be able to review current tournament status, race schedules, rewards, and user records from the admin overview and management screens. \\
         \hline
     \end{tabular}
-    \caption{Business Rules for Admin Role in Horse Racing Management System}
     \label{tab:admin_business_rules}
 \end{table}
 
 \vspace{1em}
 
-\subsection{Business Rules for Horse Owner Role}
 
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|p{12cm}|}
         \hline
-        \textbf{ID} & \textbf{Rule Definition} \\
+        BR-13 & Only an authenticated Horse Owner with the OWNER role may access the owner dashboard and perform owner-related operations. \\
         \hline
-        BR-01 & Only an authenticated Horse Owner with the OWNER role may access the owner dashboard and perform owner-related operations. \\
+        BR-14 & The Horse Owner may register a horse only when all required horse information, including name, age, breed, and gender, has been provided. \\
         \hline
-        BR-02 & The Horse Owner may register a horse only when all required horse information, including name, age, breed, and gender, has been provided. \\
+        BR-15 & A horse record may be updated or deleted only by its owner and only when the horse is not currently involved in an active or locked registration. \\
         \hline
-        BR-03 & A horse record may be updated or deleted only by its owner and only when the horse is not currently involved in an active or locked registration. \\
+        BR-16 & The Horse Owner may send a jockey invitation only when both the selected jockey and the selected horse are valid and belong to an eligible tournament context. \\
         \hline
-        BR-04 & The Horse Owner may send a jockey invitation only when both the selected jockey and the selected horse are valid and belong to an eligible tournament context. \\
+        BR-17 & A jockey invitation must contain valid invitation details and may be accepted or rejected by the recipient before it can be used for tournament registration. \\
         \hline
-        BR-05 & A jockey invitation must contain valid invitation details and may be accepted or rejected by the recipient before it can be used for tournament registration. \\
+        BR-18 & Tournament registration is allowed only when the Horse Owner has an accepted jockey invitation and the selected horse-jockey pair is valid for the chosen tournament. \\
         \hline
-        BR-06 & Tournament registration is allowed only when the Horse Owner has an accepted jockey invitation and the selected horse-jockey pair is valid for the chosen tournament. \\
+        BR-19 & The system must prevent duplicate tournament registrations for the same horse-jockey pair in the same tournament. \\
         \hline
-        BR-07 & The system must prevent duplicate tournament registrations for the same horse-jockey pair in the same tournament. \\
+        BR-20 & The Horse Owner may view the current registration status and approval result of each submitted registration request from the registered tournaments screen. \\
         \hline
-        BR-08 & The Horse Owner may view the current registration status and approval result of each submitted registration request from the registered tournaments screen. \\
+        BR-21 & The Horse Owner may view upcoming race schedules and completed race results for owned horses, including rankings, scores, remarks, and violations. \\
         \hline
-        BR-09 & The Horse Owner may view upcoming race schedules and completed race results for owned horses, including rankings, scores, remarks, and violations. \\
+        BR-22 & The Horse Owner may update personal profile information, including contact and organization details, only after valid input is provided and saved successfully. \\
         \hline
-        BR-10 & The Horse Owner may update personal profile information, including contact and organization details, only after valid input is provided and saved successfully. \\
+        BR-23 & The system must display clear success or error messages after each owner action, such as horse registration, invitation sending, registration submission, or profile update. \\
         \hline
-        BR-11 & The system must display clear success or error messages after each owner action, such as horse registration, invitation sending, registration submission, or profile update. \\
-        \hline
-        BR-12 & The Horse Owner must be able to view rankings and performance summaries for horses and jockeys through the ranking page. \\
+        BR-24 & The Horse Owner must be able to view rankings and performance summaries for horses and jockeys through the ranking page. \\
         \hline
     \end{tabular}
-    \caption{Business Rules for Horse Owner Role in Horse Racing Management System}
     \label{tab:horse_owner_business_rules}
 \end{table}
 
 \vspace{1em}
 
-\subsection{Business Rules for Race Referee Role}
-
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|p{12cm}|}
         \hline
-        \textbf{ID} & \textbf{Rule Definition} \\
+        BR-25 & Only an authenticated Race Referee with the REFEREE role may access the referee dashboard and manage assigned race supervision tasks. \\
         \hline
-        BR-01 & Only an authenticated Race Referee with the REFEREE role may access the referee dashboard and manage assigned race supervision tasks. \\
+        BR-26 & The Race Referee may view only the races assigned to them and must be able to inspect race information such as time, distance, track condition, and participant count. \\
         \hline
-        BR-02 & The Race Referee may view only the races assigned to them and must be able to inspect race information such as time, distance, track condition, and participant count. \\
+        BR-27 & A race inspection report may be submitted only when the referee provides valid weather, track, and horse health information for that race. \\
         \hline
-        BR-03 & A race inspection report may be submitted only when the referee provides valid weather, track, and horse health information for that race. \\
+        BR-28 & The referee may enter race results only for races that are currently scheduled or available for result submission, and each result must be tied to a valid race record. \\
         \hline
-        BR-04 & The referee may enter race results only for races that are currently scheduled or available for result submission, and each result must be tied to a valid race record. \\
+        BR-29 & Result entry must include a finishing position and valid score adjustment for each participating horse before the record can be saved. \\
         \hline
-        BR-05 & Result entry must include a finishing position and valid score adjustment for each participating horse before the record can be saved. \\
+        BR-30 & The referee may submit a violation report only when the violating horse, violation description, penalty type, and applicable fine amount (if required) are provided. \\
         \hline
-        BR-06 & The referee may submit a violation report only when the violating horse, violation description, penalty type, and applicable fine amount (if required) are provided. \\
+        BR-31 & The system must prevent duplicate or conflicting result submissions for the same race after the result has already been accepted or confirmed. \\
         \hline
-        BR-07 & The system must prevent duplicate or conflicting result submissions for the same race after the result has already been accepted or confirmed. \\
+        BR-32 & When a result is corrected or updated, the system must preserve the revision history and display the latest confirmed state to the referee and administrator. \\
         \hline
-        BR-08 & When a result is corrected or updated, the system must preserve the revision history and display the latest confirmed state to the referee and administrator. \\
+        BR-33 & The referee must receive a confirmation message when an inspection report, race result, or violation report is successfully submitted. \\
         \hline
-        BR-09 & The referee must receive a confirmation message when an inspection report, race result, or violation report is successfully submitted. \\
+        BR-34 & The system must reject invalid referee input and display clear error messages when required inspection or result data is missing or inconsistent. \\
         \hline
-        BR-10 & The system must reject invalid referee input and display clear error messages when required inspection or result data is missing or inconsistent. \\
+        BR-35 & The referee may review the status of race results after administrator approval and may resubmit corrected results when necessary. \\
         \hline
-        BR-11 & The referee may review the status of race results after administrator approval and may resubmit corrected results when necessary. \\
-        \hline
-        BR-12 & The referee dashboard must display the latest assigned race status, result state, and available actions for each assigned race. \\
+        BR-36 & The referee dashboard must display the latest assigned race status, result state, and available actions for each assigned race. \\
         \hline
     \end{tabular}
-    \caption{Business Rules for Race Referee Role in Horse Racing Management System}
     \label{tab:race_referee_business_rules}
 \end{table}
 
 \vspace{1em}
 
-\subsection{Business Rules for Jockey Role}
-
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|p{12cm}|}
         \hline
-        \textbf{ID} & \textbf{Rule Definition} \\ 
+        BR-37 & Only an authenticated Jockey with the JOCKEY role may access the jockey dashboard and manage assigned race-related activities. \\ 
         \hline
-        BR-01 & Only an authenticated Jockey with the JOCKEY role may access the jockey dashboard and manage assigned race-related activities. \\ 
+        BR-38 & The Jockey may accept or decline an invitation only when the invitation is valid, active, and still pending. \\ 
         \hline
-        BR-02 & The Jockey may accept or decline an invitation only when the invitation is valid, active, and still pending. \\ 
+        BR-39 & A jockey profile may be updated only when the provided information is complete and valid, including licensing and contact details. \\ 
         \hline
-        BR-03 & A jockey profile may be updated only when the provided information is complete and valid, including licensing and contact details. \\ 
+        BR-40 & The system must prevent a jockey from accepting duplicate invitations for the same horse-tournament context. \\ 
         \hline
-        BR-04 & The system must prevent a jockey from accepting duplicate invitations for the same horse-tournament context. \\ 
+        BR-41 & A jockey registration request must be linked to a valid accepted invitation before it can be considered for tournament participation. \\ 
         \hline
-        BR-05 & A jockey registration request must be linked to a valid accepted invitation before it can be considered for tournament participation. \\ 
+        BR-42 & The system must display the current invitation status and registration outcome to the jockey in the dashboard. \\ 
         \hline
-        BR-06 & The system must display the current invitation status and registration outcome to the jockey in the dashboard. \\ 
+        BR-43 & The jockey can view upcoming races and assigned schedules only for the tournaments or races in which they are officially registered. \\ 
         \hline
-        BR-07 & The jockey can view upcoming races and assigned schedules only for the tournaments or races in which they are officially registered. \\ 
+        BR-44 & The system must reject invalid jockey input and show a clear message when required profile or invitation data is missing. \\ 
         \hline
-        BR-08 & The system must reject invalid jockey input and show a clear message when required profile or invitation data is missing. \\ 
+        BR-45 & A successful profile update or invitation response must immediately refresh the relevant jockey views. \\ 
         \hline
-        BR-09 & A successful profile update or invitation response must immediately refresh the relevant jockey views. \\ 
-        \hline
-        BR-10 & The jockey must be able to review race participation history and current status through the jockey dashboard. \\ 
+        BR-46 & The jockey must be able to review race participation history and current status through the jockey dashboard. \\ 
         \hline
     \end{tabular}
-    \caption{Business Rules for Jockey Role in Horse Racing Management System}
     \label{tab:jockey_business_rules}
 \end{table}
 
 \vspace{1em}
 
-\subsection{Business Rules for Spectator Role}
-
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|p{12cm}|}
         \hline
-        \textbf{ID} & \textbf{Rule Definition} \\ 
+        BR-47 & Only an authenticated Spectator with the SPECTATOR role may access spectator features such as predictions, schedules, and results. \\ 
         \hline
-        BR-01 & Only an authenticated Spectator with the SPECTATOR role may access spectator features such as predictions, schedules, and results. \\ 
+        BR-48 & The Spectator may submit a prediction only when a valid race and horse selection have been chosen and the prediction rank is provided. \\ 
         \hline
-        BR-02 & The Spectator may submit a prediction only when a valid race and horse selection have been chosen and the prediction rank is provided. \\ 
+        BR-49 & The system must prevent the Spectator from submitting duplicate predictions for the same race and selected horse. \\ 
         \hline
-        BR-03 & The system must prevent the Spectator from submitting duplicate predictions for the same race and selected horse. \\ 
+        BR-50 & A prediction may be edited or deleted only while the associated race is still pending and not locked for result confirmation. \\ 
         \hline
-        BR-04 & A prediction may be edited or deleted only while the associated race is still pending and not locked for result confirmation. \\ 
+        BR-51 & The Spectator may view upcoming race schedules and completed race results for all available public races. \\ 
         \hline
-        BR-05 & The Spectator may view upcoming race schedules and completed race results for all available public races. \\ 
+        BR-52 & The system must display the Spectator's reward point balance and prediction history after each prediction action. \\ 
         \hline
-        BR-06 & The system must display the Spectator's reward point balance and prediction history after each prediction action. \\ 
+        BR-53 & The Spectator may view ranking tables and race outcome details for completed races from the public results screens. \\ 
         \hline
-        BR-07 & The Spectator may view ranking tables and race outcome details for completed races from the public results screens. \\ 
+        BR-54 & The system must reject invalid spectator input and display a clear error message when required prediction information is missing or inconsistent. \\ 
         \hline
-        BR-08 & The system must reject invalid spectator input and display a clear error message when required prediction information is missing or inconsistent. \\ 
+        BR-55 & A successful prediction submission, update, or deletion must immediately refresh the spectator dashboard and history list. \\ 
         \hline
-        BR-09 & A successful prediction submission, update, or deletion must immediately refresh the spectator dashboard and history list. \\ 
-        \hline
-        BR-10 & The spectator must be able to review race status, result outcomes, and reward information from the spectator portal. \\ 
+        BR-56 & The spectator must be able to review race status, result outcomes, and reward information from the spectator portal. \\ 
         \hline
     \end{tabular}
-    \caption{Business Rules for Spectator Role in Horse Racing Management System}
     \label{tab:spectator_business_rules}
 \end{table}
