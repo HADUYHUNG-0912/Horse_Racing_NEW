@@ -157,7 +157,8 @@
 \contentsline {subsubsection}{Sequence Diagram}{119}{figure.4.19}%
 \contentsline {subsubsection}{Class Specification}{120}{figure.4.20}%
 \contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{121}{table.4.11}%
-\contentsline {subsubsection}{Class Specification}{122}{figure.4.21}%
-\contentsline {subsection}{\numberline {4.2.11}Top Spectators Leaderboard}{123}{subsection.4.2.11}%
-\contentsline {subsubsection}{Class Diagram}{123}{subsection.4.2.11}%
-\contentsline {subsubsection}{Class Specification}{124}{figure.4.22}%
+\contentsline {subsubsection}{Sequence Diagram}{122}{figure.4.21}%
+\contentsline {subsubsection}{Class Specification}{123}{figure.4.22}%
+\contentsline {subsection}{\numberline {4.2.11}Top Spectators Leaderboard}{124}{subsection.4.2.11}%
+\contentsline {subsubsection}{Class Diagram}{124}{subsection.4.2.11}%
+\contentsline {subsubsection}{Class Specification}{125}{figure.4.23}%
