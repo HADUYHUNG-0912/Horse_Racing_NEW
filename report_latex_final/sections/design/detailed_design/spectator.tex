@@ -51,6 +51,14 @@ Race\allowbreak{}Participant & id, race\_id, registration\_id & entity & Databas
     \label{fig:spectator_personal_profile_class_diagram}
 \end{figure}
 
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/spectator/personal_profile_senquence_diagram.png}
+    \caption{Spectator Personal Profile Sequence Diagram}
+    \label{fig:spectator_personal_profile_sequence_diagram}
+\end{figure}
 
 \subsubsection{Class Specification}
 
@@ -59,6 +67,8 @@ Race\allowbreak{}Participant & id, race\_id, registration\_id & entity & Databas
 \setlength{\tabcolsep}{3pt}
 \TableStart{|>{\raggedright\arraybackslash}p{0.32\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
 \textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\caption{Spectator Personal Profile class specification}
+\label{tab:spectator_personal_profile_class_spec} \\
 \hline
 Spectator\allowbreak{}Profile\allowbreak{}Router & get\_spectator\_profile(), update\_spectator\_profile() & controller / route & Handles HTTP requests related to spectator profiles, including retrieving profile details and updating information. \\
 \hline
@@ -81,6 +91,15 @@ Prediction & id, user\_id, status & entity & Database entity referenced to aggre
     \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/spectator/schedule_and_results_class_diagram.png}
     \caption{Schedule and Result Class Diagram}
     \label{fig:schedule_and_result_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/spectator/schedule_and_result_senquence_diagram.png}
+    \caption{Spectator Schedule and Result Sequence Diagram}
+    \label{fig:schedule_and_result_sequence_diagram}
 \end{figure}
 
 \subsubsection{Class Specification}
