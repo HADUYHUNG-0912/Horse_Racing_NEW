@@ -41,3 +41,76 @@ Token & access\_token, token\_type & DTO & Response payload returned after succe
 HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Owner-specific profile linked to the User entity. \\
 \TableFinish{Login class specification}{tab:horse_owner_login_class_spec}
 \endgroup
+
+\subsection{Horse Owner Authentication and Authorization}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/horse_owner/authentication_class_diagram.png}
+    \caption{Horse Owner Authentication and Authorization Class Diagram}
+    \label{fig:horse_owner_authentication_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/horse_owner/authentication_sequence_diagram.png}
+    \caption{Horse Owner Authentication and Authorization Sequence Diagram}
+    \label{fig:horse_owner_authentication_sequence_diagram}
+\end{figure}
+
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+LoginPage & username, password, handleLogin(), showError(), redirectToOwnerDashboard() & boundary / UI & Collects owner credentials, sends the login request, displays authentication errors, and redirects a valid owner to the owner dashboard. \\
+\hline
+Api & baseUrl, token, login(), post(), getHeaders(), saveToken() & service / helper & Sends authentication requests to the backend, stores the JWT token, and prepares authorization headers for protected owner operations. \\
+\hline
+AuthRouter & login\_for\_access\_token(), read\_users\_me() & controller / route & Processes login requests, validates submitted credentials, issues bearer tokens, and returns authenticated user information. \\
+\hline
+Security\allowbreak{}Service & verify\_password(), create\_access\_token(), decode\_token() & service & Verifies password hashes and creates or validates JWT tokens used in the owner authentication flow. \\
+\hline
+OAuth2Password\allowbreak{}RequestForm & username, password & DTO / request & Carries the submitted username and password from the login form to the authentication endpoint. \\
+\hline
+Token & access\_token, token\_type & DTO / response & Represents the bearer token returned to the frontend after successful authentication. \\
+\hline
+Token\allowbreak{}Payload & sub & DTO / payload & Stores the user identifier decoded from the JWT token when resolving the current authenticated user. \\
+\hline
+User & id, username, password\_hash, email, full\_name, role\_id, is\_active & entity & Stores account and credential information used to authenticate the owner and verify account status. \\
+\hline
+Role & id, name & entity & Defines user roles and allows the system to confirm that the authenticated account has the \texttt{OWNER} role. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name, age, experience\_years & entity & Stores owner-specific profile information linked to the authenticated user account. \\
+\hline
+UserOut & id, username, email, full\_name, role\_id, role\_name, is\_active & DTO / response & Returns authenticated user details to the frontend so the dashboard can render owner-specific screens. \\
+\TableFinish{Horse Owner authentication and authorization class specification}{tab:horse_owner_authentication_class_spec}
+\endgroup
+
+\subsection{Horse Owner Management Operations}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/horse_owner/management_class.png}
+    \caption{Horse Owner Management Operations Class Diagram}
+    \label{fig:horse_owner_management_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/horse_owner/management_sequence.png}
+    \caption{Horse Owner Management Operations Sequence Diagram}
+    \label{fig:horse_owner_management_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
