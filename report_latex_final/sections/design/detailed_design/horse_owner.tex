@@ -179,3 +179,68 @@ Horse & id, name, age, breed, gender, owner\_id & entity & Database entity stori
 \hline
 \end{longtable}
 \endgroup
+
+\subsection{Send Jockey Invitation}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/jockey_invication_class.png}
+    \caption{Send Jockey Invitation Class Diagram}
+    \label{fig:horse_owner_jockey_invitation_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/jockey_invitation_sequence.png}
+    \caption{Send Jockey Invitation Sequence Diagram}
+    \label{fig:horse_owner_jockey_invitation_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Send Jockey Invitation class specification}
+\label{tab:horse_owner_jockey_invitation_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & horses, jockeys, tournaments, invitations, newInvitation, loadData(), sendJockeyInvitation() & boundary / UI & Displays the invitation form, loads available horses, jockeys, tournaments, and shows the status of invitations already sent by the owner. \\
+\hline
+Api & baseUrl, token, get(), post(), getHeaders() & service / helper & Sends requests to retrieve jockeys and invitations, and submits new invitation data to the backend with authorization headers. \\
+\hline
+Jockey\allowbreak{}Router & read\_jockeys(), invite\_jockey(), read\_invitations() & controller / route & Handles HTTP requests for listing jockey profiles, creating owner invitations, and retrieving invitation status records. \\
+\hline
+Role\allowbreak{}Checker & allowed\_roles, \_\_call\_\_() & service / authorization & Ensures that only an authenticated user with the \texttt{OWNER} role can send a jockey invitation. \\
+\hline
+JockeyInvitation\allowbreak{}Create & jockey\_id, horse\_id, tournament\_id, message & DTO / request & Carries the selected jockey, horse, tournament, and optional invitation message submitted by the owner. \\
+\hline
+JockeyInvitation\allowbreak{}Out & id, owner\_id, jockey\_id, horse\_id, tournament\_id, message, status, created\_at, owner\_name, horse\_name, tournament\_name, jockey\_name & DTO / response & Returns the created or retrieved invitation information, including related display names and current invitation status. \\
+\hline
+User & id, username, email, full\_name, role\_id, is\_active & entity & Represents the authenticated account used to identify the owner and resolve jockey display information. \\
+\hline
+Role & id, name & entity & Defines user roles and supports owner-only authorization for sending invitations. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Stores owner-specific information and links the authenticated owner to the invitations they send. \\
+\hline
+Horse & id, name, age, breed, gender, owner\_id & entity & Represents the horse selected by the owner and is validated to ensure it belongs to the current owner. \\
+\hline
+Jockey\allowbreak{}Profile & id, user\_id, bio, weight, height, experience\_years & entity & Represents the jockey profile selected as the invitation recipient. \\
+\hline
+Tournament & id, name, description, start\_date, end\_date, location, status & entity & Represents the tournament context in which the owner invites a jockey to partner with a horse. \\
+\hline
+Jockey\allowbreak{}Invitation & id, owner\_id, jockey\_id, horse\_id, tournament\_id, message, status, created\_at & entity & Stores the invitation record and tracks whether it is \texttt{PENDING}, \texttt{ACCEPTED}, or \texttt{REJECTED}. \\
+\hline
+\end{longtable}
+\endgroup

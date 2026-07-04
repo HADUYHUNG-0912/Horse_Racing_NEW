@@ -128,18 +128,22 @@
 \contentsline {subsubsection}{Class Diagram}{95}{subsection.4.2.3}%
 \contentsline {subsubsection}{Sequence Diagram}{96}{figure.4.5}%
 \contentsline {subsubsection}{Class Specification}{96}{figure.4.6}%
-\contentsline {subsection}{\numberline {4.2.4}Spectator Prediction}{98}{subsection.4.2.4}%
-\contentsline {subsubsection}{Class Diagram}{98}{subsection.4.2.4}%
-\contentsline {subsubsection}{Sequence Diagram}{99}{figure.4.7}%
+\contentsline {subsection}{\numberline {4.2.4}Send Jockey Invitation}{99}{subsection.4.2.4}%
+\contentsline {subsubsection}{Class Diagram}{99}{subsection.4.2.4}%
+\contentsline {subsubsection}{Sequence Diagram}{100}{figure.4.7}%
 \contentsline {subsubsection}{Class Specification}{100}{figure.4.8}%
-\contentsline {subsection}{\numberline {4.2.5}Spectator Personal Profile}{101}{subsection.4.2.5}%
-\contentsline {subsubsection}{Class Diagram}{101}{subsection.4.2.5}%
-\contentsline {subsubsection}{Class Specification}{102}{figure.4.9}%
-\contentsline {subsection}{\numberline {4.2.6}Schedule and Result}{103}{subsection.4.2.6}%
-\contentsline {subsubsection}{Class Diagram}{103}{subsection.4.2.6}%
-\contentsline {subsubsection}{Class Specification}{104}{figure.4.10}%
-\contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{105}{table.4.6}%
-\contentsline {subsubsection}{Class Specification}{106}{figure.4.11}%
-\contentsline {subsection}{\numberline {4.2.7}Top Spectators Leaderboard}{107}{subsection.4.2.7}%
-\contentsline {subsubsection}{Class Diagram}{107}{subsection.4.2.7}%
-\contentsline {subsubsection}{Class Specification}{108}{figure.4.12}%
+\contentsline {subsection}{\numberline {4.2.5}Spectator Prediction}{103}{subsection.4.2.5}%
+\contentsline {subsubsection}{Class Diagram}{103}{subsection.4.2.5}%
+\contentsline {subsubsection}{Sequence Diagram}{104}{figure.4.9}%
+\contentsline {subsubsection}{Class Specification}{105}{figure.4.10}%
+\contentsline {subsection}{\numberline {4.2.6}Spectator Personal Profile}{106}{subsection.4.2.6}%
+\contentsline {subsubsection}{Class Diagram}{106}{subsection.4.2.6}%
+\contentsline {subsubsection}{Class Specification}{107}{figure.4.11}%
+\contentsline {subsection}{\numberline {4.2.7}Schedule and Result}{108}{subsection.4.2.7}%
+\contentsline {subsubsection}{Class Diagram}{108}{subsection.4.2.7}%
+\contentsline {subsubsection}{Class Specification}{109}{figure.4.12}%
+\contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{110}{table.4.7}%
+\contentsline {subsubsection}{Class Specification}{111}{figure.4.13}%
+\contentsline {subsection}{\numberline {4.2.8}Top Spectators Leaderboard}{112}{subsection.4.2.8}%
+\contentsline {subsubsection}{Class Diagram}{112}{subsection.4.2.8}%
+\contentsline {subsubsection}{Class Specification}{113}{figure.4.14}%
