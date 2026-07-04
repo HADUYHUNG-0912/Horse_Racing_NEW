@@ -90,8 +90,8 @@
 \contentsline {subsubsection}{Spectator Login}{56}{figure.3.23}%
 \contentsline {subsubsection}{Prediction Management}{57}{figure.3.24}%
 \contentsline {subsubsection}{View Schedule and Results}{58}{figure.3.25}%
-\contentsline {subsubsection}{Personal Profile}{58}{figure.3.26}%
-\contentsline {subsubsection}{Leaderboard}{59}{figure.3.27}%
+\contentsline {subsubsection}{Personal Profile}{59}{figure.3.26}%
+\contentsline {subsubsection}{Leaderboard}{60}{figure.3.27}%
 \contentsline {subsubsection}{Referee Login}{61}{figure.3.29}%
 \contentsline {subsubsection}{Assigned Race List}{62}{figure.3.30}%
 \contentsline {subsubsection}{Race Inspection}{63}{figure.3.31}%
