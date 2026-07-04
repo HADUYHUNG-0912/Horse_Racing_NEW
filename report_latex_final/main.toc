@@ -114,22 +114,23 @@
 \contentsline {subsection}{\numberline {3.4.3}Application Messages}{83}{subsection.3.4.3}%
 \contentsline {subsection}{\numberline {3.4.4}Message Type Definitions}{83}{subsection.3.4.4}%
 \contentsline {chapter}{\numberline {4}Software Design Description}{89}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Overall Design}{89}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Detailed Design}{89}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Login and Registration}{89}{subsection.4.2.1}%
-\contentsline {subsubsection}{Sequence Diagram}{89}{subsection.4.2.1}%
-\contentsline {subsubsection}{Class Diagram}{90}{figure.4.1}%
-\contentsline {subsubsection}{Class Specification}{91}{figure.4.2}%
-\contentsline {subsection}{\numberline {4.2.2}Jockey}{92}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Spectator}{92}{subsection.4.2.3}%
-\contentsline {subsubsection}{Spectator Prediction Class Diagram}{92}{subsection.4.2.3}%
-\contentsline {subsubsection}{Class Specification}{93}{figure.4.3}%
-\contentsline {subsubsection}{Spectator Personal Profile Class Diagram}{94}{table.4.2}%
-\contentsline {subsubsection}{Class Specification}{95}{figure.4.4}%
-\contentsline {subsubsection}{Schedule and Result Class Diagram}{96}{table.4.3}%
-\contentsline {subsubsection}{Class Specification}{97}{figure.4.5}%
-\contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{98}{table.4.4}%
-\contentsline {subsubsection}{Class Specification}{99}{figure.4.6}%
-\contentsline {subsubsection}{Top Spectators Leaderboard Class Diagram}{100}{table.4.5}%
-\contentsline {subsubsection}{Class Specification}{101}{figure.4.7}%
-\contentsline {subsection}{\numberline {4.2.4}Referee}{102}{subsection.4.2.4}%
+\contentsline {section}{\numberline {4.1}Overall Design}{90}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Detailed Design}{90}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Login and Registration}{90}{subsection.4.2.1}%
+\contentsline {subsubsection}{Class Diagram}{90}{subsection.4.2.1}%
+\contentsline {subsubsection}{Sequence Diagram}{91}{figure.4.1}%
+\contentsline {subsubsection}{Class Specification}{92}{figure.4.2}%
+\contentsline {subsection}{\numberline {4.2.2}Spectator Prediction}{93}{subsection.4.2.2}%
+\contentsline {subsubsection}{Class Diagram}{93}{subsection.4.2.2}%
+\contentsline {subsubsection}{Class Specification}{94}{figure.4.3}%
+\contentsline {subsection}{\numberline {4.2.3}Spectator Personal Profile}{95}{subsection.4.2.3}%
+\contentsline {subsubsection}{Class Diagram}{95}{subsection.4.2.3}%
+\contentsline {subsubsection}{Class Specification}{96}{figure.4.4}%
+\contentsline {subsection}{\numberline {4.2.4}Schedule and Result}{97}{subsection.4.2.4}%
+\contentsline {subsubsection}{Class Diagram}{97}{subsection.4.2.4}%
+\contentsline {subsubsection}{Class Specification}{98}{figure.4.5}%
+\contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{99}{table.4.4}%
+\contentsline {subsubsection}{Class Specification}{100}{figure.4.6}%
+\contentsline {subsection}{\numberline {4.2.5}Top Spectators Leaderboard}{101}{subsection.4.2.5}%
+\contentsline {subsubsection}{Class Diagram}{101}{subsection.4.2.5}%
+\contentsline {subsubsection}{Class Specification}{102}{figure.4.7}%
