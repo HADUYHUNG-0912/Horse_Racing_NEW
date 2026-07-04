@@ -161,4 +161,4 @@
 \contentsline {subsubsection}{Class Specification}{123}{figure.4.22}%
 \contentsline {subsection}{\numberline {4.2.11}Top Spectators Leaderboard}{124}{subsection.4.2.11}%
 \contentsline {subsubsection}{Class Diagram}{124}{subsection.4.2.11}%
-\contentsline {subsubsection}{Class Specification}{125}{figure.4.23}%
+\contentsline {subsubsection}{Class Specification}{126}{figure.4.24}%
