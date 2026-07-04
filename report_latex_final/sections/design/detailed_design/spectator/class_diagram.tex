@@ -13,7 +13,7 @@
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
-\TableStart{|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\TableStart{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
 \textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
 \hline
 SpectatorRouter & make\_prediction(), read\_predictions(), update\_prediction() & controller / route & Handles HTTP requests related to spectator predictions (create, read, update). \\
@@ -47,7 +47,7 @@ RaceParticipant & id, race\_id, registration\_id & entity & Database entity repr
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
-\TableStart{|>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\TableStart{|>{\raggedright\arraybackslash}p{0.32\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
 \textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
 \hline
 SpectatorProfileRouter & get\_spectator\_profile(), update\_spectator\_profile() & controller / route & Handles HTTP requests related to spectator profiles, including retrieving profile details and updating information. \\
@@ -78,7 +78,7 @@ Prediction & id, user\_id, status & entity & Database entity referenced to aggre
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
-\TableStart{|>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\TableStart{|>{\raggedright\arraybackslash}p{0.23\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
 \textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
 \hline
 ScheduleRouter & read\_schedules() & controller / route & Handles HTTP requests to retrieve and filter the list of scheduled horse races. \\
@@ -142,7 +142,7 @@ User & id, full\_name & entity & Database entity representing core user accounts
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
-\TableStart{|>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\TableStart{|>{\raggedright\arraybackslash}p{0.32\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
 \textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
 \hline
 SpectatorRouter & get\_top\_spectators() & controller / route & Handles HTTP requests to aggregate and retrieve the leaderboard of top 10 spectators filtered by tournament. \\
@@ -160,3 +160,4 @@ RaceParticipant & id, registration\_id & entity & Database entity representing r
 Registration & id, tournament\_id & entity & Database entity representing tournament registrations, used to filter leaderboard data by specific tournament. \\
 \TableFinish{Top Spectators Leaderboard class specification}{tab:top_spectators_class_spec}
 \endgroup
+
