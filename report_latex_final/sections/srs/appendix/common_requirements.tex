@@ -1,0 +1,68 @@
+\section{Requirement Appendix}
+
+This appendix summarizes the common requirements that apply across all modules of the Horse Racing Tournament Management System.
+
+\renewcommand{\arraystretch}{1.5}
+
+\begin{longtable}{|p{2cm}|p{4cm}|p{9cm}|}
+\hline
+\rowcolor{gray!20}
+\textbf{Req. ID} &
+\textbf{Requirement Name} &
+\textbf{Description} \\ \hline
+\endfirsthead
+
+\hline
+\rowcolor{gray!20}
+\textbf{Req. ID} &
+\textbf{Requirement Name} &
+\textbf{Description} \\ \hline
+\endhead
+
+CR-01 &
+Data Validation &
+All mandatory fields marked as required must be validated on both the client side and the server side. The system shall prevent submission if any required information is missing. \\ \hline
+
+CR-02 &
+Data Format Validation &
+The system shall validate input formats before processing data.
+\begin{itemize}
+\item Email must follow the standard email format.
+\item Phone numbers must contain exactly 10 digits.
+\item Dates must use the DD/MM/YYYY format.
+\end{itemize}
+\\ \hline
+
+CR-03 &
+Authentication &
+Users shall authenticate before accessing protected system resources. Unauthorized users shall be denied access. \\ \hline
+
+CR-04 &
+Authorization &
+The system shall enforce role-based access control for Administrator, Horse Owner, Jockey, Referee, and Spectator. \\ \hline
+
+CR-05 &
+Audit Logging &
+Important user activities, including race scheduling, result submission, and approval actions, shall be recorded with timestamps and user information. \\ \hline
+
+CR-06 &
+Notification &
+The system shall notify users when important events occur, such as tournament registration approval, race assignment, or result approval. \\ \hline
+
+CR-07 &
+Performance &
+The system should respond to user requests within 3 seconds under normal operating conditions and support multiple concurrent users. \\ \hline
+
+CR-08 &
+Security &
+Passwords shall be encrypted before storage. All communication shall use HTTPS, and inactive sessions shall expire automatically. \\ \hline
+
+CR-09 &
+Availability &
+The system shall remain available during tournament operations except for scheduled maintenance periods. \\ \hline
+
+CR-10 &
+Data Integrity &
+The system shall maintain consistent and accurate data across all modules and prevent duplicate or inconsistent records. \\ \hline
+
+\end{longtable}
