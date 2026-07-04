@@ -132,5 +132,5 @@
 \contentsline {subsubsection}{Class Specification}{99}{figure.4.6}%
 \contentsline {subsubsection}{Top Spectators Leaderboard Class Diagram}{100}{table.4.5}%
 \contentsline {subsubsection}{Class Specification}{101}{figure.4.7}%
-\contentsline {subsubsection}{Sequence Diagram}{102}{table.4.6}%
+\contentsline {subsubsection}{Spectator Prediction Sequence Diagram}{102}{table.4.6}%
 \contentsline {subsection}{\numberline {4.2.4}Referee}{102}{subsection.4.2.4}%
