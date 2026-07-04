@@ -816,6 +816,7 @@ INPUT .\figures\design\horse_owner\login_sequence_diagram.png
 INPUT .\figures\design\horse_owner\login_sequence_diagram.png
 INPUT .\figures\design\horse_owner\login_sequence_diagram.png
 INPUT .\figures\design\horse_owner\login_sequence_diagram.png
+INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmtt10.tfm
 INPUT .\figures\design\horse_owner\authentication_class_diagram.png
 INPUT .\figures\design\horse_owner\authentication_class_diagram.png
 INPUT .\figures\design\horse_owner\authentication_class_diagram.png
@@ -930,6 +931,8 @@ INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri12.
 INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri12.pfb
 INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
 INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
+INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt10.pfb
+INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt10.pfb
 INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt12.pfb
 INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmtt12.pfb
 INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\symbols\msam10.pfb
