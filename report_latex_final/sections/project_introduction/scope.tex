@@ -2,18 +2,50 @@
 
 \subsection{Major Features}
 
+In order to establish a comprehensive management solution for horse racing tournaments, the system defines specific functional scopes tailored to five primary user roles: Administrator, Horse Owner, Jockey, Referee, and Spectator.
+
 \subsubsection{Major Features for Admin}
-
-FE-01: Login/Logout
-
-FE-02: Manage user accounts
+\begin{itemize}
+    \item \textbf{FE-AD-01: User Account Management:} Register, view, update, and manage accounts for Referees, Jockeys, Horse Owners, and Spectators.
+    \item \textbf{FE-AD-02: Tournament \& Schedule Management:} Define new tournaments, set up races, assign tracks, and schedule tournament timelines.
+    \item \textbf{FE-AD-03: System Configuration:} Configure parameters such as registration fees, base points, and reward distributions.
+\end{itemize}
 
 \subsubsection{Major Features for Horse Owner}
+\begin{itemize}
+    \item \textbf{FE-OW-01: Horse Registry:} Register and maintain detailed profiles for participating horses.
+    \item \textbf{FE-OW-02: Tournament Registration:} Register horses to upcoming tournaments and track the review/approval status from the organization board.
+    \item \textbf{FE-OW-03: Jockey Invitation:} Draft and send invitations to qualified Jockeys for tournament partnerships.
+\end{itemize}
 
-FE-01: Register horse for tournament
+\subsubsection{Major Features for Jockey}
+\begin{itemize}
+    \item \textbf{FE-JK-01: Invitation Handling:} View, accept, or decline race partnership invitations received from Horse Owners.
+    \item \textbf{FE-JK-02: Race Schedule Tracking:} View personal racing schedules and details of assigned tournaments.
+    \item \textbf{FE-JK-03: Performance Overview:} Track personal race history, rankings, and career statistics.
+\end{itemize}
 
-FE-02: View registration status
+\subsubsection{Major Features for Referee}
+\begin{itemize}
+    \item \textbf{FE-RF-01: Race Assignments:} View the list of races assigned by the Administrator.
+    \item \textbf{FE-RF-02: Participant Inspection:} Log checking-in processes, including verifying registration details and recording pre-race weight checks for jockeys and horses.
+    \item \textbf{FE-RF-03: Violation Reporting:} Report and document any rule infractions or warnings during the race.
+    \item \textbf{FE-RF-04: Result Recording:} Input and confirm race completion times and final placements through a two-step validation flow.
+\end{itemize}
+
+\subsubsection{Major Features for Spectator}
+\begin{itemize}
+    \item \textbf{FE-SP-01: Schedule \& Result Information:} Browse active tournaments, view upcoming schedules, and inspect historical race results.
+    \item \textbf{FE-SP-02: Leaderboards:} View dynamic performance leaderboards for horses, jockeys, and top predicting spectators.
+    \item \textbf{FE-SP-03: Rank Prediction:} Predict the top-ranking horses before a race starts to earn virtual reward points.
+    \item \textbf{FE-SP-04: Personal Profile \& History:} Manage profile details and review prediction history and accumulated rewards.
+\end{itemize}
 
 \subsection{Limitations \& Exclusions}
-
-LI-1: Write limitation here.
+To ensure project feasibility within the designated timeframe and resources, the following constraints and exclusions are defined:
+\begin{itemize}
+    \item \textbf{LI-01: No Real-Money Betting:} The prediction module operates purely on virtual reward points. No integration with real currency transactions, financial betting systems, or gambling licenses is supported.
+    \item \textbf{LI-02: No Automatic IoT/Hardware Integration:} The system does not interface with physical hardware such as GPS trackers on horses, automatic weight scales, or high-speed photofinish cameras at the finish line. All inspection metrics and race results are logged manually by Referees.
+    \item \textbf{LI-03: Offline \& Simulated Payment Processing:} Standard fees (e.g., tournament registrations) are simulated or handled offline. No production payment gateways (e.g., credit card processors, electronic wallets) are integrated.
+    \item \textbf{LI-04: Lack of Live Simulation:} The application does not provide real-time 3D simulation or video streaming of active races. The race status changes are updated statefully through Referee inputs.
+\end{itemize}
