@@ -1,0 +1,239 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{Acknowledgement}{3}{chapter*.2}%
+\contentsline {chapter}{Definition and Acronyms}{4}{chapter*.3}%
+\contentsline {chapter}{\numberline {1}Project Introduction}{5}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Overview}{5}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Project Information}{5}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Project Team}{5}{subsection.1.1.2}%
+\contentsline {section}{\numberline {1.2}Product Background}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Existing Systems}{6}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Prism Horse}{6}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}RaceDB}{7}{subsection.1.3.2}%
+\contentsline {section}{\numberline {1.4}Business Opportunity}{8}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Software Product Vision}{8}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Project Scope \& Limitations}{8}{section.1.6}%
+\contentsline {subsection}{\numberline {1.6.1}Major Features}{8}{subsection.1.6.1}%
+\contentsline {subsubsection}{Major Features for Admin}{9}{subsection.1.6.1}%
+\contentsline {subsubsection}{Major Features for Horse Owner}{9}{subsection.1.6.1}%
+\contentsline {subsubsection}{Major Features for Jockey}{9}{subsection.1.6.1}%
+\contentsline {subsubsection}{Major Features for Referee}{9}{subsection.1.6.1}%
+\contentsline {subsubsection}{Major Features for Spectator}{10}{subsection.1.6.1}%
+\contentsline {subsection}{\numberline {1.6.2}Limitations \& Exclusions}{10}{subsection.1.6.2}%
+\contentsline {chapter}{\numberline {2}Software Project Management Plan}{11}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Overview}{11}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Scope \& Estimation}{11}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Project Objectives}{12}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Defect Tolerance by Testing Phase}{13}{subsection.2.3.1}%
+\contentsline {section}{\numberline {2.4}Risk Management}{14}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Management Approach}{15}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Agile-Scrum Implementation}{15}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Coding Standards and Bug Prevention}{16}{subsection.2.5.2}%
+\contentsline {section}{\numberline {2.6}Deliverables Schedule}{16}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Deliverables Timeline (Week 1 - Week 9)}{16}{subsection.2.6.1}%
+\contentsline {section}{\numberline {2.7}Responsibility Assignment Matrix (DRSI)}{17}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Document Management}{18}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}Source Code Management}{19}{subsection.2.7.2}%
+\contentsline {subsection}{\numberline {2.7.3}Tools and Infrastructure}{19}{subsection.2.7.3}%
+\contentsline {chapter}{\numberline {3}Software Requirement Specification}{21}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Product Overview}{21}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}System Context Diagram}{22}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Interaction Data Flows}{22}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}User Requirements}{23}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}System Actors}{23}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Use Cases}{24}{subsection.3.2.2}%
+\contentsline {subsubsection}{Use Case Diagram}{24}{subsection.3.2.2}%
+\contentsline {subsubsection}{Use Case Description}{24}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Functional Requirements}{26}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}System Functional Overview}{26}{subsection.3.3.1}%
+\contentsline {subsubsection}{Admin Screen Flow}{26}{subsection.3.3.1}%
+\contentsline {subsubsection}{Admin Screen description}{27}{figure.3.2}%
+\contentsline {subsubsection}{Horse Owner Screen Flow}{28}{table.3.1}%
+\contentsline {subsubsection}{Horse Owner Screen description}{29}{figure.3.3}%
+\contentsline {subsubsection}{Jockey Screen Flow}{30}{table.3.2}%
+\contentsline {subsubsection}{Jockey Screen description}{31}{figure.3.4}%
+\contentsline {subsubsection}{Race Scheduling Management Screen Flow}{32}{table.3.3}%
+\contentsline {subsubsection}{Screen description for Race Scheduling}{33}{figure.3.5}%
+\contentsline {subsubsection}{Spectator Screen Flow}{34}{table.3.4}%
+\contentsline {subsubsection}{Spectator Screen description}{35}{figure.3.6}%
+\contentsline {subsubsection}{Referee Screen Flow}{36}{table.3.5}%
+\contentsline {subsubsection}{Referee Screen Description}{37}{figure.3.7}%
+\contentsline {subsection}{\numberline {3.3.2}Screen Authorization}{37}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Non-Function Requirement}{38}{subsection.3.3.3}%
+\contentsline {subsubsection}{External Interfaces}{38}{subsection.3.3.3}%
+\contentsline {subsubsection}{User Interface}{38}{subsection.3.3.3}%
+\contentsline {subsubsection}{Authentication Interface}{39}{subsection.3.3.3}%
+\contentsline {subsubsection}{Database Interface}{39}{subsection.3.3.3}%
+\contentsline {subsubsection}{Quality Attributes}{39}{subsection.3.3.3}%
+\contentsline {subsubsection}{Usability}{39}{subsection.3.3.3}%
+\contentsline {subsubsection}{Reliability}{40}{subsection.3.3.3}%
+\contentsline {subsubsection}{Performance}{40}{subsection.3.3.3}%
+\contentsline {subsubsection}{Security}{40}{subsection.3.3.3}%
+\contentsline {subsubsection}{Maintainability}{41}{subsection.3.3.3}%
+\contentsline {subsubsection}{Portability}{41}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Entity Relationship Diagram}{41}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.5}Web Application}{42}{subsection.3.3.5}%
+\contentsline {subsubsection}{Horse Owner Login}{42}{subsection.3.3.5}%
+\contentsline {subsubsection}{Manage Horses}{43}{figure.3.9}%
+\contentsline {subsubsection}{Invite Jockey}{44}{figure.3.10}%
+\contentsline {subsubsection}{Register Tournament}{45}{figure.3.11}%
+\contentsline {subsubsection}{Registered Tournaments}{46}{figure.3.12}%
+\contentsline {subsubsection}{Horse Schedule}{46}{figure.3.13}%
+\contentsline {subsubsection}{Race Results}{47}{figure.3.14}%
+\contentsline {subsubsection}{Owner Profile}{48}{figure.3.15}%
+\contentsline {subsubsection}{Ranking}{50}{figure.3.16}%
+\contentsline {subsubsection}{Jockey Login}{51}{figure.3.17}%
+\contentsline {subsubsection}{Invitations Inbox}{52}{figure.3.18}%
+\contentsline {subsubsection}{Race Schedule}{53}{figure.3.19}%
+\contentsline {subsubsection}{Jockey Profile}{54}{figure.3.20}%
+\contentsline {subsubsection}{Rewards \& Achievements}{55}{figure.3.21}%
+\contentsline {subsubsection}{Leaderboard}{56}{figure.3.22}%
+\contentsline {subsubsection}{Spectator Login}{57}{figure.3.23}%
+\contentsline {subsubsection}{Prediction Management}{58}{figure.3.24}%
+\contentsline {subsubsection}{View Schedule and Results}{59}{figure.3.25}%
+\contentsline {subsubsection}{Personal Profile}{60}{figure.3.26}%
+\contentsline {subsubsection}{Leaderboard}{61}{figure.3.27}%
+\contentsline {subsubsection}{Referee Login}{62}{figure.3.29}%
+\contentsline {subsubsection}{Assigned Race List}{63}{figure.3.30}%
+\contentsline {subsubsection}{Race Inspection}{64}{figure.3.31}%
+\contentsline {subsubsection}{Input Result Form}{65}{figure.3.32}%
+\contentsline {subsubsection}{Violation Report}{66}{figure.3.33}%
+\contentsline {subsubsection}{Result Confirmed}{67}{figure.3.34}%
+\contentsline {subsubsection}{Ranking Board}{68}{figure.3.35}%
+\contentsline {subsubsection}{Leaderboard}{69}{figure.3.36}%
+\contentsline {subsubsection}{Admin Login}{70}{figure.3.37}%
+\contentsline {subsubsection}{System Overview}{71}{figure.3.38}%
+\contentsline {subsubsection}{Manage Tournaments}{72}{figure.3.39}%
+\contentsline {subsubsection}{Schedule Races}{73}{figure.3.40}%
+\contentsline {subsubsection}{Manage Rewards}{74}{figure.3.41}%
+\contentsline {subsubsection}{User Management}{75}{figure.3.42}%
+\contentsline {subsubsection}{Confirm Registrations}{76}{figure.3.43}%
+\contentsline {subsubsection}{Leaderboard}{77}{figure.3.44}%
+\contentsline {section}{\numberline {3.4}Requirement Appendix}{79}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Business Rules}{79}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Common Requirements}{83}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Application Messages}{84}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Message Type Definitions}{84}{subsection.3.4.4}%
+\contentsline {chapter}{\numberline {4}Software Design Description}{90}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Overall Design}{91}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Detailed Design}{91}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Admin System Overview}{91}{subsection.4.2.1}%
+\contentsline {subsubsection}{Class Diagram}{91}{subsection.4.2.1}%
+\contentsline {subsubsection}{Sequence Diagram}{92}{figure.4.1}%
+\contentsline {subsubsection}{Class Specification}{93}{figure.4.2}%
+\contentsline {subsection}{\numberline {4.2.2}Admin Tournament Management}{94}{subsection.4.2.2}%
+\contentsline {subsubsection}{Class Diagram}{94}{subsection.4.2.2}%
+\contentsline {subsubsection}{Sequence Diagram}{95}{figure.4.3}%
+\contentsline {subsubsection}{Class Specification}{96}{figure.4.4}%
+\contentsline {subsection}{\numberline {4.2.3}Admin Registration Confirmation}{97}{subsection.4.2.3}%
+\contentsline {subsubsection}{Class Diagram}{97}{subsection.4.2.3}%
+\contentsline {subsubsection}{Sequence Diagram}{98}{figure.4.5}%
+\contentsline {subsubsection}{Class Specification}{99}{figure.4.6}%
+\contentsline {subsection}{\numberline {4.2.4}Admin Schedule Races}{100}{subsection.4.2.4}%
+\contentsline {subsubsection}{Class Diagram}{100}{subsection.4.2.4}%
+\contentsline {subsubsection}{Sequence Diagram}{101}{figure.4.7}%
+\contentsline {subsubsection}{Class Specification}{102}{figure.4.8}%
+\contentsline {subsection}{\numberline {4.2.5}Admin Manage Users}{103}{subsection.4.2.5}%
+\contentsline {subsubsection}{Class Diagram}{103}{subsection.4.2.5}%
+\contentsline {subsubsection}{Sequence Diagram}{104}{figure.4.9}%
+\contentsline {subsubsection}{Class Specification}{105}{figure.4.10}%
+\contentsline {subsection}{\numberline {4.2.6}Admin Manage Rewards}{106}{subsection.4.2.6}%
+\contentsline {subsubsection}{Class Diagram}{106}{subsection.4.2.6}%
+\contentsline {subsubsection}{Sequence Diagram}{107}{figure.4.11}%
+\contentsline {subsubsection}{Class Specification}{108}{figure.4.12}%
+\contentsline {subsection}{\numberline {4.2.7}Login and Registration}{109}{subsection.4.2.7}%
+\contentsline {subsubsection}{Class Diagram}{109}{subsection.4.2.7}%
+\contentsline {subsubsection}{Sequence Diagram}{110}{figure.4.13}%
+\contentsline {subsubsection}{Class Specification}{110}{figure.4.14}%
+\contentsline {subsection}{\numberline {4.2.8}Tournament Registration}{112}{subsection.4.2.8}%
+\contentsline {subsubsection}{Tournament Registration Data Preparation Class Diagram}{112}{subsection.4.2.8}%
+\contentsline {subsubsection}{Load Accepted Registration Options Sequence Diagram}{113}{figure.4.15}%
+\contentsline {subsubsection}{Class Specification}{113}{figure.4.16}%
+\contentsline {subsubsection}{Tournament Registration Submission Class Diagram}{115}{table.4.8}%
+\contentsline {subsubsection}{Submit Tournament Registration Sequence Diagram}{116}{figure.4.17}%
+\contentsline {subsubsection}{Class Specification}{116}{figure.4.18}%
+\contentsline {subsection}{\numberline {4.2.9}Horse Owner Authentication and Authorization}{118}{subsection.4.2.9}%
+\contentsline {subsubsection}{Class Diagram}{118}{subsection.4.2.9}%
+\contentsline {subsubsection}{Sequence Diagram}{119}{figure.4.19}%
+\contentsline {subsubsection}{Class Specification}{119}{figure.4.20}%
+\contentsline {subsection}{\numberline {4.2.10}Horse Owner Management Operations}{121}{subsection.4.2.10}%
+\contentsline {subsubsection}{Class Diagram}{121}{subsection.4.2.10}%
+\contentsline {subsubsection}{Sequence Diagram}{122}{figure.4.21}%
+\contentsline {subsubsection}{Class Specification}{122}{figure.4.22}%
+\contentsline {subsection}{\numberline {4.2.11}Horse Owner Send Jockey Invitation}{125}{subsection.4.2.11}%
+\contentsline {subsubsection}{Class Diagram}{125}{subsection.4.2.11}%
+\contentsline {subsubsection}{Sequence Diagram}{126}{figure.4.23}%
+\contentsline {subsubsection}{Class Specification}{126}{figure.4.24}%
+\contentsline {subsection}{\numberline {4.2.12}View Registered Tournaments}{129}{subsection.4.2.12}%
+\contentsline {subsubsection}{Class Diagram}{129}{subsection.4.2.12}%
+\contentsline {subsubsection}{Sequence Diagram}{130}{figure.4.25}%
+\contentsline {subsubsection}{Class Specification}{130}{figure.4.26}%
+\contentsline {subsection}{\numberline {4.2.13}View Horse Schedules for Owner}{132}{subsection.4.2.13}%
+\contentsline {subsubsection}{Class Diagram}{132}{subsection.4.2.13}%
+\contentsline {subsubsection}{Sequence Diagram}{132}{figure.4.27}%
+\contentsline {subsubsection}{Class Specification}{133}{figure.4.28}%
+\contentsline {subsection}{\numberline {4.2.14}View Race Results for Owner}{134}{subsection.4.2.14}%
+\contentsline {subsubsection}{Class Diagram}{134}{subsection.4.2.14}%
+\contentsline {subsubsection}{Sequence Diagram}{134}{figure.4.29}%
+\contentsline {subsubsection}{Class Specification}{135}{figure.4.30}%
+\contentsline {subsection}{\numberline {4.2.15}Horse Owner Profile Management}{136}{subsection.4.2.15}%
+\contentsline {subsubsection}{Class Diagram}{136}{subsection.4.2.15}%
+\contentsline {subsubsection}{Sequence Diagram}{137}{figure.4.31}%
+\contentsline {subsubsection}{Class Specification}{137}{figure.4.32}%
+\contentsline {subsection}{\numberline {4.2.16}Jockey Dashboard}{139}{subsection.4.2.16}%
+\contentsline {subsubsection}{Class Diagram}{139}{subsection.4.2.16}%
+\contentsline {subsubsection}{Sequence Diagram}{140}{figure.4.33}%
+\contentsline {subsubsection}{Class Specification}{140}{figure.4.34}%
+\contentsline {subsection}{\numberline {4.2.17}Jockey Invitation Management}{143}{subsection.4.2.17}%
+\contentsline {subsubsection}{Class Diagram}{143}{subsection.4.2.17}%
+\contentsline {subsubsection}{Sequence Diagram}{144}{figure.4.35}%
+\contentsline {subsubsection}{Class Specification}{144}{figure.4.36}%
+\contentsline {subsection}{\numberline {4.2.18}Race Schedule}{146}{subsection.4.2.18}%
+\contentsline {subsubsection}{Class Diagram}{146}{subsection.4.2.18}%
+\contentsline {subsubsection}{Sequence Diagram}{147}{figure.4.37}%
+\contentsline {subsubsection}{Class Specification}{147}{figure.4.38}%
+\contentsline {subsection}{\numberline {4.2.19}Personal Profile}{149}{subsection.4.2.19}%
+\contentsline {subsubsection}{Class Diagram}{149}{subsection.4.2.19}%
+\contentsline {subsubsection}{Sequence Diagram}{150}{figure.4.39}%
+\contentsline {subsubsection}{Class Specification}{150}{figure.4.40}%
+\contentsline {subsection}{\numberline {4.2.20}Achievements}{152}{subsection.4.2.20}%
+\contentsline {subsubsection}{Class Diagram}{152}{subsection.4.2.20}%
+\contentsline {subsubsection}{Sequence Diagram}{153}{figure.4.41}%
+\contentsline {subsubsection}{Class Specification}{153}{figure.4.42}%
+\contentsline {subsection}{\numberline {4.2.21}Spectator Prediction}{155}{subsection.4.2.21}%
+\contentsline {subsubsection}{Class Diagram}{155}{subsection.4.2.21}%
+\contentsline {subsubsection}{Sequence Diagram}{156}{figure.4.43}%
+\contentsline {subsubsection}{Class Specification}{157}{figure.4.44}%
+\contentsline {subsection}{\numberline {4.2.22}Spectator Personal Profile}{158}{subsection.4.2.22}%
+\contentsline {subsubsection}{Class Diagram}{158}{subsection.4.2.22}%
+\contentsline {subsubsection}{Sequence Diagram}{159}{figure.4.45}%
+\contentsline {subsubsection}{Class Specification}{160}{figure.4.46}%
+\contentsline {subsection}{\numberline {4.2.23}Schedule and Result}{161}{subsection.4.2.23}%
+\contentsline {subsubsection}{Class Diagram}{161}{subsection.4.2.23}%
+\contentsline {subsubsection}{Sequence Diagram}{162}{figure.4.47}%
+\contentsline {subsubsection}{Class Specification}{163}{figure.4.48}%
+\contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{164}{table.4.24}%
+\contentsline {subsubsection}{Sequence Diagram}{165}{figure.4.49}%
+\contentsline {subsubsection}{Class Specification}{166}{figure.4.50}%
+\contentsline {subsection}{\numberline {4.2.24}Top Spectators Leaderboard}{167}{subsection.4.2.24}%
+\contentsline {subsubsection}{Class Diagram}{167}{subsection.4.2.24}%
+\contentsline {subsubsection}{Class Specification}{169}{figure.4.52}%
+\contentsline {subsection}{\numberline {4.2.25}Assigned Race List}{170}{subsection.4.2.25}%
+\contentsline {subsubsection}{Class Diagram}{170}{subsection.4.2.25}%
+\contentsline {subsubsection}{Sequence Diagram}{171}{figure.4.53}%
+\contentsline {subsubsection}{Class Specification}{172}{figure.4.54}%
+\contentsline {subsection}{\numberline {4.2.26}Race Inspection}{173}{subsection.4.2.26}%
+\contentsline {subsubsection}{Class Diagram}{173}{subsection.4.2.26}%
+\contentsline {subsubsection}{Sequence Diagram}{174}{figure.4.55}%
+\contentsline {subsubsection}{Class Specification}{175}{figure.4.56}%
+\contentsline {subsection}{\numberline {4.2.27}Input Result Form}{176}{subsection.4.2.27}%
+\contentsline {subsubsection}{Class Diagram}{176}{subsection.4.2.27}%
+\contentsline {subsubsection}{Sequence Diagram}{177}{figure.4.57}%
+\contentsline {subsubsection}{Class Specification}{178}{figure.4.58}%
+\contentsline {subsection}{\numberline {4.2.28}Violation Report}{179}{subsection.4.2.28}%
+\contentsline {subsubsection}{Class Diagram}{179}{subsection.4.2.28}%
+\contentsline {subsubsection}{Sequence Diagram}{180}{figure.4.59}%
+\contentsline {subsubsection}{Class Specification}{181}{figure.4.60}%
+\contentsline {subsection}{\numberline {4.2.29}Result Confirmed}{182}{subsection.4.2.29}%
+\contentsline {subsubsection}{Class Diagram}{182}{subsection.4.2.29}%
+\contentsline {subsubsection}{Sequence Diagram}{183}{figure.4.61}%
+\contentsline {subsubsection}{Class Specification}{184}{figure.4.62}%
