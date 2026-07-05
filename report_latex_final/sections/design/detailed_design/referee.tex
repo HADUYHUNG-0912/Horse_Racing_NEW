@@ -77,3 +77,122 @@ Race & id, round\_id, name, race\_time, track\_condition, distance, status & ent
 Referee & id, user\_id, license\_no & entity & Database entity identifying the referee who submitted the inspection report. \\
 \TableFinish{Race Inspection class specification}{tab:race_inspection_class_spec}
 \endgroup
+
+\subsection{Input Result Form}
+\subsubsection{Class Diagram}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/referee/Input_Result_class.png}
+    \caption{Input Result Form Class Diagram}
+    \label{fig:input_result_class_diagram}
+\end{figure}
+ 
+\subsubsection{Sequence Diagram}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/referee/Input_result_seq.png}
+    \caption{Input Result Form Sequence Diagram}
+    \label{fig:input_result_sequence_diagram}
+\end{figure}
+ 
+\subsubsection{Class Specification}
+ 
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+Race\allowbreak{}Result\allowbreak{}Router & submit\_result(), update\_result(), read\_results() & controller / route & Handles HTTP requests to create, update, and retrieve race results entered by the referee. \\
+\hline
+Result\allowbreak{}Create & race\_participant\_id, rank, points, notes & DTO & Input data transfer object used to submit a new result for a race participant. \\
+\hline
+Result\allowbreak{}Update & rank, points, notes & DTO & Input data transfer object used to correct an existing race result. \\
+\hline
+ResultOut & id, race\_participant\_id, rank, points, notes, horse\_name, jockey\_name & DTO & Output data transfer object returning the saved result along with related participant information. \\
+\hline
+Result & id, race\_participant\_id, rank, points, notes & entity & Database entity storing the official placement and points scored by a race participant. \\
+\hline
+Race\allowbreak{}Participant & id, race\_id, registration\_id, lane\_number, status & entity & Database entity representing the horse-jockey pair for which the result is being recorded. \\
+\TableFinish{Input Result Form class specification}{tab:input_result_class_spec}
+\endgroup
+ 
+\subsection{Violation Report}
+\subsubsection{Class Diagram}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/referee/Violation_report_class.png}
+    \caption{Violation Report Class Diagram}
+    \label{fig:violation_report_class_diagram}
+\end{figure}
+ 
+\subsubsection{Sequence Diagram}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/referee/Violation_report_seq.png}
+    \caption{Violation Report Sequence Diagram}
+    \label{fig:violation_report_sequence_diagram}
+\end{figure}
+ 
+\subsubsection{Class Specification}
+ 
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.22\textwidth}|>{\raggedright\arraybackslash}p{0.32\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.26\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+Violation\allowbreak{}Router & report\_violation(), read\_violations() & controller / route & Handles HTTP requests to submit and retrieve violation reports filed by the referee. \\
+\hline
+Violation\allowbreak{}Create & race\_participant\_id, description, penalty\_type, fine\_amount & DTO & Input data transfer object used to submit a new violation report for a race participant. \\
+\hline
+Violation\allowbreak{}Out & id, race\_participant\_id, description, penalty\_type, fine\_amount, horse\_name, created\_at & DTO & Output data transfer object returning the submitted violation details along with related participant information. \\
+\hline
+Violation & id, race\_participant\_id, referee\_id, description, penalty\_type, fine\_amount, created\_at & entity & Database entity storing the details and penalty applied for a violation committed during a race. \\
+\hline
+Race\allowbreak{}Participant & id, race\_id, registration\_id, lane\_number, status & entity & Database entity representing the horse-jockey pair being reported for the violation. \\
+\hline
+Referee & id, user\_id, license\_no & entity & Database entity identifying the referee who filed the violation report. \\
+\TableFinish{Violation Report class specification}{tab:violation_report_class_spec}
+\endgroup
+ 
+\subsection{Result Confirmed}
+\subsubsection{Class Diagram}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/referee/Result_confirmed_class.png}
+    \caption{Result Confirmed Class Diagram}
+    \label{fig:result_confirmed_class_diagram}
+\end{figure}
+ 
+\subsubsection{Sequence Diagram}
+ 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/referee/Result_confirmed_seq.png}
+    \caption{Result Confirmed Sequence Diagram}
+    \label{fig:result_confirmed_sequence_diagram}
+\end{figure}
+ 
+\subsubsection{Class Specification}
+ 
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+Result\allowbreak{}Confirm\allowbreak{}Router & read\_race\_status(), confirm\_result(), request\_edit() & controller / route & Handles HTTP requests to review the administrator-approved race status and confirm or request edits to the official result. \\
+\hline
+RaceOut & id, name, status & DTO & Output data transfer object returning the current status of the race after administrator review. \\
+\hline
+Race & id, round\_id, name, race\_time, track\_condition, distance, status & entity & Database entity storing core information of the race, including its confirmation status. \\
+\hline
+Result & id, race\_participant\_id, rank, points, notes & entity & Database entity storing the official race result that is reviewed or corrected during confirmation. \\
+\TableFinish{Result Confirmed class specification}{tab:result_confirmed_class_spec}
+\endgroup
