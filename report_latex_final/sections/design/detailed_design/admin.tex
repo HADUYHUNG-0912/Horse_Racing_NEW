@@ -127,3 +127,127 @@ Horse & id, name & entity & Database entity providing naming contexts for regist
 Jockey & id, name & entity & Database entity referencing profile information for underlying jockey entries. \\
 \TableFinish{Admin Registration Confirmation class specification}{tab:admin_registration_confirmation_class_spec}
 \endgroup
+\subsection{Admin Schedule Races}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/admin/Schedule_Races_ClassDiagram.png}
+    \caption{Class Diagram for Schedule Races}
+    \label{fig:admin_schedule_races_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/admin/Schedule_Races_SequenceDiagram.png}
+    \caption{Admin Schedule Races Sequence Diagram}
+    \label{fig:admin_schedule_races_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+RaceSchedulerRouter & schedule\_race(), update\_race(), get\_race\_schedule(), cancel\_race() & controller / route & Handles race scheduling operations and event lifecycle changes. \\
+\hline
+ScheduleRaceRequest & tournament\_id, round\_id, track\_id, start\_time, participant\_ids & DTO & Input DTO for creating or modifying a race schedule. \\
+\hline
+RaceScheduleOut & race\_id, round\_name, track\_name, start\_time, status, lane\_assignments & DTO & Output DTO delivering scheduled race details. \\
+\hline
+Race & id, round\_id, track\_id, start\_time, status, lane\_assignments & entity & Entity representing a scheduled race entry. \\
+\hline
+Round & id, tournament\_id, name, sequence\_order & entity & Entity representing a tournament round that contains races. \\
+\hline
+Track & id, name, location, capacity & entity & Entity representing a race track and its configuration. \\
+\hline
+Participant & id, horse\_id, jockey\_id, lane\_number & entity & Entity representing a horse-jockey entry assigned to a race lane. \\
+\TableFinish{Admin Schedule Races class specification}{tab:admin_schedule_races_class_spec}
+\endgroup
+
+\subsection{Admin Manage Users}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/admin/Manage_User_ClassDiagram.png}
+    \caption{Class Diagram for Manage Users}
+    \label{fig:admin_manage_users_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/admin/Manage_Users_SequenceDiagram.png}
+    \caption{Admin Manage Users Sequence Diagram}
+    \label{fig:admin_manage_users_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+UserRouter & create\_user(), update\_user(), delete\_user(), get\_users() & controller / route & Manages user administration requests and account lifecycle actions. \\
+\hline
+UserCreate & username, email, password, role, is\_active & DTO & Input DTO used to create a new user account. \\
+\hline
+UserUpdate & user\_id, email, role, is\_active & DTO & Input DTO used to update user profile and status. \\
+\hline
+UserOut & id, username, email, role, status & DTO & Output DTO returning user details for display. \\
+\hline
+User & id, username, email, password\_hash, role, is\_active & entity & Entity storing user authentication and role data. \\
+\hline
+Role & id, name, permissions & entity & Entity representing role definitions and access permissions. \\
+\TableFinish{Admin Manage Users class specification}{tab:admin_manage_users_class_spec}
+\endgroup
+
+\subsection{Admin Manage Rewards}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/admin/Manage_Rewards_ClassDiagram.png}
+    \caption{Class Diagram for Manage Rewards}
+    \label{fig:admin_manage_rewards_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/design/admin/Manage_Rewards_SequenceDiagram.png}
+    \caption{Admin Manage Rewards Sequence Diagram}
+    \label{fig:admin_manage_rewards_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\TableStart{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+RewardRouter & create\_reward(), update\_reward(), assign\_reward(), get\_rewards() & controller / route & Manages reward configuration, assignment, and retrieval endpoints. \\
+\hline
+RewardCreate & title, description, value, rank, tournament\_id & DTO & Input DTO for defining a new reward within a tournament context. \\
+\hline
+RewardAssign & reward\_id, user\_id, race\_id, reason & DTO & Input DTO for assigning a reward to a user or race result. \\
+\hline
+RewardOut & id, title, description, value, rank, status & DTO & Output DTO returning reward information and distribution status. \\
+\hline
+Reward & id, title, description, value, rank, status, tournament\_id & entity & Entity representing a reward definition and its current state. \\
+\hline
+RewardAssignment & id, reward\_id, user\_id, race\_id, assigned\_at, reason & entity & Entity capturing reward assignment history and references. \\
+\TableFinish{Admin Manage Rewards class specification}{tab:admin_manage_rewards_class_spec}
+\endgroup
