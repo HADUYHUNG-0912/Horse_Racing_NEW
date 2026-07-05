@@ -1,0 +1,63 @@
+\subsection{Jockey Dashboard}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/Jockey/classdiagram_jockey_dashborad.drawio.png}
+    \caption{Jockey Dashboard Class Diagram}
+    \label{fig:jockey_dashboard_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/Jockey/Sequence_jockey_dashborad.png}
+    \caption{Jockey Dashboard Sequence Diagram}
+    \label{fig:jockey_dashboard_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Jockey Dashboard class specification}
+\label{tab:jockey_dashboard_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+User & id, fullName, avatar, role, login(), logout() & entity & Represents the base account of a system user. Both \texttt{Owner} and \texttt{Jockey} inherit from this class. \\
+\hline
+Jockey & jockeyId, ranking, points & entity & Extends \texttt{User} with jockey-specific attributes; linked to invitations, schedules, awards, and the leaderboard. \\
+\hline
+Owner & ownerId, stableName & entity & Extends \texttt{User} and sends invitations to jockeys on behalf of a stable. \\
+\hline
+Invitation & invitationId, message, status, sentDate, accept(), decline(), getStatus() & entity & Records a race invitation sent by an owner to a jockey, with the current status tracked via \texttt{InvitationStatus}. \\
+\hline
+Invitation\allowbreak{}Status & PENDING, ACCEPTED, DECLINED & enumeration & Enumerates the possible lifecycle states of a jockey invitation. \\
+\hline
+Schedule & scheduleId, raceDate, location, tournamentName & entity & Stores race schedule details visible to the jockey after an invitation is accepted. \\
+\hline
+Award & awardId, title, dateAwarded, tournamentName & entity & Records awards and achievements earned by the jockey in tournaments. \\
+\hline
+Leaderboard & rank, totalPoints, calculateRank() & entity & Maintains the global jockey ranking and calculates each jockey's position based on accumulated points. \\
+\hline
+Horse & horseId, name, breed, age & entity & Represents the horse assigned to a jockey through an invitation for a specific tournament. \\
+\hline
+Tournament & tournamentId, name, year, startDate, location & entity & Represents the racing tournament context that links invitations, schedules, and awards together. \\
+\hline
+Dashboard\allowbreak{}UI & login(), getInvitations(), acceptInvitation(), declineInvitation(), getSchedule(), getProfile(), getAwards(), getLeaderboard(), logout() & boundary / UI & The jockey-facing dashboard interface that handles login, displays invitations, schedule, profile, awards, and the leaderboard. \\
+\hline
+Dashboard\allowbreak{}Controller & login(username, password), getInvitations(jockeyId), acceptInvitation(invitationId), declineInvitation(invitationId), getSchedule(jockeyId), getProfile(jockeyId), getAwards(jockeyId), getLeaderboard() & controller & Processes all dashboard requests from the UI, coordinates data retrieval and status updates with the database. \\
+\hline
+\end{longtable}
+\endgroup
