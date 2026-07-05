@@ -128,69 +128,60 @@
 \contentsline {subsubsection}{Class Diagram}{97}{subsection.4.2.3}%
 \contentsline {subsubsection}{Sequence Diagram}{98}{figure.4.5}%
 \contentsline {subsubsection}{Class Specification}{99}{figure.4.6}%
-\contentsline {subsection}{\numberline {4.2.4}Admin Schedule Races}{100}{subsection.4.2.4}%
+\contentsline {subsection}{\numberline {4.2.4}Login and Registration}{100}{subsection.4.2.4}%
 \contentsline {subsubsection}{Class Diagram}{100}{subsection.4.2.4}%
 \contentsline {subsubsection}{Sequence Diagram}{101}{figure.4.7}%
-\contentsline {subsubsection}{Class Specification}{102}{figure.4.8}%
-\contentsline {subsection}{\numberline {4.2.5}Admin Manage Users}{103}{subsection.4.2.5}%
-\contentsline {subsubsection}{Class Diagram}{103}{subsection.4.2.5}%
-\contentsline {subsubsection}{Sequence Diagram}{104}{figure.4.9}%
-\contentsline {subsubsection}{Class Specification}{105}{figure.4.10}%
-\contentsline {subsection}{\numberline {4.2.6}Admin Manage Rewards}{106}{subsection.4.2.6}%
-\contentsline {subsubsection}{Class Diagram}{106}{subsection.4.2.6}%
-\contentsline {subsubsection}{Sequence Diagram}{107}{figure.4.11}%
-\contentsline {subsubsection}{Class Specification}{108}{figure.4.12}%
-\contentsline {subsection}{\numberline {4.2.7}Login and Registration}{109}{subsection.4.2.7}%
-\contentsline {subsubsection}{Class Diagram}{109}{subsection.4.2.7}%
+\contentsline {subsubsection}{Class Specification}{101}{figure.4.8}%
+\contentsline {subsection}{\numberline {4.2.5}Tournament Registration}{103}{subsection.4.2.5}%
+\contentsline {subsubsection}{Tournament Registration Data Preparation Class Diagram}{103}{subsection.4.2.5}%
+\contentsline {subsubsection}{Load Accepted Registration Options Sequence Diagram}{104}{figure.4.9}%
+\contentsline {subsubsection}{Class Specification}{104}{figure.4.10}%
+\contentsline {subsubsection}{Tournament Registration Submission Class Diagram}{106}{table.4.5}%
+\contentsline {subsubsection}{Submit Tournament Registration Sequence Diagram}{107}{figure.4.11}%
+\contentsline {subsubsection}{Class Specification}{107}{figure.4.12}%
+\contentsline {subsection}{\numberline {4.2.6}Horse Owner Authentication and Authorization}{109}{subsection.4.2.6}%
+\contentsline {subsubsection}{Class Diagram}{109}{subsection.4.2.6}%
 \contentsline {subsubsection}{Sequence Diagram}{110}{figure.4.13}%
 \contentsline {subsubsection}{Class Specification}{110}{figure.4.14}%
-\contentsline {subsection}{\numberline {4.2.8}Horse Owner Authentication and Authorization}{111}{subsection.4.2.8}%
-\contentsline {subsubsection}{Class Diagram}{111}{subsection.4.2.8}%
-\contentsline {subsubsection}{Sequence Diagram}{112}{figure.4.15}%
-\contentsline {subsubsection}{Class Specification}{112}{figure.4.16}%
-\contentsline {subsection}{\numberline {4.2.9}Horse Owner Management Operations}{114}{subsection.4.2.9}%
-\contentsline {subsubsection}{Class Diagram}{114}{subsection.4.2.9}%
-\contentsline {subsubsection}{Sequence Diagram}{115}{figure.4.17}%
-\contentsline {subsubsection}{Class Specification}{115}{figure.4.18}%
-\contentsline {subsection}{\numberline {4.2.10}Send Jockey Invitation}{118}{subsection.4.2.10}%
-\contentsline {subsubsection}{Class Diagram}{118}{subsection.4.2.10}%
-\contentsline {subsubsection}{Sequence Diagram}{119}{figure.4.19}%
-\contentsline {subsubsection}{Class Specification}{119}{figure.4.20}%
-\contentsline {subsection}{\numberline {4.2.11}Jockey Dashboard}{122}{subsection.4.2.11}%
-\contentsline {subsubsection}{Class Diagram}{122}{subsection.4.2.11}%
+\contentsline {subsection}{\numberline {4.2.7}Horse Owner Management Operations}{112}{subsection.4.2.7}%
+\contentsline {subsubsection}{Class Diagram}{112}{subsection.4.2.7}%
+\contentsline {subsubsection}{Sequence Diagram}{113}{figure.4.15}%
+\contentsline {subsubsection}{Class Specification}{113}{figure.4.16}%
+\contentsline {subsection}{\numberline {4.2.8}Horse Owner Send Jockey Invitation}{116}{subsection.4.2.8}%
+\contentsline {subsubsection}{Class Diagram}{116}{subsection.4.2.8}%
+\contentsline {subsubsection}{Sequence Diagram}{117}{figure.4.17}%
+\contentsline {subsubsection}{Class Specification}{117}{figure.4.18}%
+\contentsline {subsection}{\numberline {4.2.9}View Registered Tournaments}{120}{subsection.4.2.9}%
+\contentsline {subsubsection}{Class Diagram}{120}{subsection.4.2.9}%
+\contentsline {subsubsection}{Sequence Diagram}{121}{figure.4.19}%
+\contentsline {subsubsection}{Class Specification}{121}{figure.4.20}%
+\contentsline {subsection}{\numberline {4.2.10}View Horse Schedules for Owner}{123}{subsection.4.2.10}%
+\contentsline {subsubsection}{Class Diagram}{123}{subsection.4.2.10}%
 \contentsline {subsubsection}{Sequence Diagram}{123}{figure.4.21}%
-\contentsline {subsubsection}{Class Specification}{123}{figure.4.22}%
-\contentsline {subsection}{\numberline {4.2.12}Jockey Invitation Management}{126}{subsection.4.2.12}%
-\contentsline {subsubsection}{Class Diagram}{126}{subsection.4.2.12}%
-\contentsline {subsubsection}{Sequence Diagram}{127}{figure.4.23}%
-\contentsline {subsubsection}{Class Specification}{127}{figure.4.24}%
-\contentsline {subsection}{\numberline {4.2.13}Race Schedule}{129}{subsection.4.2.13}%
-\contentsline {subsubsection}{Class Diagram}{129}{subsection.4.2.13}%
-\contentsline {subsubsection}{Sequence Diagram}{130}{figure.4.25}%
-\contentsline {subsubsection}{Class Specification}{130}{figure.4.26}%
-\contentsline {subsection}{\numberline {4.2.14}Personal Profile}{132}{subsection.4.2.14}%
-\contentsline {subsubsection}{Class Diagram}{132}{subsection.4.2.14}%
-\contentsline {subsubsection}{Sequence Diagram}{133}{figure.4.27}%
-\contentsline {subsubsection}{Class Specification}{133}{figure.4.28}%
-\contentsline {subsection}{\numberline {4.2.15}Achievements}{135}{subsection.4.2.15}%
-\contentsline {subsubsection}{Class Diagram}{135}{subsection.4.2.15}%
-\contentsline {subsubsection}{Sequence Diagram}{136}{figure.4.29}%
-\contentsline {subsubsection}{Class Specification}{136}{figure.4.30}%
-\contentsline {subsection}{\numberline {4.2.16}Spectator Prediction}{138}{subsection.4.2.16}%
-\contentsline {subsubsection}{Class Diagram}{138}{subsection.4.2.16}%
-\contentsline {subsubsection}{Sequence Diagram}{139}{figure.4.31}%
-\contentsline {subsubsection}{Class Specification}{140}{figure.4.32}%
-\contentsline {subsection}{\numberline {4.2.17}Spectator Personal Profile}{141}{subsection.4.2.17}%
-\contentsline {subsubsection}{Class Diagram}{141}{subsection.4.2.17}%
-\contentsline {subsubsection}{Sequence Diagram}{142}{figure.4.33}%
-\contentsline {subsubsection}{Class Specification}{143}{figure.4.34}%
-\contentsline {subsection}{\numberline {4.2.18}Schedule and Result}{144}{subsection.4.2.18}%
-\contentsline {subsubsection}{Class Diagram}{144}{subsection.4.2.18}%
-\contentsline {subsubsection}{Sequence Diagram}{145}{figure.4.35}%
-\contentsline {subsubsection}{Class Specification}{146}{figure.4.36}%
-\contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{147}{table.4.18}%
-\contentsline {subsubsection}{Sequence Diagram}{148}{figure.4.37}%
-\contentsline {subsubsection}{Class Specification}{149}{figure.4.38}%
-\contentsline {subsection}{\numberline {4.2.19}Top Spectators Leaderboard}{150}{subsection.4.2.19}%
-\contentsline {subsubsection}{Class Diagram}{150}{subsection.4.2.19}%
-\contentsline {subsubsection}{Class Specification}{152}{figure.4.40}%
+\contentsline {subsubsection}{Class Specification}{124}{figure.4.22}%
+\contentsline {subsection}{\numberline {4.2.11}View Race Results for Owner}{125}{subsection.4.2.11}%
+\contentsline {subsubsection}{Class Diagram}{125}{subsection.4.2.11}%
+\contentsline {subsubsection}{Sequence Diagram}{125}{figure.4.23}%
+\contentsline {subsubsection}{Class Specification}{126}{figure.4.24}%
+\contentsline {subsection}{\numberline {4.2.12}Horse Owner Profile Management}{127}{subsection.4.2.12}%
+\contentsline {subsubsection}{Class Diagram}{127}{subsection.4.2.12}%
+\contentsline {subsubsection}{Sequence Diagram}{128}{figure.4.25}%
+\contentsline {subsubsection}{Class Specification}{128}{figure.4.26}%
+\contentsline {subsection}{\numberline {4.2.13}Spectator Prediction}{130}{subsection.4.2.13}%
+\contentsline {subsubsection}{Class Diagram}{130}{subsection.4.2.13}%
+\contentsline {subsubsection}{Sequence Diagram}{131}{figure.4.27}%
+\contentsline {subsubsection}{Class Specification}{132}{figure.4.28}%
+\contentsline {subsection}{\numberline {4.2.14}Spectator Personal Profile}{133}{subsection.4.2.14}%
+\contentsline {subsubsection}{Class Diagram}{133}{subsection.4.2.14}%
+\contentsline {subsubsection}{Sequence Diagram}{134}{figure.4.29}%
+\contentsline {subsubsection}{Class Specification}{135}{figure.4.30}%
+\contentsline {subsection}{\numberline {4.2.15}Schedule and Result}{136}{subsection.4.2.15}%
+\contentsline {subsubsection}{Class Diagram}{136}{subsection.4.2.15}%
+\contentsline {subsubsection}{Sequence Diagram}{137}{figure.4.31}%
+\contentsline {subsubsection}{Class Specification}{138}{figure.4.32}%
+\contentsline {subsubsection}{Horse and Jockey Rankings Class Diagram}{139}{table.4.16}%
+\contentsline {subsubsection}{Sequence Diagram}{140}{figure.4.33}%
+\contentsline {subsubsection}{Class Specification}{141}{figure.4.34}%
+\contentsline {subsection}{\numberline {4.2.16}Top Spectators Leaderboard}{142}{subsection.4.2.16}%
+\contentsline {subsubsection}{Class Diagram}{142}{subsection.4.2.16}%
+\contentsline {subsubsection}{Class Specification}{144}{figure.4.36}%
