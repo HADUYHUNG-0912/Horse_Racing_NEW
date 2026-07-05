@@ -22,7 +22,11 @@
 \begingroup
 \small
 \setlength{\tabcolsep}{3pt}
-\TableStart{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Spectator Prediction class specification}
+\label{tab:spectator_prediction_class_spec} \\
+\hline
+\tableHeader
 \textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
 \hline
 SpectatorRouter & make\_prediction(), read\_predictions(), update\_prediction() & controller / route & Handles HTTP requests related to spectator predictions (create, read, update). \\
@@ -38,7 +42,8 @@ Prediction & id, user\_id, race\_participant\_id, predicted\_rank, prediction\_d
 User & id, username, full\_name & entity & Database entity representing an application user who makes predictions. \\
 \hline
 Race\allowbreak{}Participant & id, race\_id, registration\_id & entity & Database entity representing a participant in a race being predicted. \\
-\TableFinish{Spectator Prediction class specification}{tab:spectator_prediction_class_spec}
+\hline
+\end{longtable}
 \endgroup
 
 \subsection{Spectator Personal Profile}
