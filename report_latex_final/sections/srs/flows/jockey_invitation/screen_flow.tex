@@ -2,7 +2,7 @@
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/srs/jockey_Requirements/screenflow_jockey.png}
+    \includegraphics[width=0.9\textwidth]{figures/srs/jockey_Requirements/screenflow_jockey.drawio.png}
     \caption{Jockey screen flow}
     \label{fig:jockey_screen_flow}
 \end{figure}
@@ -16,17 +16,27 @@
 \hline
 2 & General & Login & Authenticate the jockey and enter the Jockey Dashboard. \\
 \hline
-3 & Dashboard & Jockey Dashboard & Main hub for jockey with navigation to invitations, upcoming races, results, and profile. \\
+3 & Dashboard & Jockey Dashboard & Main hub for jockey with navigation to invitations, race schedule, profile, awards, and leaderboard. \\
 \hline
-4 & Notifications & Jockey Notification & View pending invitations from owners with horse, owner, tournament, and current status. \\
+4 & Invitations & Invitations Received & View invitations received from horse owners with current status. \\
 \hline
-5 & Invitation & Invitation Detail & Display invitation details including owner, horse, tournament, schedule, and custom message. \\
+5 & Invitations & Status: ACCEPTED & Show accepted invitations and allow jockey to proceed to race registration. \\
 \hline
-6 & Invitation & Accept Confirmation & Confirm acceptance of the invitation and register the jockey for the selected race. \\
+6 & Invitations & Status: DECLINED & Show declined invitations and provide feedback details. \\
 \hline
-7 & Invitation & Reject Confirmation & Decline the invitation and send notification back to the owner. \\
+7 & Schedule & Race Schedule & Display upcoming races and enable navigation to race details. \\
 \hline
-8 & Schedule & My Upcoming Races & Show accepted races with date, time, horse, owner, tournament, and race status. \\
+8 & Schedule & Race Details & Show detailed information for a selected race. \\
 \hline
-9 & Notification & Owner Notification & Notify the owner whether the invitation was accepted or rejected. \\
+9 & Profile & Personal Profile & View jockey profile information and access the edit profile form. \\
+\hline
+10 & Profile & Edit Profile Form & Update personal details such as name, contact, weight, height, and experience. \\
+\hline
+11 & Awards & Awards Achieved & Display awards and achievements earned by the jockey. \\
+\hline
+12 & Awards & Award Details & Show detailed information for a selected award. \\
+\hline
+13 & Leaderboard & Leaderboard & Display jockey rankings with filters by tournament and category. \\
+\hline
+14 & Leaderboard & Rank Details & Show detailed rank information for selected jockey standings. \\
 \TableFinish{Jockey screen descriptions}{tab:jockey_screen_screens}
