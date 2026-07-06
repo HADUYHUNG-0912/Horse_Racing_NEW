@@ -50,6 +50,21 @@ class JockeyProfile(Base):
     registrations = relationship("Registration", back_populates="jockey")
     invitations = relationship("JockeyInvitation", back_populates="jockey")
 
+    @property
+    def username(self):
+        """Bridge sang bảng Users để Pydantic JockeyProfileOut lấy được username."""
+        return self.user.username if self.user else None
+
+    @property
+    def full_name(self):
+        """Bridge sang bảng Users để Pydantic JockeyProfileOut lấy được full_name."""
+        return self.user.full_name if self.user else None
+
+    @property
+    def email(self):
+        """Bridge sang bảng Users để Pydantic JockeyProfileOut lấy được email."""
+        return self.user.email if self.user else None
+
 class HorseOwnerProfile(Base):
     __tablename__ = 'HorseOwnerProfiles'
     
