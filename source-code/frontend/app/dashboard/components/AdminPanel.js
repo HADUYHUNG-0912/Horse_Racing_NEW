@@ -40,7 +40,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
         const listReferees = await api.get("/referees");
         setReferees(listReferees || []);
       } catch (e) {
-        console.error("Lỗi lấy danh sách trọng tài:", e);
+        console.error("Error fetching referees list:", e);
         setReferees([]);
       }    
 
@@ -59,13 +59,13 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
     } catch (e) {      
       setUsers([       
       ]);
-      console.error("Lỗi lấy danh sách thành viên từ API:", e);
+      console.error("Error fetching users list from API:", e);
     }
     try {
         const adminStats = await api.get("/admin/stats");
         setStats(adminStats);
       } catch (e) {
-        console.error("Lỗi lấy thống kê hệ thống:", e);
+        console.error("Error fetching system statistics:", e);
         setStats({
           summary: { total_users: 150, total_tournaments: 5, total_races: 24, total_horses: 45, total_jockeys: 30 },
           predictions: { global_accuracy_rate: 74.5 },
@@ -96,7 +96,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
         setUsers(allUsers || []);
       } catch (e) {
         setUsers([]);
-        console.error("Lỗi lấy danh sách thành viên từ API:", e);
+        console.error("Error fetching users list from API:", e);
       }
     };
     
@@ -107,7 +107,7 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
     if (selectedTournamentId) {
       api.get(`/tournaments/${selectedTournamentId}/prizes`)
         .then(res => setPrizes(res || []))
-        .catch(err => console.error("Lỗi tải giải thưởng:", err));
+        .catch(err => console.error("Error loading prizes:", err));
     } else {
       setPrizes([]);
     }
@@ -124,7 +124,7 @@ const approvedRegistrations = useMemo(() => {
   const handleUpdateTournamentStatus = async (id, status) => {
     try {      
       await api.put(`/tournaments/${id}/status`, { new_status: status });
-      showMsg(`Chuyển trạng thái giải đấu sang "${status}" thành công!`);
+      showMsg(`Tournament status successfully updated to "${status}"!`);
       loadData(); 
     } catch (err) {
       showMsg(err.message, "error");
@@ -135,13 +135,13 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
   const nextStatus = !currentStatus;
   try {
     await api.put(`/admin/users/${userId}/status`, { is_active: nextStatus })
-    showMsg("Cập nhật trạng thái người dùng thành công!");
+    showMsg("User status updated successfully!");
     loadData(); 
   } catch (err) {
     setUsers(prevUsers =>
       prevUsers.map(u => u.id === userId ? { ...u, is_active: !u.is_active } : u)
     );
-    showMsg("Đang cập nhật trạng thái ở chế độ Local!", "info");
+    showMsg("Updating status in Local mode!", "info");
   }
 };
 
@@ -149,7 +149,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     e.preventDefault();
     try {
       await api.post("/tournaments", newTournament);
-      showMsg("Tạo giải đấu thành công!");
+      showMsg("Create a successful tournament!");
       setNewTournament({ name: "", description: "", start_date: "", end_date: "", location: "" });
       loadData();
     } catch (err) {
@@ -159,13 +159,13 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
 
   const createRound = async (e) => {
     e.preventDefault();
-    if (!newRound.tournament_id) return showMsg("Vui lòng chọn giải đấu", "error");
+    if (!newRound.tournament_id) return showMsg("Please select a tournament.", "error");
     try {
       await api.post(`/tournaments/${newRound.tournament_id}/rounds`, {
         name: newRound.name,
         sequence: parseInt(newRound.sequence, 10)
       });
-      showMsg("Tạo vòng đấu thành công!");
+      showMsg("Create a successful round!");
       setNewRound({ tournament_id: "", name: "", sequence: "1" });
       loadData();
     } catch (err) {
@@ -175,7 +175,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
 
   const createRace = async (e) => {
     e.preventDefault();
-    if (!newRace.round_id) return showMsg("Vui lòng chọn vòng đấu", "error");
+    if (!newRace.round_id) return showMsg("Please select a round.", "error");
     try {
       await api.post(`/races/rounds/${newRace.round_id}/races`, {
         name: newRace.name,
@@ -184,12 +184,12 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
         distance: parseInt(newRace.distance, 10),
         referee_id: newRace.referee_id ? parseInt(newRace.referee_id, 10) : null
       });
-      showMsg("Tạo trận đua thành công!");
+      showMsg("Make the race a success!");
       setNewRace({ round_id: "", name: "", race_time: "", track_condition: "Good", distance: "1200", referee_id: "" });
       loadData();
     } catch (err) {
       if (err.status === 400 || (err.response && err.response.status === 400)) {
-        const backendError = err.response?.data?.detail || "Lỗi trùng lịch thi đấu!";
+        const backendError = err.response?.data?.detail || "Match scheduling error!";
         showMsg(backendError, "error");
       } else {
         showMsg(err.message, "error");
@@ -199,13 +199,13 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
 
   const addParticipant = async (e) => {
     e.preventDefault();
-    if (!newParticipant.race_id || !newParticipant.registration_id) return showMsg("Vui lòng nhập đầy đủ thông tin", "error");
+    if (!newParticipant.race_id || !newParticipant.registration_id) return showMsg("Please enter all the required information.", "error");
     try {
       await api.post(`/races/${newParticipant.race_id}/participants`, {
         registration_id: parseInt(newParticipant.registration_id, 10),
         lane_number: parseInt(newParticipant.lane_number, 10)
       });
-      showMsg("Thêm ngựa vào đường đua thành công!");
+      showMsg("Adding horses to the race track was a success!");
       setNewParticipant({ race_id: "", registration_id: "", lane_number: "" });
       loadData();
     } catch (err) {
@@ -225,7 +225,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
 
   const deleteTournament = async (tournamentId, tournamentName) => {
     console.log("deleteTournament called with:", tournamentId, tournamentName);
-    if (!window.confirm(`⚠️ Bạn chắc chắn muốn xóa giải đấu "${tournamentName}"? Tất cả vòng đấu, trận đua liên quan sẽ bị xóa!`)) {
+    if (!window.confirm(`⚠️ Are you sure you want to delete the tournament "${tournamentName}"? All related rounds and races will be deleted!`)) {
       console.log("Delete cancelled by user");
       return;
     }
@@ -233,7 +233,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     try {
       const res = await api.delete(`/tournaments/${tournamentId}`);
       console.log("API delete response:", res);
-      showMsg("Xóa giải đấu thành công!");
+      showMsg("Tournament deleted successfully!");
       loadData();
     } catch (err) {
       console.error("API delete error:", err);

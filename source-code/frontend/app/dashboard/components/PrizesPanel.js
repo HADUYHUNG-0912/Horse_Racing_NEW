@@ -31,7 +31,7 @@ export default function PrizesPanel({ activeTab, showMsg }) {
       const tours = await api.get("/tournaments?limit=100");
       setTournaments(tours);
     } catch (err) {
-      console.error("Lỗi tải giải đấu:", err);
+      console.error("Tournament loading error:", err);
     }
   };
 
@@ -42,7 +42,7 @@ export default function PrizesPanel({ activeTab, showMsg }) {
       const data = await api.get(`/tournaments/${selectedTournament}/prizes`);
       setPrizes(data);
     } catch (err) {
-      console.error("Lỗi tải giải thưởng:", err);
+      console.error("Prize loading error:", err);
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ export default function PrizesPanel({ activeTab, showMsg }) {
   const createPrize = async (e) => {
     e.preventDefault();
     if (!selectedTournament || !newPrize.position || !newPrize.title) {
-      showMsg("Vui lòng điền đầy đủ thông tin", "error");
+      showMsg("Please fill in all the information", "error");
       return;
     }
     try {
@@ -61,22 +61,22 @@ export default function PrizesPanel({ activeTab, showMsg }) {
         prize_value: parseFloat(newPrize.prize_value) || 0,
         description: newPrize.description,
       });
-      showMsg("Tạo giải thưởng thành công!");
+      showMsg("Create a successful award!");
       setNewPrize({ position: "", title: "", prize_value: "", description: "" });
       loadPrizes();
     } catch (err) {
-      showMsg(err.message || "Lỗi tạo giải thưởng", "error");
+      showMsg(err.message || "Award creation error", "error");
     }
   };
 
   const deletePrize = async (prizeId) => {
-    if (!window.confirm("Xác nhận xóa giải thưởng?")) return;
+    if (!window.confirm("Confirmation of prize cancellation?")) return;
     try {
       await api.delete(`/tournaments/${selectedTournament}/prizes/${prizeId}`);
-      showMsg("Xóa giải thưởng thành công!");
+      showMsg("Prize removed successfully!");
       loadPrizes();
     } catch (err) {
-      showMsg(err.message || "Lỗi xóa giải thưởng", "error");
+      showMsg(err.message || "Error deleting prize", "error");
     }
   };
 
@@ -249,8 +249,8 @@ export default function PrizesPanel({ activeTab, showMsg }) {
             textAlign: "center",
             color: "#64748b"
           }}>
-            <p>Awards sẽ tự động tạo khi tournament chuyển sang status COMPLETED.</p>
-            <p>Hiện tại chưa có awards nào hoặc feature này còn đang phát triển.</p>
+            <p>Awards will be automatically generated when the tournament status changes to COMPLETED.</p>
+            <p>Currently, there are no awards for this feature, or it is still under development.</p>
           </div>
         </div>
       )}

@@ -288,8 +288,8 @@ def change_tournament_status(
         if not has_results or has_results == 0:
             raise HTTPException(
                 status_code=400,
-                detail="Không thể hoàn thành giải đấu khi chưa có kết quả trận đua nào. "
-                       "Vui lòng nhập kết quả ít nhất một trận đua trước khi chuyển sang COMPLETED."
+                detail="Cannot complete the tournament because there are no race results yet. "
+                       "Please enter results for at least one race before marking the tournament as COMPLETED."
             )
 
         _auto_award(db, tournament)
@@ -410,7 +410,7 @@ def create_prize(
     if tournament.status == "COMPLETED":
         raise HTTPException(
             status_code=400,
-            detail="Không thể thêm giải thưởng cho tournament đã hoàn thành"
+            detail="It is not possible to add prizes to a completed tournament."
         )
 
     # Kiểm tra trùng position
@@ -421,7 +421,7 @@ def create_prize(
     if dup:
         raise HTTPException(
             status_code=400,
-            detail=f"Đã tồn tại giải thưởng cho hạng {prize_in.position} trong tournament này"
+            detail=f"A prize already exists for position {prize_in.position} in this tournament"
         )
 
     prize = Prize(
