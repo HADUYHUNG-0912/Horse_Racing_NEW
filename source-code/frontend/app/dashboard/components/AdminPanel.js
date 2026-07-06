@@ -216,7 +216,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
   const approveRegistration = async (regId, status) => {
     try {
       await api.put(`/tournaments/registrations/${regId}`, { status });
-      showMsg(`Đã ${status === "APPROVED" ? "phê duyệt" : "từ chối"} đăng ký!`);
+      showMsg(`Registration ${status === "APPROVED" ? "approved" : "rejected"} successfully!`);
       loadData();
     } catch (err) {
       showMsg(err.message, "error");
