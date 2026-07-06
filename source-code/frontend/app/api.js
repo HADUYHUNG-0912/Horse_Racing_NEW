@@ -19,6 +19,7 @@ export const api = {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
       method: "GET",
       headers: getHeaders(),
+      cache: "no-store",
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: "Request failed" }));
@@ -51,6 +52,19 @@ export const api = {
       throw new Error(err.detail || "Request failed");
     }
     return res.json();
+  },
+
+  async delete(endpoint) {
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      method: "DELETE",
+      headers: getHeaders(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: "Request failed" }));
+      throw new Error(err.detail || "Request failed");
+    }
+    // DELETE trả về 204 No Content, không có body
+    return res.status === 204 ? null : res.json().catch(() => null);
   },
 
   // Auth methods
@@ -88,4 +102,20 @@ export const api = {
   logout() {
     localStorage.removeItem("token");
   },
+};
+export const fetchPrizes = (tournamentId) => 
+  api.get(`/tournaments/${tournamentId}/prizes`);
+
+export const createPrize = (tournamentId, data) => 
+  api.post(`/tournaments/${tournamentId}/prizes`, data);
+
+export const updateTournamentStatus = (id, status) => 
+  api.put(`/tournaments/${id}/status`, { new_status: status });
+
+export const fetchAdminStats = () => 
+  api.get(`/admin/stats`);
+
+export const fetchAdminUsers = (params) => {
+  const query = new URLSearchParams(params).toString();
+  return api.get(`/admin/users?${query}`);
 };

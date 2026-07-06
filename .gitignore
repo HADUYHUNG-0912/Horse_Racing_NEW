@@ -156,6 +156,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv312/
 
 # Spyder project settings
 .spyderproject
@@ -219,12 +220,17 @@ __marimo__/
 
 # LaTeX build files
 *.aux
-*.log
+*.out
 *.toc
+*.log
+*.lof
+*.lot
 *.fls
 *.fdb_latexmk
 *.synctex.gz
-*.out
 
 # Optional
-*.pdf   
+*.pdf
+
+# Temporary files
+*.tmp

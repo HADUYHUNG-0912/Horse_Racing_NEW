@@ -20,6 +20,11 @@ def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User account is locked"
+        )
     access_token = create_access_token(subject=user.id)
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -65,7 +70,14 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     elif role_name == "OWNER":
         profile = HorseOwnerProfile(
             user_id=user.id,
-            company_name=user_in.company_name
+            company_name=user_in.company_name,
+            age=user_in.age,
+            experience_years=user_in.experience_years or 0,
+            occupation=user_in.occupation,
+            address=user_in.address,
+            nationality=user_in.nationality,
+            social_link=user_in.social_link,
+            bio=user_in.bio
         )
         db.add(profile)
     elif role_name == "REFEREE":

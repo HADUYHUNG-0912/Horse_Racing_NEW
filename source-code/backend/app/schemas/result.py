@@ -45,6 +45,7 @@ class RankingOut(BaseModel):
     entity_type: str # 'HORSE' or 'JOCKEY'
     entity_id: int
     entity_name: Optional[str] = None
+    tournament_id: Optional[int] = None
     points: int
     rank: int
     updated_at: datetime
