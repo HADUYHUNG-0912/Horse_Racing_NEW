@@ -219,18 +219,82 @@ __marimo__/
 .streamlit/secrets.toml
 
 # LaTeX build files
+*.acn
+*.acr
+*.alg
 *.aux
-*.out
-*.toc
-*.log
-*.lof
-*.lot
-*.fls
+*.bbl
+*.bcf
+*.blg
+*.dvi
 *.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
 *.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# LaTeX build artifacts (project-specific)
+report_latex_final/**/*.acn
+report_latex_final/**/*.acr
+report_latex_final/**/*.alg
+report_latex_final/**/*.aux
+report_latex_final/**/*.bbl
+report_latex_final/**/*.bcf
+report_latex_final/**/*.blg
+report_latex_final/**/*.dvi
+report_latex_final/**/*.fdb_latexmk
+report_latex_final/**/*.fls
+report_latex_final/**/*.glg
+report_latex_final/**/*.glo
+report_latex_final/**/*.gls
+report_latex_final/**/*.idx
+report_latex_final/**/*.ilg
+report_latex_final/**/*.ind
+report_latex_final/**/*.ist
+report_latex_final/**/*.lof
+report_latex_final/**/*.log
+report_latex_final/**/*.lot
+report_latex_final/**/*.nav
+report_latex_final/**/*.out
+report_latex_final/**/*.run.xml
+report_latex_final/**/*.snm
+report_latex_final/**/*.synctex.gz
+report_latex_final/**/*.toc
+report_latex_final/**/*.vrb
+report_latex_final/**/*.xdv
+
+# Project custom reports, LaTeX and utilities
+Báo cáo*.md
+Báo_cáo*.md
+report-latex/
+*.whl
+jira_creator.py
+jira_import_tasks.csv
+team-checklist.md
+team_task_assignment.md
+test.tex
 
 # Optional
 *.pdf
+
+# Node dependencies
+node_modules/
+source-code/frontend/node_modules/
 
 # Temporary files
 *.tmp

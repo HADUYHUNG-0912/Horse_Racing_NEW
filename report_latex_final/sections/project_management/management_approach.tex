@@ -1,0 +1,21 @@
+\section{Management Approach}
+
+To effectively manage the development of the Horse Racing Tournament Management System, the team employs the Agile-Scrum methodology. This approach allows the team to deliver features iteratively, adapt to changes quickly, and ensure constant communication among members.
+
+\subsection{Agile-Scrum Implementation}
+
+The development cycle is organized into weekly sprints. Each sprint begins with a planning meeting and ends with a review and retrospective.
+\begin{itemize}
+    \item \textbf{Sprint Planning}: Held at the start of each week to define the sprint goal and allocate tasks from the product backlog on Jira.
+    \item \textbf{Weekly Syncs}: Held twice a week (on Wednesdays and Saturdays) to track progress, identify blockers, and align integration efforts. Daily updates and progress reports are shared via Zalo.
+    \item \textbf{Sprint Review \& Retrospective}: Conducted at the end of the sprint to review completed tasks, demo features, and reflect on improvements for the next sprint.
+\end{itemize}
+
+\subsection{Coding Standards and Bug Prevention}
+
+To maintain code quality and prevent bugs early in the lifecycle, the team enforces the following rules and standards:
+\begin{itemize}
+    \item \textbf{Coding Style Guidelines}: The backend follows PEP 8 guidelines for Python (FastAPI), while the frontend adheres to ESLint standards for React/Next.js. React Hooks rules are strictly monitored (e.g., avoiding calling hooks inside loops or conditions).
+    \item \textbf{Database Consistency}: Any database schema modifications must be updated in the SQLAlchemy models. Developers are required to run the automated database setup and seeding script (\texttt{db\_setup.py}) locally after pulling the latest code to prevent database mismatches.
+    \item \textbf{Git Workflow Rules}: Direct pushes to the main branch (\texttt{main}) or integration branch (\texttt{dev-GiaHuy}) are prohibited. All work must be completed on feature branches (\texttt{feature/*}) and integrated via Pull Requests (PRs). The Team Leader reviews and approves all PRs before merging.
+\end{itemize}

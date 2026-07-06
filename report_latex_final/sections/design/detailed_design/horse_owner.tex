@@ -1,0 +1,623 @@
+\subsection{Login and Registration}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/login_class_diagram.png}
+    \caption{Login Class Diagram}
+    \label{fig:horse_owner_login_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/login_sequence_diagram.png}
+    \caption{Login Sequence Diagram}
+    \label{fig:horse_owner_login_sequence_diagram}
+\end{figure}
+
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.15\textwidth}|>{\raggedright\arraybackslash}p{0.31\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Login class specification}
+\label{tab:horse_owner_login_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+LoginPage & username, password, handleLogin() & state / action & UI component that collects login credentials and calls the API. \\
+\hline
+Api & login(), post(), getHeaders() & service / helper & Calls \texttt{POST /auth/token}, stores JWT, and prepares request headers. \\
+\hline
+AuthRouter & login\_for\_access\_token(), read\_users\_me() & controller / route & Validates username/password and issues bearer tokens. \\
+\hline
+User & id, username, password\_hash, email, full\_name, role\_id, is\_active & entity & Database entity representing an application user. \\
+\hline
+Role & id, name & entity & Defines user roles, including \texttt{OWNER}. \\
+\hline
+Token & access\_token, token\_type & DTO & Response payload returned after successful login. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Owner-specific profile linked to the User entity. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{Tournament Registration}
+
+\subsubsection{Tournament Registration Data Preparation Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/tournament_registration_class.png}
+    \caption{Tournament Registration Data Preparation Class Diagram}
+    \label{fig:horse_owner_tournament_registration_data_preparation_class_diagram}
+\end{figure}
+
+\subsubsection{Load Accepted Registration Options Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/tournament_registration_sequence.png}
+    \caption{Load Accepted Registration Options Sequence Diagram}
+    \label{fig:horse_owner_load_accepted_registration_options_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Tournament registration data preparation class specification}
+\label{tab:horse_owner_tournament_registration_data_preparation_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & tournaments, invitations, registrations, loading, loadData(), filterAcceptedInvitations(), checkAlreadyRegistered() & boundary / UI & Loads tournaments, owner invitations, and existing registrations, then filters accepted horse-jockey pairs available for tournament registration. \\
+\hline
+Api & baseUrl, token, get(), getHeaders() & service / helper & Sends data-loading requests to tournament and jockey endpoints with the owner authentication token. \\
+\hline
+Tournament\allowbreak{}Router & read\_tournaments(), read\_registrations() & controller / route & Provides tournament records and registration lists used by the frontend to prepare registration options. \\
+\hline
+Jockey\allowbreak{}Router & read\_invitations() & controller / route & Provides invitations sent by the owner, including their acceptance status and related horse-jockey information. \\
+\hline
+Tournament\allowbreak{}Out & id, name, description, start\_date, end\_date, location, status & DTO / response & Returns tournament data displayed in the registration screen. \\
+\hline
+JockeyInvitation\allowbreak{}Out & id, owner\_id, jockey\_id, horse\_id, tournament\_id, message, status, created\_at, horse\_name, jockey\_name, tournament\_name & DTO / response & Returns invitation data that the frontend filters by \texttt{ACCEPTED} status and matching tournament. \\
+\hline
+Registration\allowbreak{}Out & id, tournament\_id, horse\_id, jockey\_id, status, registration\_date, horse\_name, jockey\_name & DTO / response & Returns existing registrations so the frontend can prevent duplicate registration buttons for the same horse and tournament. \\
+\hline
+Tournament & id, name, description, start\_date, end\_date, location, status & entity & Stores tournament records that may be selected for registration. \\
+\hline
+Jockey\allowbreak{}Invitation & id, owner\_id, jockey\_id, horse\_id, tournament\_id, message, status, created\_at & entity & Stores owner-jockey invitation records and their current acceptance status. \\
+\hline
+Registration & id, tournament\_id, horse\_id, jockey\_id, status, registration\_date & entity & Stores tournament registration records and approval status. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsubsection{Tournament Registration Submission Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/registration_submission_class.png}
+    \caption{Tournament Registration Submission Class Diagram}
+    \label{fig:horse_owner_tournament_registration_submission_class_diagram}
+\end{figure}
+
+\subsubsection{Submit Tournament Registration Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/registration_submission_sequence.png}
+    \caption{Submit Tournament Registration Sequence Diagram}
+    \label{fig:horse_owner_submit_tournament_registration_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Tournament registration submission class specification}
+\label{tab:horse_owner_tournament_registration_submission_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & tournaments, invitations, registrations, registerForTournament(), showSuccess(), showError(), loadData() & boundary / UI & Submits an accepted horse-jockey pair to a selected tournament and refreshes registration status after submission. \\
+\hline
+Api & baseUrl, token, post(), getHeaders() & service / helper & Sends the tournament registration payload to \texttt{POST /tournaments/\{id\}/register}. \\
+\hline
+Tournament\allowbreak{}Router & register\_for\_tournament() & controller / route & Validates the tournament registration request and creates a pending registration when all rules are satisfied. \\
+\hline
+Role\allowbreak{}Checker & allowed\_roles, \_\_call\_\_() & service / authorization & Ensures that only an authenticated \texttt{OWNER} user can submit tournament registrations. \\
+\hline
+Registration\allowbreak{}Create & tournament\_id, horse\_id, jockey\_id & DTO / request & Carries the selected tournament, horse, and jockey identifiers in the registration request. \\
+\hline
+Registration\allowbreak{}Out & id, tournament\_id, horse\_id, jockey\_id, status, registration\_date, horse\_name, jockey\_name & DTO / response & Returns the created registration with status information for display on the owner dashboard. \\
+\hline
+User & id, username, email, full\_name, role\_id, is\_active & entity & Represents the authenticated account used to resolve the current owner. \\
+\hline
+Role & id, name & entity & Defines user roles and supports owner-only registration authorization. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Links the authenticated owner account to horses that may be registered. \\
+\hline
+Tournament & id, name, description, start\_date, end\_date, location, status & entity & Represents the tournament that receives the registration request. \\
+\hline
+Horse & id, name, age, breed, gender, owner\_id & entity & Represents the selected horse and is validated to ensure ownership by the current owner. \\
+\hline
+Jockey\allowbreak{}Profile & id, user\_id, bio, weight, height, experience\_years & entity & Represents the selected jockey who will ride the horse in the tournament. \\
+\hline
+Registration & id, tournament\_id, horse\_id, jockey\_id, status, registration\_date & entity & Stores the submitted tournament registration with default status \texttt{PENDING}. \\
+\hline
+Jockey\allowbreak{}Invitation & id, owner\_id, jockey\_id, horse\_id, tournament\_id, status & entity & Represents the accepted invitation pair used by the frontend before submitting registration. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{Horse Owner Authentication and Authorization}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/authentication_class_diagram.png}
+    \caption{Horse Owner Authentication and Authorization Class Diagram}
+    \label{fig:horse_owner_authentication_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/authentication_sequence_diagram.png}
+    \caption{Horse Owner Authentication and Authorization Sequence Diagram}
+    \label{fig:horse_owner_authentication_sequence_diagram}
+\end{figure}
+
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Horse Owner authentication and authorization class specification}
+\label{tab:horse_owner_authentication_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+LoginPage & username, password, handleLogin(), showError(), redirectToOwnerDashboard() & boundary / UI & Collects owner credentials, sends the login request, displays authentication errors, and redirects a valid owner to the owner dashboard. \\
+\hline
+Api & baseUrl, token, login(), post(), getHeaders(), saveToken() & service / helper & Sends authentication requests to the backend, stores the JWT token, and prepares authorization headers for protected owner operations. \\
+\hline
+AuthRouter & login\_for\_access\_token(), read\_users\_me() & controller / route & Processes login requests, validates submitted credentials, issues bearer tokens, and returns authenticated user information. \\
+\hline
+Security\allowbreak{}Service & verify\_password(), create\_access\_token(), decode\_token() & service & Verifies password hashes and creates or validates JWT tokens used in the owner authentication flow. \\
+\hline
+OAuth2Password\allowbreak{}RequestForm & username, password & DTO / request & Carries the submitted username and password from the login form to the authentication endpoint. \\
+\hline
+Token & access\_token, token\_type & DTO / response & Represents the bearer token returned to the frontend after successful authentication. \\
+\hline
+Token\allowbreak{}Payload & sub & DTO / payload & Stores the user identifier decoded from the JWT token when resolving the current authenticated user. \\
+\hline
+User & id, username, password\_hash, email, full\_name, role\_id, is\_active & entity & Stores account and credential information used to authenticate the owner and verify account status. \\
+\hline
+Role & id, name & entity & Defines user roles and allows the system to confirm that the authenticated account has the \texttt{OWNER} role. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name, age, experience\_years & entity & Stores owner-specific profile information linked to the authenticated user account. \\
+\hline
+UserOut & id, username, email, full\_name, role\_id, role\_name, is\_active & DTO / response & Returns authenticated user details to the frontend so the dashboard can render owner-specific screens. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{Horse Owner Management Operations}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/management_class.png}
+    \caption{Horse Owner Management Operations Class Diagram}
+    \label{fig:horse_owner_management_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/management_sequence.png}
+    \caption{Horse Owner Management Operations Sequence Diagram}
+    \label{fig:horse_owner_management_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Horse Owner management operations class specification}
+\label{tab:horse_owner_management_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Dashboard & activeTab, openHorseManagement() & boundary / UI & Provides the owner dashboard navigation and opens the horse management tab for owner operations. \\
+\hline
+Owner\allowbreak{}Panel & horses, newHorse, editingHorse, editHorseForm, loadData(), createHorse(), startEditHorse(), updateHorse(), deleteHorse(), cancelEdit() & boundary / UI & Displays the list of owned horses and manages the create, update, and delete interactions from the frontend. \\
+\hline
+Api & baseUrl, token, get(), post(), put(), delete(), getHeaders() & service / helper & Sends horse management requests to the backend and attaches the owner authentication token to protected API calls. \\
+\hline
+Horse\allowbreak{}Router & read\_horses(), create\_horse(), update\_horse(), delete\_horse() & controller / route & Handles HTTP requests for viewing, registering, editing, and deleting horses owned by the authenticated owner. \\
+\hline
+Role\allowbreak{}Checker & allowed\_roles, \_\_call\_\_() & service / authorization & Verifies that the current authenticated user has the \texttt{OWNER} role before allowing protected horse operations. \\
+\hline
+Horse\allowbreak{}Create & name, age, breed, gender & DTO / request & Carries the input data required to register a new horse; age must be between 2 and 10. \\
+\hline
+Horse\allowbreak{}Update & name, age, breed, gender & DTO / request & Carries optional horse fields submitted when an owner edits an existing horse record. \\
+\hline
+Horse\allowbreak{}Out & id, name, age, breed, gender, owner\_id & DTO / response & Returns horse information to the frontend after list, create, or update operations. \\
+\hline
+User & id, username, email, full\_name, role\_id, is\_active & entity & Represents the authenticated account used to identify the owner performing horse management operations. \\
+\hline
+Role & id, name & entity & Defines the user's role and supports authorization checks for owner-only operations. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name, horses & entity & Stores owner-specific information and links the authenticated owner to the horses they manage. \\
+\hline
+Horse & id, name, age, breed, gender, owner\_id & entity & Database entity storing horse records owned and managed by a horse owner. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{Horse Owner Send Jockey Invitation}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/jockey_invication_class.png}
+    \caption{Send Jockey Invitation Class Diagram}
+    \label{fig:horse_owner_jockey_invitation_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/jockey_invitation_sequence.png}
+    \caption{Send Jockey Invitation Sequence Diagram}
+    \label{fig:horse_owner_jockey_invitation_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Send Jockey Invitation class specification}
+\label{tab:horse_owner_jockey_invitation_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & horses, jockeys, tournaments, invitations, newInvitation, loadData(), sendJockeyInvitation() & boundary / UI & Displays the invitation form, loads available horses, jockeys, tournaments, and shows the status of invitations already sent by the owner. \\
+\hline
+Api & baseUrl, token, get(), post(), getHeaders() & service / helper & Sends requests to retrieve jockeys and invitations, and submits new invitation data to the backend with authorization headers. \\
+\hline
+Jockey\allowbreak{}Router & read\_jockeys(), invite\_jockey(), read\_invitations() & controller / route & Handles HTTP requests for listing jockey profiles, creating owner invitations, and retrieving invitation status records. \\
+\hline
+Role\allowbreak{}Checker & allowed\_roles, \_\_call\_\_() & service / authorization & Ensures that only an authenticated user with the \texttt{OWNER} role can send a jockey invitation. \\
+\hline
+JockeyInvitation\allowbreak{}Create & jockey\_id, horse\_id, tournament\_id, message & DTO / request & Carries the selected jockey, horse, tournament, and optional invitation message submitted by the owner. \\
+\hline
+JockeyInvitation\allowbreak{}Out & id, owner\_id, jockey\_id, horse\_id, tournament\_id, message, status, created\_at, owner\_name, horse\_name, tournament\_name, jockey\_name & DTO / response & Returns the created or retrieved invitation information, including related display names and current invitation status. \\
+\hline
+User & id, username, email, full\_name, role\_id, is\_active & entity & Represents the authenticated account used to identify the owner and resolve jockey display information. \\
+\hline
+Role & id, name & entity & Defines user roles and supports owner-only authorization for sending invitations. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Stores owner-specific information and links the authenticated owner to the invitations they send. \\
+\hline
+Horse & id, name, age, breed, gender, owner\_id & entity & Represents the horse selected by the owner and is validated to ensure it belongs to the current owner. \\
+\hline
+Jockey\allowbreak{}Profile & id, user\_id, bio, weight, height, experience\_years & entity & Represents the jockey profile selected as the invitation recipient. \\
+\hline
+Tournament & id, name, description, start\_date, end\_date, location, status & entity & Represents the tournament context in which the owner invites a jockey to partner with a horse. \\
+\hline
+Jockey\allowbreak{}Invitation & id, owner\_id, jockey\_id, horse\_id, tournament\_id, message, status, created\_at & entity & Stores the invitation record and tracks whether it is \texttt{PENDING}, \texttt{ACCEPTED}, or \texttt{REJECTED}. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{View Registered Tournaments}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/view_status_class.png}
+    \caption{View Registered Tournaments Class Diagram}
+    \label{fig:horse_owner_view_status_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/view_status_sequence.png}
+    \caption{View Registered Tournaments Sequence Diagram}
+    \label{fig:horse_owner_view_status_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{View registered tournaments class specification}
+\label{tab:horse_owner_view_registered_tournaments_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & tournaments, registrations, loadData(), displayRegisteredTournaments(), formatDate() & boundary / UI & Displays the list of tournaments registered by the owner and shows the approval status for each registration. \\
+\hline
+Api & baseUrl, token, get(), getHeaders() & service / helper & Sends requests to retrieve tournaments and registration records with authorization headers. \\
+\hline
+Tournament\allowbreak{}Router & read\_tournaments(), read\_registrations() & controller / route & Provides tournament lists and registration records used to build the registered tournaments table. \\
+\hline
+Tournament\allowbreak{}Out & id, name, description, start\_date, end\_date, location, status & DTO / response & Returns tournament information that is attached to registration records for display. \\
+\hline
+Registration\allowbreak{}Out & id, tournament\_id, horse\_id, jockey\_id, status, registration\_date, horse\_name, jockey\_name & DTO / response & Returns registration history and current approval status such as \texttt{PENDING}, \texttt{APPROVED}, or \texttt{REJECTED}. \\
+\hline
+Tournament & id, name, description, start\_date, end\_date, location, status & entity & Stores tournament data referenced by each registration. \\
+\hline
+Registration & id, tournament\_id, horse\_id, jockey\_id, status, registration\_date & entity & Stores submitted tournament registrations and their approval status. \\
+\hline
+Horse & id, name, owner\_id & entity & Represents the horse registered by the owner for a tournament. \\
+\hline
+Jockey\allowbreak{}Profile & id, user\_id & entity & Represents the jockey assigned to a registered horse. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{View Horse Schedules for Owner}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/view_schedule_class.png}
+    \caption{View Horse Schedules Class Diagram}
+    \label{fig:horse_owner_view_schedule_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/view_schedule_sequence.png}
+    \caption{View Horse Schedules Sequence Diagram}
+    \label{fig:horse_owner_view_schedule_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{View horse schedules class specification}
+\label{tab:horse_owner_view_schedule_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & upcomingRaces, loadData(), displayUpcomingRaces(), formatDateTime() & boundary / UI & Displays upcoming race schedules for horses owned by the authenticated owner. \\
+\hline
+Api & baseUrl, token, get(), getHeaders() & service / helper & Sends the schedule request to \texttt{GET /owners/upcoming-races}. \\
+\hline
+Owner\allowbreak{}Router & read\_owner\_upcoming\_races() & controller / route & Retrieves scheduled future races for horses that belong to the current owner. \\
+\hline
+OwnerUpcoming\allowbreak{}Race & race\_id, race\_name, horse\_name, tournament\_name, race\_date, location & DTO / response & Returns formatted schedule information displayed in the owner schedule screen. \\
+\hline
+User & id, username, role\_id, is\_active & entity & Represents the authenticated owner account used to filter schedule data. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Links the authenticated user to owned horses. \\
+\hline
+Horse & id, name, owner\_id & entity & Represents horses owned by the current owner. \\
+\hline
+Registration & id, tournament\_id, horse\_id, jockey\_id, status & entity & Connects owned horses to tournament participation records. \\
+\hline
+Race\allowbreak{}Participant & id, race\_id, registration\_id, lane\_number, status & entity & Represents a registered horse-jockey pair assigned to a race. \\
+\hline
+Race & id, round\_id, name, race\_time, status & entity & Stores race schedule data and is filtered to upcoming scheduled races. \\
+\hline
+Round & id, tournament\_id, name, sequence & entity & Links a race to its tournament round. \\
+\hline
+Tournament & id, name, location, status & entity & Provides tournament name and location displayed in the schedule. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{View Race Results for Owner}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/view_result_class.png}
+    \caption{View Race Results Class Diagram}
+    \label{fig:horse_owner_view_result_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/view_result_sequence.png}
+    \caption{View Race Results Sequence Diagram}
+    \label{fig:horse_owner_view_result_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{View race results class specification}
+\label{tab:horse_owner_view_result_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & resultHistory, loadData(), displayRaceResults(), formatDateTime() & boundary / UI & Displays race result history for the owner's horses, including rank, points, notes, and violations. \\
+\hline
+Api & baseUrl, token, get(), getHeaders() & service / helper & Sends the result history request to \texttt{GET /owners/results}. \\
+\hline
+Owner\allowbreak{}Router & read\_owner\_results() & controller / route & Retrieves completed race results and related violations for horses owned by the current owner. \\
+\hline
+OwnerResult\allowbreak{}History & id, rank, points, notes, horse\_name, race\_name, tournament\_name, race\_date, violations, violation\_count & DTO / response & Returns detailed result history displayed in the owner result table. \\
+\hline
+User & id, username, role\_id, is\_active & entity & Represents the authenticated owner account used to filter result data. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name & entity & Links the authenticated owner to horses whose results are displayed. \\
+\hline
+Horse & id, name, owner\_id & entity & Represents the owner's horses that have participated in races. \\
+\hline
+Registration & id, tournament\_id, horse\_id, jockey\_id, status & entity & Connects an owned horse to a tournament participation record. \\
+\hline
+Race\allowbreak{}Participant & id, race\_id, registration\_id, lane\_number, status & entity & Represents a horse-jockey pair participating in a specific race. \\
+\hline
+Result & id, race\_participant\_id, rank, points, notes & entity & Stores official race result information for a race participant. \\
+\hline
+Violation & id, race\_participant\_id, description, penalty, fine\_amount & entity & Stores rule violations associated with a race participant. \\
+\hline
+Race & id, round\_id, name, race\_time, status & entity & Provides race name and race date for the result history. \\
+\hline
+Round & id, tournament\_id, name & entity & Links each race to its tournament context. \\
+\hline
+Tournament & id, name, location & entity & Provides tournament information displayed with race results. \\
+\hline
+\end{longtable}
+\endgroup
+
+\subsection{Horse Owner Profile Management}
+\subsubsection{Class Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/owner_profile_class.png}
+    \caption{Horse Owner Profile Management Class Diagram}
+    \label{fig:horse_owner_profile_class_diagram}
+\end{figure}
+
+\subsubsection{Sequence Diagram}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{figures/design/horse_owner/owner_profile_sequence.png}
+    \caption{View and Update Horse Owner Profile Sequence Diagram}
+    \label{fig:horse_owner_profile_sequence_diagram}
+\end{figure}
+
+\subsubsection{Class Specification}
+
+\begingroup
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\caption{Horse Owner profile management class specification}
+\label{tab:horse_owner_profile_class_spec} \\
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endfirsthead
+\hline
+\tableHeader
+\textbf{Class} & \textbf{Attributes / Methods} & \textbf{Type} & \textbf{Description} \\
+\hline
+\endhead
+Owner\allowbreak{}Panel & ownerProfile, profileForm, loadData(), getOwnerProfileForm(), saveOwnerProfile(), showOwnerProfile() & boundary / UI & Displays the current owner profile, fills the edit form, validates input, and submits profile updates. \\
+\hline
+Api & baseUrl, token, get(), put(), getHeaders() & service / helper & Sends profile retrieval and update requests to owner endpoints with authorization headers. \\
+\hline
+Owner\allowbreak{}Router & read\_owner\_profile(), update\_owner\_profile() & controller / route & Handles requests to view and update the authenticated horse owner's profile information. \\
+\hline
+Role\allowbreak{}Checker & allowed\_roles, \_\_call\_\_() & service / authorization & Ensures that only an authenticated user with the \texttt{OWNER} role can view or update owner profile data. \\
+\hline
+OwnerProfile\allowbreak{}Update & full\_name, email, phone\_number, avatar, company\_name, age, experience\_years, occupation, address, nationality, social\_link, bio & DTO / request & Carries editable user and owner profile fields submitted from the owner profile form. \\
+\hline
+OwnerProfile\allowbreak{}DetailOut & id, user\_id, full\_name, email, phone\_number, avatar, company\_name, age, experience\_years, occupation, address, nationality, social\_link, bio, joined\_date & DTO / response & Returns complete owner profile details for display after loading or updating the profile. \\
+\hline
+User & id, username, email, full\_name, phone\_number, avatar, role\_id, is\_active, created\_at & entity & Stores account-level profile fields such as full name, email, phone number, avatar, and join date. \\
+\hline
+Role & id, name & entity & Defines the user's role and supports owner-only profile access. \\
+\hline
+HorseOwner\allowbreak{}Profile & id, user\_id, company\_name, age, experience\_years, occupation, address, nationality, social\_link, bio & entity & Stores horse-owner-specific profile information linked to the user account. \\
+\hline
+\end{longtable}
+\endgroup
+

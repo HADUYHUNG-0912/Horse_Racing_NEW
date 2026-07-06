@@ -1,0 +1,44 @@
+\section{Project Objectives}
+
+To ensure the Horse Racing Tournament Management System meets the quality standards required for deployment and user satisfaction, the team has established specific quality objectives. These objectives focus on functional correctness, performance, security, data integrity, and usability, matching the real development and testing guidelines of the project.
+
+The table below outlines the core quality objectives and target criteria for the project:
+
+\TableStart{|p{0.06\textwidth}|p{0.30\textwidth}|p{0.34\textwidth}|p{0.28\textwidth}|}
+\textbf{No.} & \textbf{Quality Objective} & \textbf{Target Metric / Criteria} & \textbf{Measurement Method} \\
+\hline
+1 & Functional Suitability & 100\% of defined SRS requirements pass manual E2E test cases & Execution of Manual E2E Test Cases (Phase 1, 2, 3, 4) \\
+\hline
+2 & Data Integrity \& Encoding & 100\% successful storage and display of Vietnamese characters (Unicode) in DB and UI & Database inspection (SQL Server) \& UI display validation \\
+\hline
+3 & Security \& Authentication & Secure password hashing (bcrypt) and JWT authorization for protected role-based routes & Manual code review of app security handlers and route guards \\
+\hline
+4 & Performance Efficiency & Response time < 2s for all frontend page transitions and backend API calls & Network monitoring via Browser Developer Tools \\
+\hline
+5 & Usability \& Aesthetics & Responsive dark-mode glassmorphic interface with consistent date/time formats & Manual peer testing \& UI checklist validation \\
+\TableFinish{Project Quality Objectives}{tab:quality_objectives}
+
+\subsection{Defect Tolerance by Testing Phase}
+
+Defect density and resolution rates are tracked continuously across various testing levels: Document Review, Integration Testing (Phase 1-2), Integration Testing (Phase 3), and System Testing/UAT. Defects are classified into three severity levels:
+\begin{itemize}
+    \item \textbf{Critical}: System crash, database connection failure, or core functions completely blocked (e.g., authentication failure, scheduling conflicts, failed result recalculation).
+    \item \textbf{Major}: Features malfunctioning or displaying incorrect data without completely blocking the flow (e.g., jockey showing ID instead of real name, date formats displaying raw ISO string).
+    \item \textbf{Minor}: UI layout alignment bugs, minor text formatting glitches, or spelling errors that do not affect functional operations.
+\end{itemize}
+
+The table below details the maximum allowed defects and the target resolution process for each testing phase:
+
+\TableStart{|p{0.25\textwidth}|p{0.18\textwidth}|p{0.18\textwidth}|p{0.18\textwidth}|p{0.19\textwidth}|}
+\textbf{Testing Phase} & \textbf{Max Critical} & \textbf{Max Major} & \textbf{Max Minor} & \textbf{Resolution Process} \\
+\hline
+Document Review & 0 & Max 2 & Max 5 & Resolved before coding phase \\
+\hline
+Unit Testing & 0 & 0 & Max 3 & Resolved before PR merge \\
+\hline
+Integration Test & 0 & Max 1 & Max 8 & Resolved before System Test \\
+\hline
+System Test & 0 & Max 2 & Max 12 & Resolved before UAT phase \\
+\hline
+Acceptance Test (UAT) & 0 & 0 & Max 3 & Resolved before final release \\
+\TableFinish{Maximum Allowed Defect Rates by Testing Phase}{tab:defect_tolerances}
