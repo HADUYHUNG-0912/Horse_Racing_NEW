@@ -1304,6 +1304,7 @@ OUTPUT documents\software_testing_ocumentation.aux
 INPUT .\documents\software_testing_ocumentation.tex
 INPUT .\documents\software_testing_ocumentation.tex
 INPUT documents\software_testing_ocumentation.tex
+INPUT C:\Users\dinht\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ts1-lmr10.tfm
 INPUT main.aux
 INPUT .\documents\project_introduction.aux
 INPUT .\documents\project_introduction.aux
