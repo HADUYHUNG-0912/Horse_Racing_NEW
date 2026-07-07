@@ -147,7 +147,7 @@ Dự án áp dụng quy trình kiểm soát mã nguồn chuẩn mực để trá
 ## 👥 Đội ngũ Phát triển dự án
 Dự án được thực hiện bởi nhóm sinh viên **Trường Đại học Giao thông Vận tải TP.HCM (UTH)**:
 - **Hà Duy Hưng** (Trưởng nhóm)
-- **Đinh Thụy Anh**
+- **Đinh Thùy Anh**
 - **Hồ Nguyễn Thái Châu**
 - **Lê Thị Mỹ Huệ**
 - **Bùi Lê Quang Huy**
