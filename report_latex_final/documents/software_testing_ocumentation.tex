@@ -2,4 +2,290 @@
 
 \section{Scope of Testing}
 
+\subsection{In-Scope Testing}
+
+The test scope covers the main business functions of the Horse Racing Tournament Management System (HRTMS) web application. The purpose of testing is to verify that the core workflows work correctly for each role and that the backend data is stored and retrieved accurately.
+
+\begin{itemize}
+    \item \textbf{Authentication and Registration}
+    \begin{itemize}
+        \item Login with valid and invalid credentials.
+        \item Login handling for locked accounts.
+        \item Registration for Spectator, Horse Owner, Jockey, and Referee roles.
+        \item Logout and redirect back to the login page.
+    \end{itemize}
+
+    \item \textbf{Admin and Tournament Management}
+    \begin{itemize}
+        \item Load, create, update, and delete tournaments.
+        \item Create rounds and races.
+        \item Assign referees and validate scheduling conflicts.
+        \item Manage users, lock and unlock accounts, and change user roles.
+        \item Approve, reject, and reset registrations.
+        \item Manage prizes, awards, and tournament status.
+    \end{itemize}
+
+    \item \textbf{Horse Owner Workflow}
+    \begin{itemize}
+        \item Load, create, edit, and delete horse records.
+        \item Validate horse age and other required fields.
+        \item Select jockeys and send invitations.
+        \item Register horses for tournaments.
+        \item View registration status, profile details, upcoming races, and results.
+    \end{itemize}
+
+    \item \textbf{Jockey Workflow}
+    \begin{itemize}
+        \item View incoming invitations and respond with accept or reject.
+        \item View schedule, profile, and awards.
+        \item Update profile information.
+        \item Validate profile rules such as unique email and required fields.
+        \item Filter leaderboard data by tournament.
+    \end{itemize}
+
+    \item \textbf{Referee Workflow}
+    \begin{itemize}
+        \item View assigned races and race participant details.
+        \item Inspect races and record draft results.
+        \item Confirm official results.
+        \item Report violations and validate fine amounts.
+        \item Update result status from entered to completed.
+    \end{itemize}
+
+    \item \textbf{Spectator Workflow}
+    \begin{itemize}
+        \item Create, edit, and delete predictions.
+        \item Lock predictions after race time.
+        \item View upcoming schedules and completed race results.
+        \item Update personal profile and spectator statistics.
+        \item View leaderboard and filter by tournament.
+    \end{itemize}
+
+    \item \textbf{API Verification}
+    \begin{itemize}
+        \item Validate key backend endpoints with Postman.
+        \item Verify user data, rankings, race lists, invitations, prizes, and race result APIs.
+        \item Check response data, status codes, and persistence in the database.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Out-of-Scope Testing}
+
+The following items are excluded from the final test scope because they are not part of the current release or they require a separate non-functional test plan:
+
+\begin{itemize}
+    \item External payment or betting integrations.
+    \item Mobile application testing.
+    \item Large-scale load or stress testing.
+    \item Automated UI testing frameworks, because the team decided to use manual browser testing for UI verification.
+    \item External services that are not implemented in the current HRTMS release.
+\end{itemize}
+
+\subsection{Constraints \& Assumptions}
+
+\begin{itemize}
+    \item Testing is performed in a production-like environment or a locally deployed environment with seeded test data.
+    \item Test accounts for all roles are available before execution.
+    \item Postman is used to verify backend endpoints and response payloads.
+    \item UI verification is performed manually in the browser using the latest stable Chrome version.
+    \item Test data is prepared in advance so that each role can follow its expected workflow without dependency issues.
+    \item Database connectivity remains stable during the test window.
+\end{itemize}
+
 \section{Test Strategy}
+
+\subsection{Testing Types}
+
+This project uses three main testing types: Unit Testing, Integration Testing, and Functional Testing. The test strategy is built around manual UI verification and Postman-based API verification, which matches the final decision of the team.
+
+\begin{itemize}
+    \item \textbf{Unit Testing}
+    \begin{itemize}
+        \item \textbf{Objective:} Verify the correctness of individual functions, services, controllers, and validation rules in isolation. In HRTMS, unit-level checks focus on login logic, horse age validation, tournament registration rules, invitation validation, race result processing, and leaderboard calculation.
+        \item \textbf{Technique:} White-box testing is applied by developers during implementation. Individual functions are checked with controlled inputs and mock data when they depend on the database or other modules.
+        \item \textbf{Completion Criteria:}
+        \begin{itemize}
+            \item Core business logic in important modules is covered by unit checks.
+            \item All unit test cases pass before code is merged.
+            \item No critical logic defect remains in authentication, validation, or result processing.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Integration Testing}
+    \begin{itemize}
+        \item \textbf{Objective:} Validate that connected modules work correctly together, especially the interaction between the frontend, backend APIs, and database layer.
+        \item \textbf{Technique:} Black-box and gray-box testing are performed with Postman and browser-based verification. API requests are sent to the backend, and the results are checked against expected database changes and screen behavior.
+        \item \textbf{Completion Criteria:}
+        \begin{itemize}
+            \item All main integration scenarios are executed and passed.
+            \item Data exchange between frontend, backend, and database is stable.
+            \item No critical defect remains in login flow, registration, scheduling, invitation processing, or race result storage.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Functional Testing}
+    \begin{itemize}
+        \item \textbf{Objective:} Confirm that the implemented features satisfy the business requirements for each role in the system.
+        \item \textbf{Technique:} Black-box testing is carried out manually through the browser to simulate real user journeys for Admin, Horse Owner, Jockey, Referee, and Spectator.
+        \item \textbf{Completion Criteria:}
+        \begin{itemize}
+            \item All major functional requirements are covered by manual test cases.
+            \item The tested features operate correctly for the intended role and screen.
+            \item No blocking issue remains that prevents normal use of the system.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Test Levels}
+
+The table below shows how the three testing types are mapped to the testing levels used in this project.
+
+\TableStart{|p{0.28\textwidth}|p{0.18\textwidth}|p{0.18\textwidth}|p{0.18\textwidth}|p{0.18\textwidth}|}
+\textbf{Type of Tests} & \textbf{Unit} & \textbf{Integration} & \textbf{System} & \textbf{Acceptance} \\
+\hline
+Unit Testing & X &  &  &  \\
+\hline
+Integration Testing &  & X & X &  \\
+\hline
+Functional Testing &  &  & X & X \\
+\TableFinish{Test Levels for Horse Racing Tournament Management System}{tab:test_levels}
+
+\subsection{Supporting Tools}
+
+\TableStart{|p{0.28\textwidth}|p{0.20\textwidth}|p{0.22\textwidth}|p{0.18\textwidth}|}
+\textbf{Purpose} & \textbf{Tool} & \textbf{Provider / Vendor} & \textbf{Version} \\
+\hline
+Integration Testing (API) & Postman & Postman, Inc. & Latest \\
+\hline
+Functional Testing (UI) & Manual Browser Testing & In-house & Latest Chrome \\
+\hline
+Database Verification & SQL Server Management Studio & Microsoft & Latest \\
+\hline
+Test Case Tracking & Microsoft Excel & Microsoft & Latest \\
+\TableFinish{Supporting Tools for Testing}{tab:supporting_tools}
+
+\section{Test Plan}
+
+\subsection{Human Resources}
+
+The table below assigns the main testing responsibilities to each project member.
+
+\TableStart{|p{0.23\textwidth}|p{0.17\textwidth}|p{0.52\textwidth}|}
+\textbf{Worker / Doer} & \textbf{Role} & \textbf{Specific Responsibilities / Comments} \\
+\hline
+Ha Duy Hung & Project Leader & Execute and verify the login/logout testing flow, supervise overall testing progress, and approve the final report. \\
+\hline
+Dinh Thuy Anh & Test Leader & Execute and lead the Horse Owner testing flow, coordinate owner-related test cases, and report defects related to horse management and registration. \\
+\hline
+Ho Nguyen Thai Chau & Member & Execute Jockey and leaderboard test cases, and re-check failed cases after fixes. \\
+\hline
+Le Thi My Hue & Member & Execute Admin and tournament management test cases, including API verification with Postman. \\
+\hline
+Bui Le Quang Huy & Member & Execute Referee workflow test cases and verify race result processing. \\
+\hline
+Nguyen Gia Huy & Member & Execute integration tests, consolidate results, and update the final testing report. \\
+\hline
+Doan Thi Thu May & Member & Execute Spectator workflow test cases and verify prediction and profile functions. \\
+\TableFinish{Testing Team Responsibilities}{tab:test_team}
+
+\subsection{Test Environment}
+
+\TableStart{|p{0.34\textwidth}|p{0.20\textwidth}|p{0.18\textwidth}|p{0.16\textwidth}|}
+\textbf{Purpose} & \textbf{Tool} & \textbf{Provider} & \textbf{Version} \\
+\hline
+API validation & Postman & Postman, Inc. & Latest \\
+\hline
+UI validation & Manual browser testing & In-house & Latest Chrome \\
+\hline
+Database inspection & SQL Server Management Studio & Microsoft & Latest \\
+\hline
+Test case documentation & Microsoft Excel & Microsoft & Latest \\
+\TableFinish{Test Environment}{tab:test_environment}
+
+\subsection{Test Milestones}
+
+The test execution window is based on the dates recorded in the test plan workbook.
+
+\TableStart{|p{0.38\textwidth}|p{0.17\textwidth}|p{0.17\textwidth}|}
+\textbf{Milestone Task} & \textbf{Start Date} & \textbf{End Date} \\
+\hline
+Prepare test cases and test data & 21/06/2026 & 21/06/2026 \\
+\hline
+Execute authentication and registration tests & 21/06/2026 & 22/06/2026 \\
+\hline
+Execute admin and tournament management tests & 22/06/2026 & 25/06/2026 \\
+\hline
+Execute horse owner and jockey workflow tests & 26/06/2026 & 29/06/2026 \\
+\hline
+Execute referee and spectator workflow tests & 30/06/2026 & 03/07/2026 \\
+\hline
+Execute API checks and final retest & 03/07/2026 & 05/07/2026 \\
+\TableFinish{Test Milestones}{tab:test_milestones}
+
+\section{Test Cases}
+
+The detailed test cases are maintained in the Excel workbook \texttt{Test\_plan.xlsx}. The sheet contains the general function list to be tested, tester assignment, priority, deadline, notes, and execution status. It is a test function plan, not the final detailed test case specification.
+
+\begin{itemize}
+    \item Main workbook: \texttt{Test\_plan.xlsx}
+    \item Primary sheet: \texttt{Execution Plan}
+    \item Tracking columns: No, Function Name, Priority, Deadline, Tester, Note, Pass, Fail, Untest
+\end{itemize}
+
+\section{Test Reports}
+
+\subsection{General Information}
+
+\TableStart{|p{0.24\textwidth}|p{0.64\textwidth}|}
+\textbf{Field} & \textbf{Value} \\
+\hline
+Project Name & Horse Racing Tournament Management System \\
+\hline
+Project Code & HRTMS \\
+\hline
+Document Code & Test Report \\
+\hline
+Creator & Testing Team \\
+\hline
+Reviewer / Approver & Team Leader and Supervisor \\
+\hline
+Issue Date & 05/07/2026 \\
+\hline
+Notes & Manual UI testing and Postman API verification were used for the final test execution. \\
+\TableFinish{Test Report General Information}{tab:test_report_info}
+
+\subsection{Result by Module}
+
+\TableStart{|p{0.22\textwidth}|p{0.09\textwidth}|p{0.09\textwidth}|p{0.09\textwidth}|p{0.09\textwidth}|p{0.13\textwidth}|p{0.13\textwidth}|p{0.13\textwidth}|}
+\textbf{Module / Workflow} & \textbf{Passed} & \textbf{Failed} & \textbf{Untested} & \textbf{Total} & \textbf{Coverage} & \textbf{Pass Rate} & \textbf{Status} \\
+\hline
+Authentication \& Registration & 10 & 0 & 0 & 10 & 100.00\% & 100.00\% & Passed \\
+\hline
+Admin \& Tournament Management & 32 & 0 & 0 & 32 & 100.00\% & 100.00\% & Passed \\
+\hline
+Horse Owner Workflow & 17 & 0 & 0 & 17 & 100.00\% & 100.00\% & Passed \\
+\hline
+Jockey Workflow & 11 & 2 & 0 & 13 & 100.00\% & 84.62\% & Open issues \\
+\hline
+Referee Workflow & 14 & 0 & 0 & 14 & 100.00\% & 100.00\% & Passed \\
+\hline
+Spectator Workflow & 15 & 0 & 0 & 15 & 100.00\% & 100.00\% & Passed \\
+\hline
+Backend API Checks & 5 & 0 & 1 & 6 & 83.33\% & 100.00\% & Follow-up needed \\
+\hline
+\textbf{Total} & \textbf{104} & \textbf{2} & \textbf{1} & \textbf{107} & \textbf{99.07\%} & \textbf{98.11\%} & \textbf{Overall passed} \\
+\TableFinish{Result by Module}{tab:module_results}
+
+\subsection{Open Issues}
+
+The following cases were not fully completed or still need follow-up:
+
+\begin{itemize}
+    \item \textbf{validateJockeyProfileEmailDuplicate}: This case failed because some required data validation paths were missing during execution.
+    \item \textbf{filterLeaderboardByTournament}: This case failed because the leaderboard filter did not return correct results in some scenarios.
+    \item \textbf{getTournamentAwards}: This case was untested because the test data for awards was not sufficient at the time of execution.
+\end{itemize}
+
+\subsection{Final Comment}
+
+The overall testing result shows that the system is stable for the main workflows. The report is summarized by module instead of a global test summary because the final reporting is based on the executed function groups. Most test cases passed successfully, and the remaining issues are concentrated in the Jockey workflow and one backend API case. These items should be retested after the related fixes and test data are prepared.
