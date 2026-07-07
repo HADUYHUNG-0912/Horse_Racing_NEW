@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import EmailStr
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.api.deps import get_db, get_current_user, RoleChecker
 from app.models.database_models import JockeyProfile, HorseOwnerProfile, JockeyInvitation, Horse, Tournament, User
@@ -13,8 +13,9 @@ router = APIRouter()
 
 @router.get("/", response_model=List[JockeyProfileOut])
 def read_jockeys(db: Session = Depends(get_db)):
-    # Fetch all jockey profiles
-    jockeys = db.query(JockeyProfile).all()
+    # Eager-load relationship 'user' để tránh lazy loading thất bại sau khi session đóng
+    # (giúp trả về full_name, username cho Owner khi chọn Jockey mời)
+    jockeys = db.query(JockeyProfile).options(joinedload(JockeyProfile.user)).all()
     return jockeys
 
 
