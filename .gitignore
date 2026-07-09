@@ -290,7 +290,7 @@ team_task_assignment.md
 test.tex
 
 # Optional
-*.pdf
+
 
 # Node dependencies
 node_modules/
