@@ -212,3 +212,7 @@ class UserOut(UserBase):
 
     class Config:
         from_attributes = True
+
+class AdminUserCreate(UserBase):
+    password: str
+    role_name: Literal["ADMIN", "ORGANIZER"]

@@ -9,7 +9,7 @@ from app.models.database_models import (
     Registration, Prediction, SpectatorProfile, Result,
     RaceParticipant, Ranking, Prize, Award
 )
-from app.schemas.auth import UserOut, UserStatusUpdate, UserRoleUpdate
+from app.schemas.auth import UserOut, UserStatusUpdate, UserRoleUpdate, AdminUserCreate
 
 router = APIRouter()
 
@@ -32,7 +32,7 @@ def get_all_users(
     Lấy danh sách người dùng (không bao gồm ADMIN).
     Hỗ trợ phân trang, tìm kiếm, lọc theo role và trạng thái.
     """
-    query = db.query(User).join(Role).filter(Role.name != "ADMIN")
+    query = db.query(User).join(Role).filter(User.id != current_user.id)
 
     # Tìm kiếm
     if search:
@@ -74,9 +74,13 @@ def update_user_status(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if user.role.name == "ADMIN":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Không thể thay đổi trạng thái tài khoản ADMIN")
-        
+    #if user.role.name == "ADMIN":
+    #    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Không thể thay đổi trạng thái tài khoản ADMIN")
+    if user.id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail="You cannot lock your own account!"
+        )    
     user.is_active = status_update.is_active
     db.commit()
     db.refresh(user)
@@ -91,6 +95,7 @@ def update_user_role(
     db: Session = Depends(get_db),
     current_user = Depends(RoleChecker(["ADMIN"]))
 ):
+    
     user = db.query(User).filter(User.id == id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -102,6 +107,44 @@ def update_user_role(
     user.role_id = role.id
     db.commit()
     db.refresh(user)
+    user.role_name = role.name
+    return user
+
+
+@router.post("/users/create-admin", response_model=UserOut)
+def admin_create_user(
+    user_in: AdminUserCreate, 
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["ADMIN"])) 
+):
+    """
+    This API is for internal use by the admin team to create Admin or Organizer accounts.
+    """    
+    existing_user = db.query(User).filter(User.username == user_in.username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="The username already exists.")
+
+    existing_email = db.query(User).filter(User.email == user_in.email).first()
+    if existing_email:
+        raise HTTPException(status_code=400, detail="The email is already in use.")
+
+    role = db.query(Role).filter(Role.name == user_in.role_name.upper()).first()
+    if not role:
+        raise HTTPException(status_code=400, detail=f"The permission {user_in.role_name} does not exist.")        
+  
+    from app.core.security import get_password_hash
+    user = User(
+        username=user_in.username,
+        email=user_in.email,
+        full_name=user_in.full_name,
+        password_hash=get_password_hash(user_in.password),
+        role_id=role.id,
+        is_active=True 
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)    
+
     user.role_name = role.name
     return user
 
