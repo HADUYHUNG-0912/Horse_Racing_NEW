@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db, get_current_user, RoleChecker
+from app.api.deps import get_db, get_current_user, get_current_user_optional, RoleChecker
 from app.models.database_models import Horse, HorseOwnerProfile
 from app.schemas.horse import HorseCreate, HorseOut, HorseUpdate
 
@@ -11,13 +11,13 @@ router = APIRouter()
 @router.get("/", response_model=List[HorseOut])
 def read_horses(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_current_user_optional),
     owner_id: Optional[int] = None
 ):
     query = db.query(Horse)
 
     # If OWNER, only show their own horses
-    if current_user.role.name == "OWNER":
+    if current_user and current_user.role.name == "OWNER":
         owner_profile = db.query(HorseOwnerProfile).filter(HorseOwnerProfile.user_id == current_user.id).first()
         if not owner_profile:
             raise HTTPException(status_code=400, detail="Owner profile not found")
@@ -25,6 +25,7 @@ def read_horses(
     elif owner_id is not None:
         # Other roles can filter by owner_id optionally
         query = query.filter(Horse.owner_id == owner_id)
+
             
     return query.all()
 
