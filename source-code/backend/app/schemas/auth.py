@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Any, Dict, Optional, List
 from pydantic import BaseModel, EmailStr
 
 class Token(BaseModel):
@@ -10,6 +10,25 @@ class TokenPayload(BaseModel):
     sub: Optional[str] = None
 
     model_config = {"extra": "ignore"}
+
+class PasswordChangeIn(BaseModel):
+    old_password: str
+    new_password: str
+
+class UserDetailOut(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    full_name: str
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    role_id: int
+    role_name: Optional[str] = None
+    is_active: bool
+    created_at: Optional[datetime] = None
+    profile: Optional[Dict[str, Any]] = None
+
+    model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
 
 # Profiles schemas
 class JockeyProfileBase(BaseModel):
