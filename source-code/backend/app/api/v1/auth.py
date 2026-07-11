@@ -30,6 +30,11 @@ def login_for_access_token(
 
 @router.post("/register", response_model=UserOut)
 def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
+    if user_in.role_name == "ADMIN" or user_in.role_name == "ORGANIZER":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Registering an account as an Administrator is not permitted!"
+        )
     # Check if username exists
     existing_user = db.query(User).filter(User.username == user_in.username).first()
     if existing_user:
@@ -43,7 +48,8 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     # Get role
     role = db.query(Role).filter(Role.name == user_in.role_name.upper()).first()
     if not role:
-        raise HTTPException(status_code=400, detail=f"Role {user_in.role_name} does not exist")
+        raise HTTPException(status_code=400, detail=
+                            "Role {user_in.role_name} does not exist")
         
     # Create user
     user = User(

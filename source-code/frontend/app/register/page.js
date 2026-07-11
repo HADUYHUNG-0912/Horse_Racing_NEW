@@ -150,8 +150,7 @@ export default function Register() {
               <option value="SPECTATOR">Spectator (Khán giả)</option>
               <option value="OWNER">Horse Owner (Chủ ngựa)</option>
               <option value="JOCKEY">Jockey (Kỵ sĩ)</option>
-              <option value="REFEREE">Referee (Trọng tài)</option>
-              <option value="ADMIN">Organizer (Ban tổ chức)</option>
+              <option value="REFEREE">Referee (Trọng tài)</option>              
             </select>
           </div>
 

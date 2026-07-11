@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, Literal
 from pydantic import BaseModel, EmailStr
 
 class Token(BaseModel):
@@ -174,10 +174,11 @@ class UserBase(BaseModel):
     username: str
     email: EmailStr
     full_name: str
+    role_name: Literal["SPECTATOR", "OWNER", "JOCKEY", "REFEREE"]
 
 class UserCreate(UserBase):
     password: str
-    role_name: str  # ADMIN, REFEREE, JOCKEY, OWNER, SPECTATOR
+    role_name: Literal["SPECTATOR", "OWNER", "JOCKEY", "REFEREE"]
     # Profile fields (optional depending on role)
     bio: Optional[str] = None
     weight: Optional[float] = None
@@ -185,7 +186,7 @@ class UserCreate(UserBase):
     experience_years: Optional[int] = 0
     company_name: Optional[str] = None
     certification_level: Optional[str] = None
-    favorite_horse_breed: Optional[str] = None
+    favorite_horse_breed: Optional[str] = None 
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
