@@ -119,5 +119,10 @@
     - Cập nhật script [db_setup.py](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/backend/db_setup.py) để chuyển đổi toàn bộ dữ liệu seed (Tên ngựa, Tên giải đấu, Tên người dùng, Mô tả, Lịch trình, Giải thưởng, Biên bản vi phạm...) sang tiếng Anh.
     - Thực hiện xóa sạch (Clear) dữ liệu cũ trong cơ sở dữ liệu SQL Server local và nạp (Seed) lại dữ liệu tiếng Anh hoàn chỉnh.
     - Đảm bảo hệ thống backend và frontend vận hành ổn định trên các cổng mặc định và hiển thị đúng thông số tiếng Anh.
+- **Tiến độ đã hoàn thành (11/07/2026 - Chuẩn bị Phase 5 & Đẩy task lên Jira):**
+  - Biên soạn và thống nhất Kế hoạch triển khai Phase 5 chi tiết tại [trien_khai_phase5.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/plan/trien_khai_phase5.md).
+  - Tách 4 nhánh làm việc cho từng role từ nhánh `main`: `feature/phase5-admin`, `feature/phase5-referee`, `feature/phase5-owner`, `feature/phase5-jockey`.
+  - Khởi tạo 4 Epics, 10 Tasks con trên Jira, tự động gán đúng thành viên phụ trách và chuyển tất cả sang trạng thái `In Progress`.
+
 
 
