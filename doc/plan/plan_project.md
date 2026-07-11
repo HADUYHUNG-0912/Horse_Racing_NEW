@@ -111,4 +111,13 @@
     - Xóa toàn bộ các nhánh tính năng local và remote của Gia Huy, Huệ và Thái Châu để giữ cây thư mục Git sạch sẽ.
     - Tạo tài liệu hướng dẫn kiểm thử tích hợp liên hoàn UAT Phase 4 tại [test_guide_phase4.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/test/test_guide_phase4.md) dựa theo phân công `team_task_assignment_phase4.md`.
     - Cập nhật checklist dự án trong [team_checklist.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/task/team_checklist.md).
+- **Tiến độ đã hoàn thành (11/07/2026 - Sửa lỗi thống kê trang chủ & Bản địa hóa dữ liệu tiếng Anh):**
+  - **Sửa lỗi hiển thị thống kê 0 ở Trang chủ (Landing Page):**
+    - Khắc phục lỗi do API `/api/v1/horses/` yêu cầu xác thực bắt buộc. Tạo thêm dependency `get_current_user_optional` trong [deps.py](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/backend/app/api/deps.py) cho phép bỏ qua xác thực khi lấy danh sách ngựa cho người dùng chưa đăng nhập.
+    - Cập nhật endpoint `/horses` tại [horses.py](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/backend/app/api/v1/horses.py) dùng dependency mới để khách viếng thăm có thể xem danh sách ngựa công khai, từ đó hiển thị chính xác các chỉ số đếm ở trang chủ.
+  - **Chuyển đổi toàn bộ dữ liệu mẫu sang tiếng Anh (Localization to English):**
+    - Cập nhật script [db_setup.py](file:///e:/CNPM/Project/Horse_Racing_NEW/source-code/backend/db_setup.py) để chuyển đổi toàn bộ dữ liệu seed (Tên ngựa, Tên giải đấu, Tên người dùng, Mô tả, Lịch trình, Giải thưởng, Biên bản vi phạm...) sang tiếng Anh.
+    - Thực hiện xóa sạch (Clear) dữ liệu cũ trong cơ sở dữ liệu SQL Server local và nạp (Seed) lại dữ liệu tiếng Anh hoàn chỉnh.
+    - Đảm bảo hệ thống backend và frontend vận hành ổn định trên các cổng mặc định và hiển thị đúng thông số tiếng Anh.
+
 
