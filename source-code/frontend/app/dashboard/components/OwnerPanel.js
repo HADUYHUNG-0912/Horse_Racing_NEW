@@ -31,6 +31,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [awards, setAwards] = useState([]);
   const [awardsLoading, setAwardsLoading] = useState(false);
   const [awardsError, setAwardsError] = useState("");
+  const [awardsRequestVersion, setAwardsRequestVersion] = useState(0);
   const [profileForm, setProfileForm] = useState(emptyOwnerProfileForm);
   const [loading, setLoading] = useState(true);
   const awardsRequestedRef = useRef(false);
@@ -135,7 +136,12 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     };
 
     loadAwards();
-  }, [activeTab, showMsg]);
+  }, [activeTab, awardsRequestVersion, showMsg]);
+
+  const retryAwards = () => {
+    awardsRequestedRef.current = false;
+    setAwardsRequestVersion((version) => version + 1);
+  };
 
   const saveOwnerProfile = async (e) => {
     e.preventDefault();
@@ -729,11 +735,18 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
         <div style={styles.tabContent}>
           <h2>🏆 Cúp & Giải thưởng</h2>
           {awardsLoading ? (
-            <p style={{ color: "#94a3b8" }}>Đang tải giải thưởng...</p>
+            <p style={{ color: "#94a3b8" }}>Đang tải danh sách giải thưởng...</p>
           ) : awardsError ? (
-            <p style={{ color: "var(--danger)" }}>Không thể tải giải thưởng: {awardsError}</p>
+            <div style={{ ...styles.formCard, borderColor: "rgba(239,68,68,0.3)" }}>
+              <p style={{ color: "var(--danger)", marginTop: 0 }}>
+                Không thể tải danh sách giải thưởng: {awardsError}
+              </p>
+              <button type="button" className="btn-secondary" onClick={retryAwards}>
+                Thử lại
+              </button>
+            </div>
           ) : awards.length === 0 ? (
-            <p style={{ color: "#94a3b8" }}>Bạn chưa có giải thưởng nào.</p>
+            <p style={{ color: "#94a3b8" }}>Chưa có giải thưởng nào.</p>
           ) : (
             <div style={{
               display: "grid",
