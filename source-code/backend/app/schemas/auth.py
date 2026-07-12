@@ -140,6 +140,27 @@ class RefereeProfileOut(RefereeProfileBase):
     class Config:
         from_attributes = True
 
+class RefereeProfileUpdate(BaseModel):
+    """Schema cập nhật hồ sơ Trọng tài (Phase 5 — Tính năng 2.1)."""
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    certification_level: Optional[str] = None
+
+class RefereeProfileDetailOut(BaseModel):
+    """Schema trả về hồ sơ đầy đủ Trọng tài (Phase 5 — Tính năng 2.1)."""
+    id: int
+    user_id: int
+    username: str
+    email: EmailStr
+    full_name: str
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    certification_level: Optional[str] = None
+
+    model_config = {"from_attributes": True}
+
 class SpectatorProfileBase(BaseModel):
     favorite_horse_breed: Optional[str] = None
     reward_points: int = 0

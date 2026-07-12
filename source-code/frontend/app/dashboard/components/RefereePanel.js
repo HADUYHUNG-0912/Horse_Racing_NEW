@@ -17,6 +17,16 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
   const [selectedRaceForInspection, setSelectedRaceForInspection] = useState(null);
   const [inspectionForm, setInspectionForm] = useState({ weather: "", track_condition: "", horse_health: "" });
 
+  // Profile states
+  const [profile, setProfile] = useState({
+    full_name: user?.full_name || "",
+    email: user?.email || "",
+    certification_level: ""
+  });
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileErrors, setProfileErrors] = useState({});
+
   const loadData = async () => {
     try {
       const assignedRaces = await api.get("/races/assigned-to-me");
@@ -28,10 +38,71 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
     }
   };
 
+  const loadProfile = async () => {
+    try {
+      setProfileLoading(true);
+      const data = await api.get("/referees/profile");
+      setProfile({
+        full_name: data?.full_name ?? user?.full_name ?? "",
+        email: data?.email ?? user?.email ?? "",
+        certification_level: data?.certification_level ?? ""
+      });
+    } catch (err) {
+      showMsg(err?.message || "Không thể tải hồ sơ cá nhân!", "error");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "profile") {
+      loadProfile();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  const validateProfile = () => {
+    const errors = {};
+    if (!profile.full_name?.trim()) errors.full_name = "Họ tên không được để trống";
+    if (!profile.email?.trim()) errors.email = "Email không được để trống";
+    return errors;
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    const errors = validateProfile();
+    setProfileErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      showMsg("Vui lòng kiểm tra lại thông tin nhập!", "error");
+      return;
+    }
+
+    setSavingProfile(true);
+    try {
+      const payload = {
+        full_name: profile.full_name.trim(),
+        email: profile.email.trim(),
+        certification_level: profile.certification_level?.trim() || null
+      };
+      const updated = await api.put("/referees/profile", payload);
+      setProfile({
+        full_name: updated?.full_name ?? profile.full_name,
+        email: updated?.email ?? profile.email,
+        certification_level: updated?.certification_level ?? ""
+      });
+      setProfileErrors({});
+      showMsg("Cập nhật thông tin hồ sơ Referee thành công!");
+    } catch (err) {
+      showMsg(err?.message || "Không thể lưu hồ sơ. Vui lòng thử lại!", "error");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const initResultsForm = (race) => {
     setSelectedRace(race);
@@ -389,6 +460,71 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
                 </div>
               </form>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB CẬP NHẬT HỒ SƠ CÁ NHÂN (Referee) */}
+      {activeTab === "profile" && (
+        <div style={styles.tabContent}>
+          <h2>👤 Hồ sơ cá nhân Referee: {user?.full_name}</h2>
+          {profileLoading ? (
+            <div style={styles.loading}>Đang tải hồ sơ...</div>
+          ) : (
+            <form onSubmit={handleSaveProfile} style={{ maxWidth: "520px", marginTop: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+
+              {/* Họ và tên */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Họ và tên <span style={{ color: "var(--danger)" }}>*</span></label>
+                <input
+                  type="text"
+                  value={profile.full_name}
+                  placeholder="Nhập họ và tên đầy đủ"
+                  style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.full_name ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => { setProfile({ ...profile, full_name: e.target.value }); setProfileErrors({ ...profileErrors, full_name: "" }); }}
+                />
+                {profileErrors.full_name && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.full_name}</span>}
+              </div>
+
+              {/* Email */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Địa chỉ Email <span style={{ color: "var(--danger)" }}>*</span></label>
+                <input
+                  type="email"
+                  value={profile.email}
+                  placeholder="example@email.com"
+                  style={{ padding: "10px", borderRadius: "6px", border: `1px solid ${profileErrors.email ? "var(--danger)" : "#334155"}`, background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => { setProfile({ ...profile, email: e.target.value }); setProfileErrors({ ...profileErrors, email: "" }); }}
+                />
+                {profileErrors.email && <span style={{ color: "var(--danger)", fontSize: "12px" }}>⚠ {profileErrors.email}</span>}
+              </div>
+
+              {/* Cấp chứng chỉ */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <label style={{ fontWeight: "600", color: "#94a3b8" }}>Cấp chứng chỉ (Certification Level)</label>
+                <input
+                  type="text"
+                  value={profile.certification_level}
+                  placeholder="Ví dụ: Cấp Quốc gia, Cấp Quốc tế..."
+                  style={{ padding: "10px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff" }}
+                  onChange={(e) => setProfile({ ...profile, certification_level: e.target.value })}
+                />
+              </div>
+
+              {/* Nút lưu */}
+              <button
+                type="submit"
+                className="btn-primary"
+                style={{ padding: "12px", fontSize: "14px", fontWeight: "600", marginTop: "4px", opacity: savingProfile ? 0.7 : 1, cursor: savingProfile ? "not-allowed" : "pointer" }}
+                disabled={savingProfile}
+              >
+                {savingProfile ? "⏳ Đang lưu..." : "💾 Lưu thay đổi hồ sơ"}
+              </button>
+
+              <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>
+                <span style={{ color: "var(--danger)" }}>*</span> Trường bắt buộc
+              </p>
+            </form>
           )}
         </div>
       )}
