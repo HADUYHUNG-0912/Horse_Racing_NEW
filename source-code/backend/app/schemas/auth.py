@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, List
+from typing import Any, Dict, Literal, Optional, List
 from pydantic import BaseModel, EmailStr
 
 class Token(BaseModel):
@@ -190,7 +190,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    role_name: str  # ADMIN, REFEREE, JOCKEY, OWNER, SPECTATOR
+    role_name: Literal["SPECTATOR", "OWNER", "JOCKEY", "REFEREE"]  # Public registration - no ADMIN/ORGANIZER
     # Profile fields (optional depending on role)
     bio: Optional[str] = None
     weight: Optional[float] = None
@@ -224,3 +224,37 @@ class UserOut(UserBase):
 
     class Config:
         from_attributes = True
+
+
+# ── Phase 5 — Admin/Auth schemas ──────────────────────────────────────────────
+
+class PasswordChangeIn(BaseModel):
+    """Schema cho tính năng đổi mật khẩu (Phase 5 — Tính năng 1.1)."""
+    old_password: str
+    new_password: str
+
+
+class UserDetailOut(BaseModel):
+    """Schema chi tiết người dùng bao gồm profile theo role (Phase 5 — Tính năng 1.2)."""
+    id: int
+    username: str
+    email: EmailStr
+    full_name: str
+    phone_number: Optional[str] = None
+    avatar: Optional[str] = None
+    role_id: int
+    role_name: Optional[str] = None
+    is_active: bool
+    created_at: Optional[datetime] = None
+    profile: Optional[Dict[str, Any]] = None
+
+    model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
+
+
+class AdminUserCreate(BaseModel):
+    """Schema tạo tài khoản Admin/Organizer nội bộ (chỉ ADMIN mới dùng được)."""
+    username: str
+    email: EmailStr
+    full_name: str
+    password: str
+    role_name: Literal["ADMIN", "ORGANIZER"]

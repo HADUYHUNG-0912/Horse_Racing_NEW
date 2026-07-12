@@ -23,8 +23,20 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
   const [selectedTournamentId, setSelectedTournamentId] = useState("");
   const [stats, setStats] = useState(null);
   const [userSearch, setUserSearch] = useState("");
-  const [userPage, setUserPage] = useState(1);
-  
+  const [userPage, setUserPage] = useState(1);  
+  const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
+  const [adminForm, setAdminForm] = useState({
+    username: "",
+    email: "",
+    fullName: "",
+    password: "",
+    roleName: "ADMIN"
+  });
+  const [showPassword, setShowPassword] = useState(false);  
+
+  const [showUserDetailModal, setShowUserDetailModal] = useState(false);
+  const [selectedUserDetails, setSelectedUserDetails] = useState(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);  
   
   const loadData = async () => {
     try {
@@ -132,6 +144,11 @@ const approvedRegistrations = useMemo(() => {
   };
 
 const handleToggleUserStatus = async (userId, currentStatus) => {
+  const actionText = currentStatus ? "lock" : "unlock";
+ 
+  if (!window.confirm(`⚠️ Are you sure you want to ${actionText} this account?`)) {
+    return; 
+  }
   const nextStatus = !currentStatus;
   try {
     await api.put(`/admin/users/${userId}/status`, { is_active: nextStatus })
@@ -144,7 +161,44 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     showMsg("Updating status in Local mode!", "info");
   }
 };
+  const handleCreateAdmin = async (e) => {
+    e.preventDefault();
+    if (adminForm.password.length < 8) {
+    alert("⚠️ Mật khẩu phải chứa ít nhất 8 ký tự!"); 
+    return; 
+  }
+    try {      
+      await api.post("/admin/users/create-admin", {
+        username: adminForm.username,
+        email: adminForm.email,
+        full_name: adminForm.fullName,
+        password: adminForm.password,
+        role_name: adminForm.roleName
+      });
+      
+      showMsg("New administrator account created successfully!");
+      setShowCreateAdminModal(false);
+      setShowPassword(false);       
+      setAdminForm({ username: "", email: "", fullName: "", password: "", roleName: "ADMIN" }); 
+      loadData(); 
+    } catch (err) {
+      showMsg(err.message || "Account creation failed.", "error");
+    }
+  };  
 
+  const handleViewUserDetails = async (userId) => {
+    setLoadingDetail(true);
+    setShowUserDetailModal(true);
+    try {    
+      const data = await api.get(`/admin/users/${userId}`);
+      setSelectedUserDetails(data);
+    } catch (err) {
+      showMsg("Unable to load user details!", "error");
+      setShowUserDetailModal(false);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
   const createTournament = async (e) => {
     e.preventDefault();
     try {
@@ -805,18 +859,31 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
         </div>
       )}
       {activeTab === "users" && (
-  <div style={styles.tabContent}>
-    <h2>👥 Quản lý Thành viên hệ thống</h2>
-    <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+  <div>
+    <h2>👥 Quản lý Thành viên hệ thống</h2>  
+    
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", gap: "12px" }}>
       <input 
         type="text" 
         className="input-field" 
-        style={{ maxWidth: "320px" }}
+        style={{ maxWidth: "320px", margin: 0 }}
         placeholder="🔎 Nhập tên tài khoản hoặc email để tìm kiếm..." 
         value={userSearch}
         onChange={(e) => { setUserSearch(e.target.value); setUserPage(1); }} 
       />
+      <div style={{ display: "flex", gap: "8px" }}>
+        <button 
+          type="button" 
+          className="btn-primary" 
+          style={{ width: "auto", padding: "10px 16px", margin: 0 }} 
+          nClick={() => setShowCreateAdminModal(true)}
+        >
+          ➕ Tạo Admin / Organizer
+        </button>
+      </div>
     </div>
+
+    {/* 2. BẢNG DỮ LIỆU THÀNH VIÊN */}
     <div style={styles.tableWrapper}>
       <table style={styles.table}>        
         <thead>
@@ -831,7 +898,11 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
         </thead>
         <tbody>
           {(!users || !Array.isArray(users) || users.length === 0) ? (
-            <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dữ liệu thành viên</td></tr>
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>
+                Chưa có dữ liệu thành viên
+              </td>
+            </tr>
           ) : (
             users.map((u) => (
               <tr key={u.id}>        
@@ -847,31 +918,149 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   )}
                 </td>
                 <td>
-                  <button
-                    className={u.is_active ? "btn-secondary" : "btn-primary"}
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                    className="btn-primary"
                     style={{
                       padding: "6px 12px",
                       fontSize: "12px",
-                      color: u.is_active ? "var(--danger)" : "#fff",
-                     }}
-                      onClick={() => handleToggleUserStatus(u.id, u.is_active)}
+                      backgroundColor: "#3b82f6", 
+                      color: "#fff",
+                    }}
+                      onClick={() => handleViewUserDetails(u.id)}
                     >
-                    {u.is_active ? " Khóa tài khoản" : " Mở khóa"}
-                  </button>
+                      👁 Xem chi tiết
+                    </button>    
+                    <button
+                      className={u.is_active ? "btn-secondary" : "btn-primary"}
+                      style={{
+                        padding: "6px 12px",
+                        fontSize: "12px",
+                        color: u.is_active ? "var(--danger)" : "#fff",
+                      }}
+                        onClick={() => handleToggleUserStatus(u.id, u.is_active)}
+                      >
+                        {u.is_active ? " Khóa tài khoản" : " Mở khóa"}
+                      </button>
+                    </div>
                 </td>
               </tr>
             ))
           )}
         </tbody>            
       </table>      
-    </div> 
+    </div>
+    
     <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "12px" }}>
-            <button type="button" className="btn-secondary" style={{ padding: "4px 10px" }} disabled={userPage === 1} onClick={() => setUserPage(p => p - 1)}>Trước</button>
-            <span style={{ alignSelf: "center", fontSize: "14px" }}>Trang {userPage}</span>
-            <button type="button" className="btn-secondary" style={{ padding: "4px 10px" }} disabled={users.length < 10} onClick={() => setUserPage(p => p + 1)}>Sau</button>
+      <button 
+        type="button" 
+        className="btn-secondary" 
+        style={{ padding: "4px 10px" }} 
+        disabled={userPage === 1} 
+        onClick={() => setUserPage(p => p - 1)}
+      >
+        Trước
+      </button>
+      <span style={{ alignSelf: "center", fontSize: "14px" }}>Trang {userPage}</span>
+      <button 
+        type="button" 
+        className="btn-secondary" 
+        style={{ padding: "4px 10px" }} 
+        disabled={users.length < 10} 
+        onClick={() => setUserPage(p => p + 1)}
+      >
+        Sau
+      </button>
+    </div>
+
+  </div>
+)}      
+      {showCreateAdminModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.7)", display: "flex",
+          justifyContent: "center", alignItems: "center", zIndex: 9999
+        }}>
+          <div className="glass" style={{
+            padding: "24px", borderRadius: "12px", width: "100%", 
+            maxWidth: "450px", border: "1px solid rgba(255,255,255,0.1)"
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Tạo thành viên quản trị mới</h3>
+            <form onSubmit={handleCreateAdmin} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Tên đăng nhập</label>
+                <input type="text" className="input-field" placeholder="Ví dụ: admin_racing" required
+                  value={adminForm.username} onChange={e => setAdminForm({...adminForm, username: e.target.value})} />
+              </div>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Địa chỉ Email</label>
+                <input type="email" className="input-field" placeholder="admin@example.com" required
+                  value={adminForm.email} onChange={e => setAdminForm({...adminForm, email: e.target.value})} />
+              </div>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Họ và tên</label>
+                <input type="text" className="input-field" placeholder="Ví dụ: Nguyễn Văn Quản Trị" required
+                  value={adminForm.fullName} onChange={e => setAdminForm({...adminForm, fullName: e.target.value})} />
+              </div>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Mật khẩu tài khoản</label>
+                <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    className="input-field" 
+                    placeholder="Nhập mật khẩu bí mật" 
+                    required
+                    minLength="8"
+                    style={{ paddingRight: "40px", width: "100%", margin: 0 }} 
+                    value={adminForm.password} 
+                    onChange={e => setAdminForm({...adminForm, password: e.target.value})} 
+                  />    
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      color: "rgba(255, 255, 255, 0.6)",
+                      fontSize: "16px",
+                      padding: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    {showPassword ? "👁️" : "🙈"}
+                  </button>
+                </div>
+              </div>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Chọn vai trò cấp phát</label>
+                <select className="input-field" value={adminForm.roleName} onChange={e => setAdminForm({...adminForm, roleName: e.target.value})}>
+                  <option value="ADMIN">ADMIN (Quản trị viên tối cao)</option>
+                  <option value="ORGANIZER">ORGANIZER (Điều hành giải đấu)</option>
+                </select>
+              </div>
+              <div style={{ display: "flex", gap: "12px", marginTop: "10px" }}>
+                <button type="submit" className="btn-primary" style={{ flex: 1, margin: 0 }}>Lưu thông tin</button>
+                <button 
+                  type="button" 
+                  className="btn-secondary" 
+                  style={{ flex: 1, margin: 0, backgroundColor: "rgba(255,255,255,0.1)" }} 
+                  onClick={() => {
+                    setShowCreateAdminModal(false);
+                    setShowPassword(false); 
+                  }}
+                >
+                  Hủy bỏ
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      )}   
+      )}
     </>
   );
 }
