@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
 
@@ -28,8 +28,12 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [ownerProfile, setOwnerProfile] = useState(null);
   const [upcomingRaces, setUpcomingRaces] = useState([]);
   const [resultHistory, setResultHistory] = useState([]);
+  const [awards, setAwards] = useState([]);
+  const [awardsLoading, setAwardsLoading] = useState(false);
+  const [awardsError, setAwardsError] = useState("");
   const [profileForm, setProfileForm] = useState(emptyOwnerProfileForm);
   const [loading, setLoading] = useState(true);
+  const awardsRequestedRef = useRef(false);
 
   // Form states
   const [newHorse, setNewHorse] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
@@ -109,6 +113,29 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (activeTab !== "owner-awards" || awardsRequestedRef.current) return;
+
+    awardsRequestedRef.current = true;
+    const loadAwards = async () => {
+      setAwardsLoading(true);
+      setAwardsError("");
+      try {
+        const data = await api.get("/owners/awards");
+        setAwards(Array.isArray(data) ? data : []);
+      } catch (err) {
+        const message = err?.message || "Không thể tải danh sách giải thưởng.";
+        setAwards([]);
+        setAwardsError(message);
+        showMsg(message, "error");
+      } finally {
+        setAwardsLoading(false);
+      }
+    };
+
+    loadAwards();
+  }, [activeTab, showMsg]);
 
   const saveOwnerProfile = async (e) => {
     e.preventDefault();
@@ -682,9 +709,20 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
       {activeTab === "owner-awards" && (
         <div style={styles.tabContent}>
           <h2>🏆 Cúp & Giải thưởng</h2>
-          <p style={{ color: "#94a3b8" }}>
-            Đang phát triển nội dung giải thưởng.
-          </p>
+          {awardsLoading ? (
+            <p style={{ color: "#94a3b8" }}>Đang tải giải thưởng...</p>
+          ) : awardsError ? (
+            <p style={{ color: "var(--danger)" }}>Không thể tải giải thưởng: {awardsError}</p>
+          ) : awards.length === 0 ? (
+            <p style={{ color: "#94a3b8" }}>Bạn chưa có giải thưởng nào.</p>
+          ) : (
+            <div>
+              <p style={{ color: "#94a3b8" }}>Đã nhận {awards.length} giải thưởng.</p>
+              <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                {JSON.stringify(awards, null, 2)}
+              </pre>
+            </div>
+          )}
         </div>
       )}
 
