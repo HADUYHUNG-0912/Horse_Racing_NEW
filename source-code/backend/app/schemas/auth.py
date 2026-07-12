@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
@@ -109,6 +110,18 @@ class OwnerResultHistory(BaseModel):
     race_date: datetime
     violations: Optional[str] = None
     violation_count: int = 0
+
+    class Config:
+        from_attributes = True
+
+class OwnerAwardOut(BaseModel):
+    tournament_name: str
+    horse_name: str
+    jockey_name: str
+    rank: int
+    title: str
+    prize_value: Optional[Decimal] = None
+    notes: Optional[str] = None
 
     class Config:
         from_attributes = True

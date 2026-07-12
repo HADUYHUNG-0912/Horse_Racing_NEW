@@ -70,16 +70,16 @@
 \contentsline {subsubsection}{Security}{41}{subsection.3.3.3}%
 \contentsline {subsubsection}{Maintainability}{42}{subsection.3.3.3}%
 \contentsline {subsubsection}{Portability}{42}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Entity Relationship Diagram}{42}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.4}Entity Relationship Diagram}{43}{subsection.3.3.4}%
 \contentsline {subsection}{\numberline {3.3.5}Web Application}{43}{subsection.3.3.5}%
 \contentsline {subsubsection}{Horse Owner Login}{43}{subsection.3.3.5}%
 \contentsline {subsubsection}{Manage Horses}{44}{figure.3.9}%
 \contentsline {subsubsection}{Invite Jockey}{45}{figure.3.10}%
 \contentsline {subsubsection}{Register Tournament}{46}{figure.3.11}%
 \contentsline {subsubsection}{Registered Tournaments}{47}{figure.3.12}%
-\contentsline {subsubsection}{Horse Schedule}{47}{figure.3.13}%
-\contentsline {subsubsection}{Race Results}{48}{figure.3.14}%
-\contentsline {subsubsection}{Owner Profile}{49}{figure.3.15}%
+\contentsline {subsubsection}{Horse Schedule}{48}{figure.3.13}%
+\contentsline {subsubsection}{Race Results}{49}{figure.3.14}%
+\contentsline {subsubsection}{Owner Profile}{50}{figure.3.15}%
 \contentsline {subsubsection}{Ranking}{51}{figure.3.16}%
 \contentsline {subsubsection}{Jockey Login}{52}{figure.3.17}%
 \contentsline {subsubsection}{Invitations Inbox}{53}{figure.3.18}%
