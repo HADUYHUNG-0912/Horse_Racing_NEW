@@ -33,6 +33,10 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
     roleName: "ADMIN"
   });
   const [showPassword, setShowPassword] = useState(false);  
+
+  const [showUserDetailModal, setShowUserDetailModal] = useState(false);
+  const [selectedUserDetails, setSelectedUserDetails] = useState(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);  
   
   const loadData = async () => {
     try {
@@ -159,6 +163,10 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
 };
   const handleCreateAdmin = async (e) => {
     e.preventDefault();
+    if (adminForm.password.length < 8) {
+    alert("⚠️ Mật khẩu phải chứa ít nhất 8 ký tự!"); 
+    return; 
+  }
     try {      
       await api.post("/admin/users/create-admin", {
         username: adminForm.username,
@@ -176,8 +184,21 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     } catch (err) {
       showMsg(err.message || "Account creation failed.", "error");
     }
-  };
+  };  
 
+  const handleViewUserDetails = async (userId) => {
+    setLoadingDetail(true);
+    setShowUserDetailModal(true);
+    try {    
+      const data = await api.get(`/admin/users/${userId}`);
+      setSelectedUserDetails(data);
+    } catch (err) {
+      showMsg("Unable to load user details!", "error");
+      setShowUserDetailModal(false);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
   const createTournament = async (e) => {
     e.preventDefault();
     try {
@@ -838,8 +859,9 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
         </div>
       )}
       {activeTab === "users" && (
-  <div style={styles.tabContent}>
-    <h2>👥 Quản lý Thành viên hệ thống</h2>
+  <div>
+    <h2>👥 Quản lý Thành viên hệ thống</h2>  
+    
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", gap: "12px" }}>
       <input 
         type="text" 
@@ -849,16 +871,19 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
         value={userSearch}
         onChange={(e) => { setUserSearch(e.target.value); setUserPage(1); }} 
       />
-      {/* Nút bấm mở Form nổi tạo Admin */}
-      <button 
-        type="button" 
-        className="btn-primary" 
-        style={{ width: "auto", padding: "10px 16px", margin: 0 }} 
-        onClick={() => setShowCreateAdminModal(true)}
-      >
-        ➕ Tạo Admin / Organizer
-      </button>
+      <div style={{ display: "flex", gap: "8px" }}>
+        <button 
+          type="button" 
+          className="btn-primary" 
+          style={{ width: "auto", padding: "10px 16px", margin: 0 }} 
+          nClick={() => setShowCreateAdminModal(true)}
+        >
+          ➕ Tạo Admin / Organizer
+        </button>
+      </div>
     </div>
+
+    {/* 2. BẢNG DỮ LIỆU THÀNH VIÊN */}
     <div style={styles.tableWrapper}>
       <table style={styles.table}>        
         <thead>
@@ -873,7 +898,11 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
         </thead>
         <tbody>
           {(!users || !Array.isArray(users) || users.length === 0) ? (
-            <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dữ liệu thành viên</td></tr>
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>
+                Chưa có dữ liệu thành viên
+              </td>
+            </tr>
           ) : (
             users.map((u) => (
               <tr key={u.id}>        
@@ -889,32 +918,63 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   )}
                 </td>
                 <td>
-                  <button
-                    className={u.is_active ? "btn-secondary" : "btn-primary"}
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                    className="btn-primary"
                     style={{
                       padding: "6px 12px",
                       fontSize: "12px",
-                      color: u.is_active ? "var(--danger)" : "#fff",
-                     }}
-                      onClick={() => handleToggleUserStatus(u.id, u.is_active)}
+                      backgroundColor: "#3b82f6", 
+                      color: "#fff",
+                    }}
+                      onClick={() => handleViewUserDetails(u.id)}
                     >
-                    {u.is_active ? " Khóa tài khoản" : " Mở khóa"}
-                  </button>
+                      👁 Xem chi tiết
+                    </button>    
+                    <button
+                      className={u.is_active ? "btn-secondary" : "btn-primary"}
+                      style={{
+                        padding: "6px 12px",
+                        fontSize: "12px",
+                        color: u.is_active ? "var(--danger)" : "#fff",
+                      }}
+                        onClick={() => handleToggleUserStatus(u.id, u.is_active)}
+                      >
+                        {u.is_active ? " Khóa tài khoản" : " Mở khóa"}
+                      </button>
+                    </div>
                 </td>
               </tr>
             ))
           )}
         </tbody>            
       </table>      
-    </div> 
+    </div>
+    
     <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "12px" }}>
-            <button type="button" className="btn-secondary" style={{ padding: "4px 10px" }} disabled={userPage === 1} onClick={() => setUserPage(p => p - 1)}>Trước</button>
-            <span style={{ alignSelf: "center", fontSize: "14px" }}>Trang {userPage}</span>
-            <button type="button" className="btn-secondary" style={{ padding: "4px 10px" }} disabled={users.length < 10} onClick={() => setUserPage(p => p + 1)}>Sau</button>
-          </div>
-        </div>
-      )} 
-      
+      <button 
+        type="button" 
+        className="btn-secondary" 
+        style={{ padding: "4px 10px" }} 
+        disabled={userPage === 1} 
+        onClick={() => setUserPage(p => p - 1)}
+      >
+        Trước
+      </button>
+      <span style={{ alignSelf: "center", fontSize: "14px" }}>Trang {userPage}</span>
+      <button 
+        type="button" 
+        className="btn-secondary" 
+        style={{ padding: "4px 10px" }} 
+        disabled={users.length < 10} 
+        onClick={() => setUserPage(p => p + 1)}
+      >
+        Sau
+      </button>
+    </div>
+
+  </div>
+)}      
       {showCreateAdminModal && (
         <div style={{
           position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
@@ -950,6 +1010,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                     className="input-field" 
                     placeholder="Nhập mật khẩu bí mật" 
                     required
+                    minLength="8"
                     style={{ paddingRight: "40px", width: "100%", margin: 0 }} 
                     value={adminForm.password} 
                     onChange={e => setAdminForm({...adminForm, password: e.target.value})} 
@@ -990,7 +1051,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   style={{ flex: 1, margin: 0, backgroundColor: "rgba(255,255,255,0.1)" }} 
                   onClick={() => {
                     setShowCreateAdminModal(false);
-                    setShowPassword(false); // Thêm dòng này khi bấm hủy
+                    setShowPassword(false); 
                   }}
                 >
                   Hủy bỏ

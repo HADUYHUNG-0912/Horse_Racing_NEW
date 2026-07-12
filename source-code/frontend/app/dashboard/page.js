@@ -18,6 +18,12 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("");
   const [message, setMessage] = useState({ text: "", type: "" });
   const router = useRouter();
+  const [showPwdModal, setShowPwdModal] = useState(false);
+  const [pwdForm, setPwdForm] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [showOldPwd, setShowOldPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  
 
   useEffect(() => {
     const checkAuthAndLoad = async () => {
@@ -49,6 +55,39 @@ export default function Dashboard() {
   const handleLogout = () => {
     api.logout();
     router.push("/");
+  };
+  
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+
+    if (!pwdForm.oldPassword || !pwdForm.newPassword || !pwdForm.confirmPassword) {
+      showMsg("Please fill in all the information!", "error");
+      return;
+    }
+    if (pwdForm.newPassword.length < 8) {
+      showMsg("The new password must contain at least 8 characters!", "error");
+      return;
+    }
+    if (pwdForm.newPassword !== pwdForm.confirmPassword) {
+      showMsg("Confirming the new password does not match!", "error");
+      return;
+    }
+
+    try {
+      setPwdLoading(true);
+      await api.put("/auth/change-password", {
+        old_password: pwdForm.oldPassword,
+        new_password: pwdForm.newPassword
+      });
+      showMsg("Password changed successfully!");
+      setPwdForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setShowPwdModal(false);
+    } catch (error) {
+      const serverError = error?.response?.data?.detail || "The old password is incorrect!";
+      showMsg(`❌ ${serverError}`, "error");
+    } finally {
+      setPwdLoading(false);
+    }
   };
 
   if (loading) {
@@ -131,7 +170,7 @@ export default function Dashboard() {
               </button>
               <button style={activeTab === "awards" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("awards")}>
                 🏆 Xem Awards
-              </button>
+              </button>              
             </>
           )}
 
@@ -209,6 +248,12 @@ export default function Dashboard() {
           <button style={activeTab === "leaderboard" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("leaderboard")}>
             ⭐ Bảng Xếp Hạng
           </button>
+          <button 
+            style={{ ...styles.tabBtn, marginTop: "10px", color: "#fcd34d", border: "1px dashed rgba(252, 211, 77, 0.3)" }} 
+            onClick={() => setShowPwdModal(true)}
+          >
+            🔐 Đổi mật khẩu của tôi
+          </button>
         </nav>
 
         {/* Work Area */}
@@ -227,6 +272,58 @@ export default function Dashboard() {
           )}
         </main>
       </div>
+      {/* ================= MODAL HIỂN THỊ ĐỔI MẬT KHẨU ================= */}
+      {showPwdModal && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(15, 23, 42, 0.8)", backdropFilter: "blur(4px)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999 }}>
+          <div style={{ background: "#1e293b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "24px", width: "100%", maxWidth: "400px" }}>
+            <h3 style={{ marginTop: 0, marginBottom: "16px", color: "#fff" }}>🔐 Đổi mật khẩu cá nhân</h3>
+            {message.text && (
+              <div style={{
+                padding: "10px 12px",
+                marginBottom: "16px",
+                borderRadius: "6px",
+                fontSize: "13px",
+                fontWeight: "500",
+                textAlign: "center",
+                backgroundColor: message.type === "error" ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)",
+                border: `1px solid ${message.type === "error" ? "#f87171" : "#34d399"}`,
+                color: message.type === "error" ? "#f87171" : "#34d399",
+                animation: "fadeIn 0.3s ease"
+              }}>
+                {message.text}
+              </div>
+            )}
+            <form onSubmit={handleUpdatePassword} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div>
+                <label style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>Mật khẩu hiện tại</label>
+                <div style={{ position: "relative" }}>
+                  <input type={showOldPwd ? "text" : "password"} style={{ width: "100%", padding: "10px", background: "#0f172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "#fff" }} value={pwdForm.oldPassword} onChange={e => setPwdForm({ ...pwdForm, oldPassword: e.target.value })} />
+                  <button type="button" onClick={() => setShowOldPwd(!showOldPwd)} style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer" }}>{showOldPwd ? "👁️" : "🙈"}</button>
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>Mật khẩu mới</label>
+                <div style={{ position: "relative" }}>
+                  <input type={showNewPwd ? "text" : "password"} style={{ width: "100%", padding: "10px", background: "#0f172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "#fff" }} value={pwdForm.newPassword} onChange={e => setPwdForm({ ...pwdForm, newPassword: e.target.value })} />
+                  <button type="button" onClick={() => setShowNewPwd(!showNewPwd)} style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer" }}>{showNewPwd ? "👁️" : "🙈"}</button>
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>Xác nhận mật khẩu mới</label>
+                <input type="password" style={{ width: "100%", padding: "10px", background: "#0f172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", color: "#fff" }} value={pwdForm.confirmPassword} onChange={e => setPwdForm({ ...pwdForm, confirmPassword: e.target.value })} />
+              </div>
+              <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+                <button type="submit" style={{ flex: 1, padding: "10px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "600", cursor: "pointer" }} disabled={pwdLoading}>
+                  {pwdLoading ? "🔄 Đang lưu..." : "Cập nhật"}
+                </button>
+                <button type="button" style={{ flex: 1, padding: "10px", background: "rgba(255,255,255,0.1)", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }} onClick={() => { setShowPwdModal(false); setPwdForm({ oldPassword: "", newPassword: "", confirmPassword: "" }); }}>
+                  Hủy
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}      
     </div>
   );
 }
