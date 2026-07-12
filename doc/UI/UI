@@ -1,0 +1,56 @@
+# Prompt cho AI Agent — Redesign trang đăng nhập (Login) Horse Racing Tournament System
+
+## Bối cảnh
+Frontend Next.js, **CSS Modules + global CSS thuần** (không Tailwind). Trang chủ đã được redesign theo phong cách premium/editorial (nền kem `#F5F0E6`, xanh forest `#2F4A3D`, accent burgundy `#7A1F3D`, heading serif). Giờ cần redesign **trang đăng nhập** để đồng bộ phong cách — hiện tại đang là bản cũ: nền đen, card tối, nút cam gradient (không dùng nữa).
+
+## Bố cục — split screen 2 cột (desktop), stack dọc (mobile)
+
+**Cột trái (panel chào mừng, ~55% chiều rộng):**
+- Ảnh nền jockey/ngựa đua hành động (`background-image` hoặc `<Image fill>`), `background-size: cover; background-position: center`
+- Phủ lớp overlay tối dạng gradient để chữ luôn đọc rõ:
+  ```css
+  background: linear-gradient(180deg, rgba(20,15,10,0.55) 0%, rgba(20,15,10,0.75) 60%, rgba(20,15,10,0.92) 100%);
+  ```
+  (đặt overlay là 1 lớp `position: absolute; inset: 0` đè lên ảnh, nội dung text đặt `position: relative; z-index: 1` bên trên)
+- Nội dung xếp theo chiều dọc, dùng `display:flex; flex-direction:column; justify-content:space-between`:
+  - Trên cùng: logo (icon đầu ngựa SVG `icon-horse-head.svg` màu kem + chữ "HORSE RACING")
+  - Giữa: heading serif lớn "Chào mừng trở lại đường đua" (2 dòng) + mô tả ngắn 1 dòng
+  - Dưới cùng: dòng copyright nhỏ, màu nhạt
+
+**Cột phải (form đăng nhập, ~45% chiều rộng, nền kem `#F5F0E6`):**
+- Tiêu đề serif "Đăng nhập" + mô tả phụ nhỏ
+- Input "Tên đăng nhập" — label nhỏ phía trên, input viền `#E0DACD`, bo góc 6px, nền trắng
+- Input "Mật khẩu" — cùng style, type password
+- Nút "Đăng nhập" — full width, nền burgundy `#7A1F3D`, chữ kem, bo góc 6px, hover đậm hơn (`#5C1730`)
+- Dòng dưới: "Chưa có tài khoản? Đăng ký" — chữ "Đăng ký" màu burgundy, link đến route đăng ký hiện có
+- (Tuỳ chọn) link "← Trang chủ" ở góc trên cột phải hoặc trong panel trái
+
+## Bảng màu (dùng CSS variables đã khai báo từ redesign trang chủ — không khai báo trùng)
+```
+--color-cream: #F5F0E6
+--color-forest: #2F4A3D
+--color-burgundy: #7A1F3D
+--color-burgundy-dark: #5C1730
+--color-text-dark: #1A1A1A
+--color-text-muted: #6B6B63
+--color-border: #E0DACD
+```
+
+## Ảnh & icon
+- Ảnh nền panel trái: lấy ảnh jockey đang thi đấu (đã tải theo hướng dẫn ở phần redesign trang chủ, ví dụ `hero-horse-racing.jpg` hoặc ảnh action khác cùng bộ) — đặt tại `public/images/login-bg.jpg`
+- Icon logo: `public/icons/icon-horse-head.svg`, set `color: var(--color-cream)` qua CSS
+
+## Yêu cầu kỹ thuật
+1. CSS Modules riêng cho trang login (`Login.module.css` hoặc theo tên file component hiện có)
+2. Responsive: dưới 768px, ẩn/thu gọn panel trái thành 1 dải ngắn phía trên hoặc ẩn hẳn, ưu tiên hiển thị form
+3. Giữ nguyên toàn bộ logic xử lý đăng nhập hiện có (gọi API, validate, lưu token, redirect theo role...) — **chỉ đổi giao diện, không đổi logic**
+4. Input cần đủ accessibility: `<label htmlFor>` gắn đúng input, thông báo lỗi (nếu có) hiển thị rõ màu đỏ, không chỉ đổi viền
+5. Nút "Đăng nhập" giữ đúng trạng thái loading hiện có (nếu component cũ có xử lý loading/disable khi submit) — style lại nhưng không bỏ logic
+
+## Việc cần làm — theo thứ tự
+1. Đọc file component login hiện tại, xác định phần logic (form state, API call, redirect) cần giữ nguyên
+2. Viết lại JSX theo bố cục 2 cột ở trên
+3. Viết CSS Module tương ứng
+4. Test cả 2 case: đăng nhập đúng và sai (thông báo lỗi hiển thị đúng vị trí, không vỡ layout)
+5. Test responsive mobile
+6. Commit: `feat(login): redesign giao diện đăng nhập theo phong cách premium equestrian`
