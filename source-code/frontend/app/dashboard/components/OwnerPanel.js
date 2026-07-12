@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
 
@@ -28,13 +28,8 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
   const [ownerProfile, setOwnerProfile] = useState(null);
   const [upcomingRaces, setUpcomingRaces] = useState([]);
   const [resultHistory, setResultHistory] = useState([]);
-  const [awards, setAwards] = useState([]);
-  const [awardsLoading, setAwardsLoading] = useState(false);
-  const [awardsError, setAwardsError] = useState("");
-  const [awardsRequestVersion, setAwardsRequestVersion] = useState(0);
   const [profileForm, setProfileForm] = useState(emptyOwnerProfileForm);
   const [loading, setLoading] = useState(true);
-  const awardsRequestedRef = useRef(false);
 
   // Form states
   const [newHorse, setNewHorse] = useState({ name: "", age: "", breed: "", gender: "Stallion" });
@@ -114,34 +109,6 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (activeTab !== "owner-awards" || awardsRequestedRef.current) return;
-
-    awardsRequestedRef.current = true;
-    const loadAwards = async () => {
-      setAwardsLoading(true);
-      setAwardsError("");
-      try {
-        const data = await api.get("/owners/awards");
-        setAwards(Array.isArray(data) ? data : []);
-      } catch (err) {
-        const message = err?.message || "Không thể tải danh sách giải thưởng.";
-        setAwards([]);
-        setAwardsError(message);
-        showMsg(message, "error");
-      } finally {
-        setAwardsLoading(false);
-      }
-    };
-
-    loadAwards();
-  }, [activeTab, awardsRequestVersion, showMsg]);
-
-  const retryAwards = () => {
-    awardsRequestedRef.current = false;
-    setAwardsRequestVersion((version) => version + 1);
-  };
 
   const saveOwnerProfile = async (e) => {
     e.preventDefault();
@@ -312,25 +279,6 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit"
     });
-  };
-
-  const formatAwardRank = (rank) => {
-    const numericRank = Number(rank);
-    if (!Number.isFinite(numericRank)) return "Chưa cập nhật hạng";
-    if (numericRank === 1) return "🥇 Hạng 1";
-    if (numericRank === 2) return "🥈 Hạng 2";
-    if (numericRank === 3) return "🥉 Hạng 3";
-    return `Hạng ${numericRank}`;
-  };
-
-  const formatPrizeValue = (prizeValue) => {
-    if (prizeValue === null || prizeValue === undefined || prizeValue === "") {
-      return "Chưa cập nhật";
-    }
-    const numericValue = Number(prizeValue);
-    return Number.isFinite(numericValue)
-      ? numericValue.toLocaleString("vi-VN")
-      : "Chưa cập nhật";
   };
 
   if (loading) {
@@ -727,50 +675,6 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
-
-      {/* TAB: Cúp & Giải thưởng của Owner */}
-      {activeTab === "owner-awards" && (
-        <div style={styles.tabContent}>
-          <h2>🏆 Cúp & Giải thưởng</h2>
-          {awardsLoading ? (
-            <p style={{ color: "#94a3b8" }}>Đang tải danh sách giải thưởng...</p>
-          ) : awardsError ? (
-            <div style={{ ...styles.formCard, borderColor: "rgba(239,68,68,0.3)" }}>
-              <p style={{ color: "var(--danger)", marginTop: 0 }}>
-                Không thể tải danh sách giải thưởng: {awardsError}
-              </p>
-              <button type="button" className="btn-secondary" onClick={retryAwards}>
-                Thử lại
-              </button>
-            </div>
-          ) : awards.length === 0 ? (
-            <p style={{ color: "#94a3b8" }}>Chưa có giải thưởng nào.</p>
-          ) : (
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "16px"
-            }}>
-              {awards.map((award, index) => (
-                <article
-                  key={`${award.tournament_name || "tournament"}-${award.horse_name || "horse"}-${award.rank ?? "rank"}-${index}`}
-                  style={{ ...styles.formCard, display: "flex", flexDirection: "column", gap: "12px" }}
-                >
-                  <div style={{ color: "var(--primary)", fontSize: "18px", fontWeight: "800" }}>
-                    {formatAwardRank(award.rank)}
-                  </div>
-                  <h3 style={{ margin: 0 }}>🏆 {award.title || "Chưa có thông tin"}</h3>
-                  <div><strong>Giải đấu:</strong> {award.tournament_name || "Chưa có thông tin"}</div>
-                  <div><strong>🐎 Ngựa:</strong> {award.horse_name || "Chưa có thông tin"}</div>
-                  <div><strong>👤 Nài ngựa:</strong> {award.jockey_name || "Chưa có thông tin"}</div>
-                  <div><strong>💰 Giá trị giải:</strong> {formatPrizeValue(award.prize_value)}</div>
-                  <div><strong>📝 Ghi chú:</strong> {award.notes || "Không có ghi chú"}</div>
-                </article>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
