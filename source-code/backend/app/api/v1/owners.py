@@ -5,8 +5,8 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, RoleChecker
-from app.models.database_models import HorseOwnerProfile, User, Violation
-from app.schemas.auth import OwnerAwardOut, OwnerProfileDetailOut, OwnerProfileUpdate, OwnerUpcomingRace, OwnerResultHistory
+from app.models.database_models import User, Violation
+from app.schemas.auth import OwnerProfileDetailOut, OwnerProfileUpdate, OwnerUpcomingRace, OwnerResultHistory
 
 router = APIRouter()
 
@@ -44,48 +44,6 @@ def read_owner_profile(
     if not owner:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Owner profile not found")
     return owner
-
-@router.get("/awards", response_model=List[OwnerAwardOut])
-def read_owner_awards(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(RoleChecker(["OWNER"]))
-):
-    owner_profile = db.query(HorseOwnerProfile).filter(
-        HorseOwnerProfile.user_id == current_user.id
-    ).first()
-    if not owner_profile:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Owner profile not found",
-        )
-
-    awards = db.execute(
-        text(
-            """
-            SELECT
-                t.name AS tournament_name,
-                h.name AS horse_name,
-                COALESCE(ju.full_name, '') AS jockey_name,
-                p.position AS rank,
-                p.title,
-                p.prize_value,
-                a.notes
-            FROM Awards a
-            INNER JOIN Prizes p ON p.id = a.prize_id
-            INNER JOIN Registrations reg ON reg.id = a.registration_id
-            INNER JOIN Horses h ON h.id = reg.horse_id
-            INNER JOIN HorseOwnerProfiles hp ON hp.id = h.owner_id
-            INNER JOIN Tournaments t ON t.id = p.tournament_id
-            LEFT JOIN JockeyProfiles jp ON jp.id = reg.jockey_id
-            LEFT JOIN Users ju ON ju.id = jp.user_id
-            WHERE hp.id = :owner_profile_id
-            ORDER BY a.awarded_at DESC, p.position ASC
-            """
-        ),
-        {"owner_profile_id": owner_profile.id},
-    ).mappings().all()
-
-    return awards
 
 @router.get("/upcoming-races", response_model=List[OwnerUpcomingRace])
 def read_owner_upcoming_races(
