@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Asap, Bungee } from "next/font/google";
+import { Asap, Oswald } from "next/font/google";
 
 const asap = Asap({
   subsets: ["latin", "vietnamese"],
@@ -7,8 +7,8 @@ const asap = Asap({
   variable: "--font-asap",
 });
 
-const bungee = Bungee({
-  weight: "400",
+const bungee = Oswald({
+  weight: ["400", "500", "600"],
   subsets: ["latin", "vietnamese"],
   display: "swap",
   variable: "--font-bungee",

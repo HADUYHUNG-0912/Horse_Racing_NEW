@@ -37,6 +37,7 @@ function getStatusLabel(status) {
 }
 
 export default function Home() {
+  const [isScrolled, setIsScrolled] = useState(false);
   const [rankings, setRankings] = useState([]);
   const [tournaments, setTournaments] = useState([]);
   const [stats, setStats] = useState({
@@ -45,6 +46,15 @@ export default function Home() {
     horsesCount: 0,
     jockeysCount: 0,
   });
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchLandingData = async () => {
@@ -80,18 +90,8 @@ export default function Home() {
 
   return (
     <main className={styles.page}>
-      <section className={styles.hero} aria-labelledby="hero-title">
-        <Image
-          className={styles.heroImage}
-          src={`${imageBase}/equestrian horse portrait dark background.jpg`}
-          alt="Các jockey đang tranh tài trên đường đua ngựa"
-          fill
-          priority
-          sizes="100vw"
-        />
-        <div className={styles.heroShade} />
-
-        <header className={styles.header}>
+      <header className={`${styles.header} ${isScrolled ? styles.scrolled : ""}`}>
+        <div className={styles.headerInner}>
           <Link className={styles.logo} href="/" aria-label="Horse Racing - Trang chủ">
             <span className={styles.logoMark}>
               <Image src={`${imageBase}/icon/icon-horse-head.svg`} alt="" width={34} height={34} />
@@ -109,7 +109,19 @@ export default function Home() {
             <Link className={styles.loginLink} href="/login">Đăng nhập</Link>
             <Link className={styles.registerLink} href="/register">Đăng ký</Link>
           </div>
-        </header>
+        </div>
+      </header>
+
+      <section className={styles.hero} aria-labelledby="hero-title">
+        <Image
+          className={styles.heroImage}
+          src={`${imageBase}/equestrian horse portrait dark background.jpg`}
+          alt="Các jockey đang tranh tài trên đường đua ngựa"
+          fill
+          priority
+          sizes="100vw"
+        />
+        <div className={styles.heroShade} />
 
         <div className={styles.heroContent}>
           <p className={styles.eyebrow}>Nền tảng quản lý giải đấu chuyên nghiệp</p>
