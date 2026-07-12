@@ -1,11 +1,14 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import EmailStr
+from pydantic import BaseModel, EmailStr
 from sqlalchemy import text
 from sqlalchemy.orm import Session, joinedload
 
 from app.api.deps import get_db, get_current_user, RoleChecker
-from app.models.database_models import JockeyProfile, HorseOwnerProfile, JockeyInvitation, Horse, Tournament, User
+from app.models.database_models import (
+    JockeyProfile, HorseOwnerProfile, JockeyInvitation, Horse, Tournament, User,
+    Registration, RaceParticipant, Race, Round, Result, Violation
+)
 from app.schemas.auth import JockeyProfileOut, JockeyProfileUpdate
 from app.schemas.horse import JockeyInvitationCreate, JockeyInvitationOut, JockeyInvitationUpdate
 
@@ -198,3 +201,109 @@ def update_invitation(
     db.commit()
     db.refresh(invitation)
     return invitation
+
+
+# ── Tính năng 3.2: Kết quả chi tiết trận đua cho Jockey ──────────────────────
+
+class JockeyViolationOut(BaseModel):
+    """Schema vi phạm trả về cho Jockey."""
+    id: int
+    description: str
+    penalty: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class JockeyRaceResultOut(BaseModel):
+    """Schema kết quả 1 trận đua trả về cho Jockey hiện tại."""
+    race_id: int
+    race_name: str
+    horse_name: str
+    rank: int
+    points: int
+    finish_time: Optional[str] = None   # ISO string hoặc None
+    violations: List[JockeyViolationOut] = []
+
+    class Config:
+        from_attributes = True
+
+
+@router.get("/results", response_model=List[JockeyRaceResultOut])
+def get_my_race_results(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(RoleChecker(["JOCKEY"]))
+):
+    """
+    Tính năng 3.2 – Trả về toàn bộ lịch sử kết quả thi đấu của Jockey đang
+    đăng nhập.
+
+    JOIN chain:
+        Results → RaceParticipants → Registrations → (Horses, JockeyProfiles)
+                → Races → Rounds → Tournaments
+    LEFT JOIN thêm Violations theo race_participant_id.
+
+    Lọc theo jockey_id = jockey_profile.id của current_user.
+    """
+    # 1. Tìm jockey_profile từ current_user.id
+    jockey = db.query(JockeyProfile).filter(
+        JockeyProfile.user_id == current_user.id
+    ).first()
+    if not jockey:
+        raise HTTPException(status_code=404, detail="Jockey profile not found")
+
+    # 2. JOIN chain để lấy toàn bộ Results liên quan đến jockey này
+    results = (
+        db.query(Result)
+        .join(RaceParticipant, Result.race_participant_id == RaceParticipant.id)
+        .join(Registration, RaceParticipant.registration_id == Registration.id)
+        .join(Race, RaceParticipant.race_id == Race.id)
+        .join(Round, Race.round_id == Round.id)
+        .join(Tournament, Round.tournament_id == Tournament.id)
+        .filter(Registration.jockey_id == jockey.id)
+        .options(
+            joinedload(Result.participant)
+            .joinedload(RaceParticipant.registration)
+            .joinedload(Registration.horse),
+            joinedload(Result.participant)
+            .joinedload(RaceParticipant.race),
+            joinedload(Result.participant)
+            .joinedload(RaceParticipant.violations),
+        )
+        .all()
+    )
+
+    # 3. Xây dựng response
+    output: List[JockeyRaceResultOut] = []
+    for res in results:
+        participant = res.participant
+        race = participant.race
+        registration = participant.registration
+        horse = registration.horse
+
+        # finish_time: dùng finish_time trên RaceParticipant (nullable)
+        finish_time_str: Optional[str] = None
+        if participant.finish_time:
+            finish_time_str = participant.finish_time.isoformat()
+
+        # 4. Violations (LEFT JOIN) – đã eager-loaded
+        violation_list = [
+            JockeyViolationOut(
+                id=v.id,
+                description=v.description,
+                penalty=v.penalty,
+            )
+            for v in (participant.violations or [])
+        ]
+
+        output.append(JockeyRaceResultOut(
+            race_id=race.id,
+            race_name=race.name,
+            horse_name=horse.name if horse else "Chưa rõ",
+            rank=res.rank,
+            points=res.points,
+            finish_time=finish_time_str,
+            violations=violation_list,
+        ))
+
+    return output

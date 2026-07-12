@@ -15,6 +15,11 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Tính năng 3.2: Kết quả chi tiết trận đua
+  const [raceResults, setRaceResults] = useState([]);
+  const [resultModal, setResultModal] = useState(false);
+  const [selectedResult, setSelectedResult] = useState(null);
+
   // Tab Giải thưởng
   const [rankings, setRankings] = useState([]);
   const [tournaments, setTournaments] = useState([]);
@@ -52,6 +57,16 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
       showMsg(err.message, "error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Tính năng 3.2: Nạp toàn bộ lịch sử kết quả của Jockey từ backend
+  const loadRaceResults = async () => {
+    try {
+      const data = await api.get("/jockeys/results");
+      setRaceResults(Array.isArray(data) ? data : []);
+    } catch (err) {
+      // Không critical – im lặng nếu chưa có kết quả
     }
   };
 
@@ -110,6 +125,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     loadData();
     loadProfile();
     loadRankings();
+    loadRaceResults();
   }, []);
 
   const respondInvitation = async (id, status) => {
@@ -299,14 +315,17 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                   <th>Khoảng cách</th>
                   <th>Đường chạy</th>
                   <th>Trạng thái</th>
+                  <th>Kết quả</th>
                 </tr>
               </thead>
               <tbody>
                 {myRaces.length === 0 ? (
-                  <tr><td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
+                  <tr><td colSpan="7" style={{ textAlign: "center", color: "#64748b" }}>Chưa có lịch thi đấu nào</td></tr>
                 ) : (
                   myRaces.map(rc => {
                     const myParticipation = rc.participants.find(p => p.jockey_name === user?.full_name);
+                    // Tính năng 3.2: tìm kết quả của trận này trong raceResults
+                    const myResult = raceResults.find(r => r.race_id === rc.id);
                     return (
                       <tr key={rc.id}>
                         <td style={{ fontWeight: "700" }}>{rc.name}</td>
@@ -321,12 +340,131 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
                             {rc.status}
                           </span>
                         </td>
+                        <td>
+                          {/* Tính năng 3.2: nút Xem kết quả chỉ hiện khi trận COMPLETED */}
+                          {rc.status === "COMPLETED" && myResult ? (
+                            <button
+                              id={`btn-result-${rc.id}`}
+                              className="btn-primary"
+                              style={{ padding: "6px 12px", fontSize: "12px" }}
+                              onClick={() => { setSelectedResult(myResult); setResultModal(true); }}
+                            >
+                              📊 Xem kết quả
+                            </button>
+                          ) : rc.status === "COMPLETED" ? (
+                            <span style={{ color: "#64748b", fontSize: "12px" }}>Chưa có kết quả</span>
+                          ) : null}
+                        </td>
                       </tr>
                     );
                   })
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Tính năng 3.2: Modal kết quả chi tiết trận đua */}
+      {resultModal && selectedResult && (
+        <div
+          id="result-modal-overlay"
+          style={{
+            position: "fixed", inset: 0,
+            background: "rgba(0,0,0,0.65)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            zIndex: 9999,
+          }}
+          onClick={(e) => { if (e.target.id === "result-modal-overlay") setResultModal(false); }}
+        >
+          <div style={{
+            background: "#0f172a",
+            border: "1px solid #334155",
+            borderRadius: "16px",
+            padding: "32px",
+            minWidth: "360px",
+            maxWidth: "520px",
+            width: "90%",
+            boxShadow: "0 25px 50px rgba(0,0,0,0.6)",
+          }}>
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+              <h3 style={{ margin: 0, color: "#f8fafc", fontSize: "18px" }}>📊 Kết quả trận đua</h3>
+              <button
+                id="btn-close-result-modal"
+                onClick={() => setResultModal(false)}
+                style={{ background: "none", border: "none", color: "#64748b", fontSize: "22px", cursor: "pointer", lineHeight: 1 }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Race name */}
+            <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "20px" }}>
+              Trận: <strong style={{ color: "#f8fafc" }}>{selectedResult.race_name}</strong>
+            </p>
+
+            {/* Stats cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "20px" }}>
+              {/* Ngựa */}
+              <div style={{ background: "#1e293b", borderRadius: "10px", padding: "14px 16px", border: "1px solid #334155" }}>
+                <div style={{ color: "#64748b", fontSize: "11px", marginBottom: "4px" }}>NGỰA ĐỒNG HÀNH</div>
+                <div style={{ color: "#38bdf8", fontWeight: "700", fontSize: "15px" }}>{selectedResult.horse_name}</div>
+              </div>
+              {/* Xếp hạng */}
+              <div style={{ background: "#1e293b", borderRadius: "10px", padding: "14px 16px", border: "1px solid #334155" }}>
+                <div style={{ color: "#64748b", fontSize: "11px", marginBottom: "4px" }}>XẾP HẠNG</div>
+                <div style={{
+                  fontWeight: "800", fontSize: "22px",
+                  color: selectedResult.rank === 1 ? "#f59e0b" : selectedResult.rank === 2 ? "#94a3b8" : selectedResult.rank === 3 ? "#cd7f32" : "var(--primary)"
+                }}>
+                  {selectedResult.rank === 1 ? "🥇" : selectedResult.rank === 2 ? "🥈" : selectedResult.rank === 3 ? "🥉" : `#${selectedResult.rank}`}
+                </div>
+              </div>
+              {/* Điểm */}
+              <div style={{ background: "#1e293b", borderRadius: "10px", padding: "14px 16px", border: "1px solid #334155" }}>
+                <div style={{ color: "#64748b", fontSize: "11px", marginBottom: "4px" }}>ĐIỂM ĐẠT ĐƯỢC</div>
+                <div style={{ color: "#22c55e", fontWeight: "700", fontSize: "18px" }}>{selectedResult.points} điểm</div>
+              </div>
+              {/* Thời gian về đích */}
+              <div style={{ background: "#1e293b", borderRadius: "10px", padding: "14px 16px", border: "1px solid #334155" }}>
+                <div style={{ color: "#64748b", fontSize: "11px", marginBottom: "4px" }}>THỜI GIAN VỀ ĐÍCH</div>
+                <div style={{ color: "#f8fafc", fontWeight: "600", fontSize: "14px" }}>
+                  {selectedResult.finish_time
+                    ? new Date(selectedResult.finish_time).toLocaleString("vi-VN")
+                    : "—"}
+                </div>
+              </div>
+            </div>
+
+            {/* Violations alert */}
+            {selectedResult.violations && selectedResult.violations.length > 0 && (
+              <div style={{
+                background: "rgba(239,68,68,0.1)",
+                border: "1px solid #ef4444",
+                borderRadius: "10px",
+                padding: "16px",
+                marginBottom: "8px",
+              }}>
+                <div style={{ color: "#ef4444", fontWeight: "700", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+                  🚨 Vi phạm ghi nhận ({selectedResult.violations.length})
+                </div>
+                <ul style={{ margin: 0, paddingLeft: "18px", color: "#fca5a5", fontSize: "13px" }}>
+                  {selectedResult.violations.map((v, idx) => (
+                    <li key={v.id || idx} style={{ marginBottom: "6px" }}>
+                      <strong>{v.description}</strong>
+                      {v.penalty && <span style={{ color: "#f87171" }}> — Hình phạt: {v.penalty}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {(!selectedResult.violations || selectedResult.violations.length === 0) && (
+              <div style={{ color: "#22c55e", fontSize: "13px", textAlign: "center", padding: "8px", background: "rgba(34,197,94,0.08)", borderRadius: "8px", border: "1px solid rgba(34,197,94,0.2)" }}>
+                ✅ Không có vi phạm nào được ghi nhận
+              </div>
+            )}
           </div>
         </div>
       )}
