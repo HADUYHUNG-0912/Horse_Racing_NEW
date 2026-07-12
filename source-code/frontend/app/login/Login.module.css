@@ -4,6 +4,9 @@
   grid-template-columns: minmax(0, 55fr) minmax(480px, 45fr);
   color: var(--color-text-dark);
   background: var(--color-cream);
+  font-family: var(--font-asap), var(--font-sans);
+  font-optical-sizing: auto;
+  font-variation-settings: "wdth" 100;
 }
 
 .visualPanel {
@@ -74,16 +77,17 @@
 
 .welcomeCopy h1,
 .formHeader h2 {
-  font-family: "Times New Roman", Times, serif;
+  font-family: var(--font-bungee), Impact, sans-serif;
   font-kerning: normal;
   font-variant-ligatures: common-ligatures;
+  font-weight: 400;
 }
 
 .welcomeCopy h1 {
-  font-size: clamp(54px, 5.3vw, 86px);
-  font-weight: 600;
-  line-height: 1.02;
-  letter-spacing: -0.015em;
+  font-size: clamp(44px, 4.4vw, 68px);
+  font-weight: 400;
+  line-height: 1.14;
+  letter-spacing: 0;
 }
 
 .welcomeCopy > span {
@@ -144,10 +148,10 @@
 }
 
 .formHeader h2 {
-  font-size: clamp(48px, 4.3vw, 68px);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.01em;
+  font-size: clamp(42px, 3.8vw, 58px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: 0;
 }
 
 .formHeader > span {
@@ -180,7 +184,7 @@
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 50%;
-  font-family: "Times New Roman", Times, serif;
+  font-family: var(--font-asap), sans-serif;
   font-weight: 700;
 }
 
