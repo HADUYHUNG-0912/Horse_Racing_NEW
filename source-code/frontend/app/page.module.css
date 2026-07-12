@@ -1,13 +1,4 @@
 .page {
-  --color-cream: #f5f0e6;
-  --color-forest: #2f4a3d;
-  --color-forest-dark: #1e332a;
-  --color-burgundy: #7a1f3d;
-  --color-burgundy-dark: #5c1730;
-  --color-text-dark: #1a1a1a;
-  --color-text-light: #f5f0e6;
-  --color-text-muted: #6b6b63;
-  --color-border: #e0dacd;
   min-height: 100vh;
   overflow: hidden;
   color: var(--color-text-dark);

@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { api } from "../api";
+import styles from "./Login.module.css";
+
+const imageBase = "/images/next";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -27,138 +31,106 @@ export default function Login() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card} className="glass">
-        {/* Title */}
-        <div style={styles.header}>
-          <Link href="/" style={styles.backLink}>← Trang chủ</Link>
-          <h1 style={styles.title}>🏇 HORSE <span style={{ color: "var(--primary)" }}>RACING</span></h1>
-          <p style={styles.subtitle}>Đăng nhập vào hệ thống quản lý</p>
+    <main className={styles.loginPage}>
+      <section className={styles.visualPanel} aria-label="Chào mừng trở lại">
+        <Image
+          className={styles.backgroundImage}
+          src={`${imageBase}/dressage horse rider action.jpg`}
+          alt="Jockey cùng ngựa đua tại trường đua"
+          fill
+          priority
+          sizes="(max-width: 767px) 100vw, 55vw"
+        />
+        <div className={styles.overlay} />
+
+        <div className={styles.visualContent}>
+          <Link className={styles.logo} href="/" aria-label="Horse Racing - Trang chủ">
+            <Image
+              src={`${imageBase}/icon/icon-horse-head.svg`}
+              alt=""
+              width={38}
+              height={38}
+            />
+            <span>Horse <strong>Racing</strong></span>
+          </Link>
+
+          <div className={styles.welcomeCopy}>
+            <p>Nơi những nhà vô địch hội tụ</p>
+            <h1>Chào mừng trở lại<br />đường đua.</h1>
+            <span>Tiếp tục hành trình chinh phục những cột mốc mới.</span>
+          </div>
+
+          <p className={styles.copyright}>
+            © 2026 Horse Racing Tournament Management System
+          </p>
+        </div>
+      </section>
+
+      <section className={styles.formPanel}>
+        <Link className={styles.backLink} href="/">
+          <span aria-hidden="true">←</span> Trang chủ
+        </Link>
+
+        <div className={styles.formContainer}>
+          <header className={styles.formHeader}>
+            <p>Cổng thông tin thành viên</p>
+            <h2>Đăng nhập</h2>
+            <span>Nhập thông tin tài khoản để truy cập bảng điều khiển.</span>
+          </header>
+
+          {error && (
+            <div className={styles.errorAlert} role="alert" aria-live="polite">
+              <span className={styles.errorIcon} aria-hidden="true">!</span>
+              <p>{error}</p>
+            </div>
+          )}
+
+          <form className={styles.form} onSubmit={handleLogin}>
+            <div className={styles.fieldGroup}>
+              <label htmlFor="username">Tên đăng nhập</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                placeholder="Nhập tên đăng nhập"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                aria-invalid={Boolean(error)}
+                required
+              />
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label htmlFor="password">Mật khẩu</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="Nhập mật khẩu"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                aria-invalid={Boolean(error)}
+                required
+              />
+            </div>
+
+            <button className={styles.submitButton} type="submit" disabled={loading}>
+              <span>{loading ? "Đang xử lý..." : "Đăng nhập"}</span>
+              {!loading && <span aria-hidden="true">→</span>}
+            </button>
+          </form>
+
+          <p className={styles.registerPrompt}>
+            Chưa có tài khoản? <Link href="/register">Đăng ký ngay</Link>
+          </p>
         </div>
 
-        {/* Error Alert */}
-        {error && (
-          <div style={styles.errorAlert}>
-            <span>⚠️</span> {error}
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleLogin} style={styles.form}>
-          <div className="form-group">
-            <label htmlFor="username">Tên đăng nhập</label>
-            <input
-              id="username"
-              type="text"
-              className="input-field"
-              placeholder="Nhập tên đăng nhập..."
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Mật khẩu</label>
-            <input
-              id="password"
-              type="password"
-              className="input-field"
-              placeholder="Nhập mật khẩu..."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn-primary"
-            style={styles.submitBtn}
-            disabled={loading}
-          >
-            {loading ? "Đang xử lý..." : "Đăng Nhập"}
-          </button>
-        </form>
-
-        {/* Register navigation link */}
-        <div style={styles.registerLink}>
-          Chưa có tài khoản? <Link href="/register" style={{ color: "var(--primary)", fontWeight: "600" }}>Đăng ký ngay</Link>
-        </div>
-      </div>
-    </div>
+        <p className={styles.securityNote}>
+          Thông tin đăng nhập của bạn được bảo mật an toàn.
+        </p>
+      </section>
+    </main>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "20px",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "460px",
-    padding: "40px",
-    borderRadius: "24px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "24px",
-  },
-  header: {
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-    position: "relative",
-  },
-  backLink: {
-    position: "absolute",
-    left: "0",
-    top: "-10px",
-    fontSize: "13px",
-    color: "#64748b",
-    transition: "color 0.2s",
-  },
-  title: {
-    fontSize: "26px",
-    fontWeight: "900",
-    letterSpacing: "1px",
-    marginTop: "20px",
-  },
-  subtitle: {
-    fontSize: "14px",
-    color: "#94a3b8",
-  },
-  errorAlert: {
-    background: "rgba(239, 68, 68, 0.1)",
-    border: "1px solid rgba(239, 68, 68, 0.2)",
-    color: "var(--danger)",
-    padding: "12px 16px",
-    borderRadius: "8px",
-    fontSize: "14px",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  submitBtn: {
-    width: "100%",
-    justifyContent: "center",
-    padding: "12px",
-    fontSize: "15px",
-    marginTop: "8px",
-  },
-  registerLink: {
-    textAlign: "center",
-    fontSize: "14px",
-    color: "#94a3b8",
-    marginTop: "8px",
-  },
-};

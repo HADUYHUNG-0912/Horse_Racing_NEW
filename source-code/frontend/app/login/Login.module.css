@@ -1,0 +1,430 @@
+.loginPage {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 55fr) minmax(480px, 45fr);
+  color: var(--color-text-dark);
+  background: var(--color-cream);
+}
+
+.visualPanel {
+  position: relative;
+  min-height: 100svh;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--color-text-light);
+}
+
+.backgroundImage {
+  z-index: -3;
+  object-fit: cover;
+  object-position: 48% center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(20, 15, 10, 0.24), rgba(20, 15, 10, 0.08)),
+    linear-gradient(180deg, rgba(20, 15, 10, 0.55) 0%, rgba(20, 15, 10, 0.75) 60%, rgba(20, 15, 10, 0.92) 100%);
+}
+
+.visualContent {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(32px, 4.2vw, 68px);
+}
+
+.logo {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.logo img {
+  filter: brightness(0) invert(1);
+}
+
+.logo strong {
+  color: #e1bdc8;
+}
+
+.welcomeCopy {
+  max-width: 680px;
+  margin: auto 0;
+  padding: 70px 0;
+}
+
+.welcomeCopy > p,
+.formHeader > p {
+  margin-bottom: 20px;
+  color: #e7bdcb;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.welcomeCopy h1,
+.formHeader h2 {
+  font-family: "Times New Roman", Times, serif;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+}
+
+.welcomeCopy h1 {
+  font-size: clamp(54px, 5.3vw, 86px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+}
+
+.welcomeCopy > span {
+  display: block;
+  max-width: 540px;
+  margin-top: 28px;
+  color: rgba(245, 240, 230, 0.76);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.copyright {
+  color: rgba(245, 240, 230, 0.5);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.formPanel {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 92px clamp(40px, 6vw, 110px) 64px;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(122, 31, 61, 0.055), transparent 30%),
+    var(--color-cream);
+}
+
+.backLink {
+  position: absolute;
+  top: 38px;
+  right: clamp(40px, 6vw, 110px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 180ms ease;
+}
+
+.backLink:hover {
+  color: var(--color-burgundy);
+}
+
+.formContainer {
+  width: min(100%, 440px);
+}
+
+.formHeader {
+  margin-bottom: 38px;
+}
+
+.formHeader > p {
+  color: var(--color-burgundy);
+}
+
+.formHeader h2 {
+  font-size: clamp(48px, 4.3vw, 68px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.formHeader > span {
+  display: block;
+  margin-top: 16px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.errorAlert {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: start;
+  gap: 11px;
+  margin-bottom: 22px;
+  padding: 14px 16px;
+  color: #8f1f32;
+  background: #f8e7e8;
+  border: 1px solid #e6b9bf;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.errorIcon {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.fieldGroup label {
+  color: #34342f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fieldGroup input {
+  width: 100%;
+  height: 52px;
+  padding: 0 15px;
+  color: var(--color-text-dark);
+  background: #fffdf9;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  outline: none;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.fieldGroup input::placeholder {
+  color: #a29c91;
+}
+
+.fieldGroup input:hover {
+  border-color: #c7bcaa;
+}
+
+.fieldGroup input:focus {
+  background: #fff;
+  border-color: var(--color-burgundy);
+  box-shadow: 0 0 0 3px rgba(122, 31, 61, 0.1);
+}
+
+.fieldGroup input[aria-invalid="true"] {
+  border-color: #b84150;
+}
+
+.submitButton {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 18px 0 22px;
+  color: var(--color-text-light);
+  background: var(--color-burgundy);
+  border: 1px solid var(--color-burgundy);
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--color-burgundy-dark);
+  border-color: var(--color-burgundy-dark);
+  transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.registerPrompt {
+  margin-top: 27px;
+  color: var(--color-text-muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+.registerPrompt a {
+  color: var(--color-burgundy);
+  font-weight: 800;
+}
+
+.registerPrompt a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.securityNote {
+  position: absolute;
+  bottom: 26px;
+  color: #9b958b;
+  font-size: 10px;
+}
+
+.loginPage a:focus-visible,
+.submitButton:focus-visible {
+  outline: 3px solid #d9a4b6;
+  outline-offset: 4px;
+}
+
+@media (max-width: 1024px) {
+  .loginPage {
+    grid-template-columns: minmax(0, 50fr) minmax(440px, 50fr);
+  }
+
+  .visualContent {
+    padding: 42px;
+  }
+
+  .formPanel {
+    padding-right: 54px;
+    padding-left: 54px;
+  }
+
+  .welcomeCopy h1 {
+    font-size: 58px;
+  }
+}
+
+@media (max-width: 767px) {
+  .loginPage {
+    min-height: 100svh;
+    display: block;
+  }
+
+  .visualPanel,
+  .visualContent {
+    min-height: 250px;
+  }
+
+  .backgroundImage {
+    object-position: center 42%;
+  }
+
+  .visualContent {
+    padding: 24px;
+  }
+
+  .logo {
+    font-size: 11px;
+  }
+
+  .logo img {
+    width: 31px;
+    height: 31px;
+  }
+
+  .welcomeCopy {
+    margin: auto 0 0;
+    padding: 30px 0 0;
+  }
+
+  .welcomeCopy > p,
+  .welcomeCopy > span,
+  .copyright {
+    display: none;
+  }
+
+  .welcomeCopy h1 {
+    font-size: clamp(38px, 10vw, 50px);
+    line-height: 1.02;
+  }
+
+  .formPanel {
+    min-height: calc(100svh - 250px);
+    justify-content: flex-start;
+    padding: 74px 24px 72px;
+  }
+
+  .backLink {
+    top: 25px;
+    right: 24px;
+  }
+
+  .formContainer {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .formHeader {
+    margin-bottom: 32px;
+  }
+
+  .formHeader h2 {
+    font-size: 48px;
+  }
+
+  .securityNote {
+    position: static;
+    margin-top: 54px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .visualPanel,
+  .visualContent {
+    min-height: 210px;
+  }
+
+  .welcomeCopy h1 {
+    font-size: 38px;
+  }
+
+  .formPanel {
+    min-height: calc(100svh - 210px);
+    padding: 64px 18px 50px;
+  }
+
+  .backLink {
+    top: 22px;
+    right: 18px;
+  }
+
+  .formHeader > p {
+    margin-bottom: 14px;
+  }
+
+  .formHeader h2 {
+    font-size: 43px;
+  }
+
+  .fieldGroup input {
+    height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loginPage *,
+  .loginPage *::before,
+  .loginPage *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
