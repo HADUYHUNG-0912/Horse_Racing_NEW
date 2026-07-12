@@ -120,9 +120,17 @@
     - Thực hiện xóa sạch (Clear) dữ liệu cũ trong cơ sở dữ liệu SQL Server local và nạp (Seed) lại dữ liệu tiếng Anh hoàn chỉnh.
     - Đảm bảo hệ thống backend và frontend vận hành ổn định trên các cổng mặc định và hiển thị đúng thông số tiếng Anh.
 - **Tiến độ đã hoàn thành (11/07/2026 - Chuẩn bị Phase 5 & Đẩy task lên Jira):**
-  - Biên soạn và thống nhất Kế hoạch triển khai Phase 5 chi tiết tại [trien_khai_phase5.md](file:///e:/CNPM/Project/Horse_Racing_NEW/doc/plan/trien_khai_phase5.md).
+  - Biên soạn và thống nhất Kế hoạch triển khai Phase 5 chi tiết tại [trien_khai_phase5.md](file:///e:/CNPM\Project\Horse_Racing_NEW\doc\plan\trien_khai_phase5.md).
   - Tách 4 nhánh làm việc cho từng role từ nhánh `main`: `feature/phase5-admin`, `feature/phase5-referee`, `feature/phase5-owner`, `feature/phase5-jockey`.
   - Khởi tạo 4 Epics, 10 Tasks con trên Jira, tự động gán đúng thành viên phụ trách và chuyển tất cả sang trạng thái `In Progress`.
+- **Tiến độ đã hoàn thành (12/07/2026 - Triển khai & Tích hợp hoàn tất Phase 5):**
+  - **Tích hợp & Kiểm thử nhánh Owner:** Merge thành công [PR #56](https://github.com/HADUYHUNG-0912/Horse_Racing_NEW/pull/56) mang lại tính năng xem Cúp & Giải thưởng cho Owner ở cả backend và frontend.
+  - **Tích hợp & Kiểm thử nhánh Jockey:** Merge thành công [PR #57](https://github.com/HADUYHUNG-0912/Horse_Racing_NEW/pull/57) bổ sung endpoint xem kết quả thi đấu của Jockey và modal chi tiết kết quả có hiển thị vi phạm.
+  - **Tích hợp & Kiểm thử nhánh Admin:** Merge thành công chuỗi PR #50 + #51 + #52 + #53 bổ sung tính năng đổi mật khẩu cho mọi user, xem chi tiết thông tin kèm profile của từng user cho Admin, thêm nút tạo Admin/Organizer nội bộ và chặn đăng ký Admin công khai.
+  - **Tích hợp & Kiểm thử nhánh Referee:** Merge thành công [PR #58](https://github.com/HADUYHUNG-0912/Horse_Racing_NEW/pull/58) bổ sung giao diện và API cập nhật hồ sơ cá nhân của Referee.
+  - **Dọn dẹp Git:** Đóng toàn bộ các Pull Request và xóa sạch các nhánh tính năng cũ trên remote và local để giữ git repository gọn gàng.
+  - **Cập nhật trạng thái:** Cập nhật 10 Jira subtasks của Phase 5 sang trạng thái `Done` (Hoàn thành 100%).
+
 
 
 
