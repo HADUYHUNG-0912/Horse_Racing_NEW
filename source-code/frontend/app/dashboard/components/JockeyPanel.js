@@ -10,7 +10,7 @@ import { styles } from "./styles";
 // Thay vào đó, gọi trực tiếp qua "api" (object đã chắc chắn hoạt động vì
 // api.get đang được dùng thành công ở loadData) để không bị crash.
 
-export default function JockeyPanel({ user, activeTab, showMsg }) {
+export default function JockeyPanel({ user, activeTab, showMsg, onUserRefresh }) {
   const [invitations, setInvitations] = useState([]);
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -126,6 +126,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
     loadProfile();
     loadRankings();
     loadRaceResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const respondInvitation = async (id, status) => {
@@ -220,6 +221,7 @@ export default function JockeyPanel({ user, activeTab, showMsg }) {
         bio: updated?.bio ?? "",
       });
       setProfileErrors({});
+      await onUserRefresh?.(user?.id);
       showMsg("Cập nhật thông tin hồ sơ Jockey thành công!");
     } catch (err) {
       showMsg(err?.message || "Không thể lưu hồ sơ. Vui lòng thử lại!", "error");

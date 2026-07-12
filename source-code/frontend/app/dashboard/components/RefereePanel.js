@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
 
-export default function RefereePanel({ user, activeTab, showMsg }) {
+export default function RefereePanel({ user, activeTab, showMsg, onUserRefresh }) {
   const [races, setRaces] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -96,6 +96,7 @@ export default function RefereePanel({ user, activeTab, showMsg }) {
         certification_level: updated?.certification_level ?? ""
       });
       setProfileErrors({});
+      await onUserRefresh?.(user?.id);
       showMsg("Cập nhật thông tin hồ sơ Referee thành công!");
     } catch (err) {
       showMsg(err?.message || "Không thể lưu hồ sơ. Vui lòng thử lại!", "error");

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
 
-export default function SpectatorPanel({ user, activeTab, showMsg }) {
+export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh }) {
   const [predictions, setPredictions] = useState([]);
   const [races, setRaces] = useState([]);
   const [tournaments, setTournaments] = useState([]);
@@ -136,6 +136,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg }) {
     e.preventDefault();
     try {
       await api.put("/spectators/profile", profileForm);
+      await onUserRefresh?.(user?.id);
       showMsg("Cập nhật hồ sơ thành công!");
       loadData();
     } catch (err) {

@@ -19,7 +19,7 @@ const emptyOwnerProfileForm = {
   bio: ""
 };
 
-export default function OwnerPanel({ user, activeTab, showMsg }) {
+export default function OwnerPanel({ user, activeTab, showMsg, onUserRefresh }) {
   const [horses, setHorses] = useState([]);
   const [jockeys, setJockeys] = useState([]);
   const [invitations, setInvitations] = useState([]);
@@ -189,6 +189,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
       });
       setOwnerProfile(updatedProfile);
       setProfileForm(getOwnerProfileForm(updatedProfile));
+      await onUserRefresh?.(user?.id);
       showMsg("Cập nhật hồ sơ chủ sở hữu thành công!");
     } catch (err) {
       showMsg(err.message, "error");
@@ -939,6 +940,7 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
                     <div>
                       <strong>Avatar:</strong>
                       {ownerProfile.avatar ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={ownerProfile.avatar}
                           alt="Owner Avatar"
