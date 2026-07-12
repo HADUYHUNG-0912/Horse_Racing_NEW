@@ -308,6 +308,25 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
     });
   };
 
+  const formatAwardRank = (rank) => {
+    const numericRank = Number(rank);
+    if (!Number.isFinite(numericRank)) return "Chưa cập nhật hạng";
+    if (numericRank === 1) return "🥇 Hạng 1";
+    if (numericRank === 2) return "🥈 Hạng 2";
+    if (numericRank === 3) return "🥉 Hạng 3";
+    return `Hạng ${numericRank}`;
+  };
+
+  const formatPrizeValue = (prizeValue) => {
+    if (prizeValue === null || prizeValue === undefined || prizeValue === "") {
+      return "Chưa cập nhật";
+    }
+    const numericValue = Number(prizeValue);
+    return Number.isFinite(numericValue)
+      ? numericValue.toLocaleString("vi-VN")
+      : "Chưa cập nhật";
+  };
+
   if (loading) {
     return <div style={styles.loading}>Đang tải dữ liệu Owner...</div>;
   }
@@ -716,11 +735,27 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
           ) : awards.length === 0 ? (
             <p style={{ color: "#94a3b8" }}>Bạn chưa có giải thưởng nào.</p>
           ) : (
-            <div>
-              <p style={{ color: "#94a3b8" }}>Đã nhận {awards.length} giải thưởng.</p>
-              <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-                {JSON.stringify(awards, null, 2)}
-              </pre>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "16px"
+            }}>
+              {awards.map((award, index) => (
+                <article
+                  key={`${award.tournament_name || "tournament"}-${award.horse_name || "horse"}-${award.rank ?? "rank"}-${index}`}
+                  style={{ ...styles.formCard, display: "flex", flexDirection: "column", gap: "12px" }}
+                >
+                  <div style={{ color: "var(--primary)", fontSize: "18px", fontWeight: "800" }}>
+                    {formatAwardRank(award.rank)}
+                  </div>
+                  <h3 style={{ margin: 0 }}>🏆 {award.title || "Chưa có thông tin"}</h3>
+                  <div><strong>Giải đấu:</strong> {award.tournament_name || "Chưa có thông tin"}</div>
+                  <div><strong>🐎 Ngựa:</strong> {award.horse_name || "Chưa có thông tin"}</div>
+                  <div><strong>👤 Nài ngựa:</strong> {award.jockey_name || "Chưa có thông tin"}</div>
+                  <div><strong>💰 Giá trị giải:</strong> {formatPrizeValue(award.prize_value)}</div>
+                  <div><strong>📝 Ghi chú:</strong> {award.notes || "Không có ghi chú"}</div>
+                </article>
+              ))}
             </div>
           )}
         </div>

@@ -97,7 +97,31 @@ git commit -m "feat(owner): fetch owner awards"
 
 ---
 
-# TASK 8 — HIỂN THỊ AWARDS
+# TASK 8 — HIỂN THỊ 
+Một góp ý nhỏ cho Task 8
+
+Hiện prize_value đang là:
+
+5000000.00
+
+Ở Task 8 mình sẽ yêu cầu Agent hiển thị đẹp hơn, ví dụ:
+
+💰 5.000.000 VNĐ
+
+hoặc
+
+💰 5.000.000 ₫
+
+và thay JSON bằng các card giải thưởng có:
+
+🥇 Hạng 1
+🐎 Tên ngựa
+👤 Nài ngựa
+🏆 Tên giải
+💰 Giá trị giải
+📝 Ghi chú
+
+để đúng với kế hoạch Phase 5 và giao diện hiện tại
 
 ## Dữ liệu cần hiển thị
 
