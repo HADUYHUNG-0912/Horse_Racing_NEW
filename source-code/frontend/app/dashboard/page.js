@@ -156,6 +156,9 @@ export default function Dashboard() {
               <button style={activeTab === "results" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("results") }>
                 🏆 Kết quả thi đấu
               </button>
+              <button style={activeTab === "owner-awards" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("owner-awards") }>
+                🏆 Cúp & Giải thưởng
+              </button>
               <button style={activeTab === "profile" ? styles.activeTabBtn : styles.tabBtn} onClick={() => setActiveTab("profile") }>
                 👤 Hồ sơ cá nhân
               </button>

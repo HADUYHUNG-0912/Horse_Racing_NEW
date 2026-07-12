@@ -678,6 +678,16 @@ export default function OwnerPanel({ user, activeTab, showMsg }) {
         </div>
       )}
 
+      {/* TAB: Cúp & Giải thưởng của Owner */}
+      {activeTab === "owner-awards" && (
+        <div style={styles.tabContent}>
+          <h2>🏆 Cúp & Giải thưởng</h2>
+          <p style={{ color: "#94a3b8" }}>
+            Đang phát triển nội dung giải thưởng.
+          </p>
+        </div>
+      )}
+
       {/* TAB: Hồ sơ cá nhân Owner */}
       {activeTab === "profile" && (
         <div style={styles.tabContent}>
