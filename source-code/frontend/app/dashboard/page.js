@@ -128,6 +128,8 @@ export default function Dashboard() {
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const [isProfileHover, setIsProfileHover] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAdminProfileMenuOpen, setIsAdminProfileMenuOpen] = useState(false);
+  const [adminPeriod, setAdminPeriod] = useState("month");
   const router = useRouter();
 
   const [showPwdModal, setShowPwdModal] = useState(false);
@@ -177,6 +179,7 @@ export default function Dashboard() {
 
         setUser(hydratedUser);
         setActiveTab(getDefaultTab(hydratedUser.role_name));
+        setIsSidebarOpen(window.matchMedia("(min-width: 1025px)").matches);
         setLoading(false);
       } catch (err) {
         console.error("Auth failed:", err);
@@ -245,70 +248,89 @@ export default function Dashboard() {
   }
 
   const displayName = user?.full_name || user?.username || "User";
+  const isAdmin = user?.role_name === "ADMIN";
 
   return (
-    <div className={dashboardStyles.container}>
+    <div className={`${dashboardStyles.container} ${isAdmin ? dashboardStyles.adminContainer : ""}`}>
       {isSidebarOpen && (
         <div
           className={dashboardStyles.sidebarOverlay}
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
-      <header className={dashboardStyles.header}>
+      <header className={`${dashboardStyles.header} ${isAdmin ? dashboardStyles.adminHeader : ""}`}>
         <div className={dashboardStyles.brand}>
           <button
             type="button"
             className={dashboardStyles.menuToggle}
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             aria-label="Toggle sidebar"
+            aria-expanded={isSidebarOpen}
+            aria-controls="dashboard-sidebar"
             style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
           >
             {isSidebarOpen ? <CloseIcon size={20} /> : <MenuIcon size={20} />}
           </button>
-          <FlagIcon size={24} style={{ color: "var(--color-cream)" }} />
-          <span className={dashboardStyles.brandText}>DASHBOARD</span>
+          <FlagIcon size={24} style={{ color: isAdmin ? "var(--color-forest)" : "var(--color-cream)" }} />
+          <span className={`${dashboardStyles.brandText} ${isAdmin ? dashboardStyles.adminBrandText : ""}`}>
+            {isAdmin ? "Dashboard" : "DASHBOARD"}
+          </span>
         </div>
 
         <div className={dashboardStyles.userProfile}>
-          <button
-            type="button"
-            aria-label="Xem hồ sơ cá nhân"
-            className={dashboardStyles.profileTrigger}
-            onClick={handleOpenProfile}
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <span className={dashboardStyles.avatarFrame}>
-              {user?.avatar && !avatarLoadFailed ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={user.avatar}
-                  alt=""
-                  className={dashboardStyles.avatarImage}
-                  onError={() => setAvatarLoadFailed(true)}
-                />
-              ) : (
-                <span className={dashboardStyles.avatarFallback}>{getInitials(displayName)}</span>
+          {isAdmin ? (
+            <label className={dashboardStyles.adminPeriodSelect}>
+              <CalendarIcon size={17} />
+              <select value={adminPeriod} onChange={(event) => setAdminPeriod(event.target.value)} aria-label="Chọn khoảng thời gian thống kê">
+                <option value="week">Tuần này</option>
+                <option value="month">Tháng này</option>
+                <option value="quarter">Quý này</option>
+                <option value="year">Năm nay</option>
+              </select>
+            </label>
+          ) : (
+            <>
+              <button
+                type="button"
+                aria-label="Xem hồ sơ cá nhân"
+                className={dashboardStyles.profileTrigger}
+                onClick={handleOpenProfile}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <span className={dashboardStyles.avatarFrame}>
+                  {user?.avatar && !avatarLoadFailed ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.avatar}
+                      alt=""
+                      className={dashboardStyles.avatarImage}
+                      onError={() => setAvatarLoadFailed(true)}
+                    />
+                  ) : (
+                    <span className={dashboardStyles.avatarFallback}>{getInitials(displayName)}</span>
+                  )}
+                </span>
+
+                <span className={dashboardStyles.userInfo}>
+                  <span className={dashboardStyles.userName}>{displayName}</span>
+                  <span className={dashboardStyles.roleBadge}>{user?.role_name}</span>
+                </span>
+              </button>
+
+              {user?.role_name === "SPECTATOR" && user?.spectator_profile && (
+                <div className={dashboardStyles.rewardPill}>
+                  <TrophyIcon size={14} style={{ marginRight: "4px" }} />
+                  <span className={dashboardStyles.rewardPillText}>
+                    {user.spectator_profile.reward_points ?? 0} pts
+                  </span>
+                </div>
               )}
-            </span>
 
-            <span className={dashboardStyles.userInfo}>
-              <span className={dashboardStyles.userName}>{displayName}</span>
-              <span className={dashboardStyles.roleBadge}>{user?.role_name}</span>
-            </span>
-          </button>
-
-          {user?.role_name === "SPECTATOR" && user?.spectator_profile && (
-            <div className={dashboardStyles.rewardPill}>
-              <TrophyIcon size={14} style={{ marginRight: "4px" }} />
-              <span className={dashboardStyles.rewardPillText}>
-                {user.spectator_profile.reward_points ?? 0} pts
-              </span>
-            </div>
+              <button onClick={handleLogout} className={dashboardStyles.logoutBtn} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <LogoutIcon size={16} /> Đăng xuất
+              </button>
+            </>
           )}
-
-          <button onClick={handleLogout} className={dashboardStyles.logoutBtn} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <LogoutIcon size={16} /> Đăng xuất
-          </button>
         </div>
       </header>
 
@@ -322,8 +344,12 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className={dashboardStyles.mainGrid}>
-        <nav className={`${dashboardStyles.sidebar} ${isSidebarOpen ? dashboardStyles.sidebarActive : ""}`}>
+      <div className={`${dashboardStyles.mainGrid} ${isSidebarOpen ? dashboardStyles.mainGridSidebarOpen : ""}`}>
+        <nav
+          id="dashboard-sidebar"
+          className={`${dashboardStyles.sidebar} ${isAdmin ? dashboardStyles.adminSidebar : ""} ${isSidebarOpen ? dashboardStyles.sidebarActive : ""}`}
+          aria-label="Điều hướng Dashboard"
+        >
           {user?.role_name === "ADMIN" && (
             <>
               <button className={activeTab === "overview" ? dashboardStyles.activeTabBtn : dashboardStyles.tabBtn} onClick={() => { setActiveTab("overview"); setIsSidebarOpen(false); }}>
@@ -415,15 +441,49 @@ export default function Dashboard() {
             <StarIcon size={18} style={{ marginRight: "10px" }} /> Bảng Xếp Hạng
           </button>
           <button
-            className={dashboardStyles.tabBtn}
-            style={{ marginTop: "10px", color: "var(--color-burgundy)", border: "1px dashed rgba(122, 31, 61, 0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}
+            className={`${dashboardStyles.tabBtn} ${dashboardStyles.sidebarPasswordBtn}`}
             onClick={() => { setShowPwdModal(true); setIsSidebarOpen(false); }}
           >
             <KeyIcon size={16} style={{ marginRight: "8px" }} /> Đổi mật khẩu
           </button>
+
+          {isAdmin && (
+            <div className={`${dashboardStyles.adminSidebarProfile} ${isAdminProfileMenuOpen ? dashboardStyles.adminSidebarProfileOpen : ""}`}>
+              {isAdminProfileMenuOpen && (
+                <div className={dashboardStyles.adminProfileMenu}>
+                  <button type="button" onClick={() => { handleOpenProfile(); setIsAdminProfileMenuOpen(false); }}>
+                    <UserIcon size={15} /> Hồ sơ cá nhân
+                  </button>
+                  <button type="button" onClick={handleLogout}>
+                    <LogoutIcon size={15} /> Đăng xuất
+                  </button>
+                </div>
+              )}
+              <button
+                type="button"
+                className={dashboardStyles.adminProfileToggle}
+                onClick={() => setIsAdminProfileMenuOpen((isOpen) => !isOpen)}
+                aria-expanded={isAdminProfileMenuOpen}
+              >
+                <span className={dashboardStyles.adminSidebarProfileAvatar}>
+                  {user?.avatar && !avatarLoadFailed ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={user.avatar} alt="" onError={() => setAvatarLoadFailed(true)} />
+                  ) : (
+                    getInitials(displayName)
+                  )}
+                </span>
+                <span className={dashboardStyles.adminProfileIdentity}>
+                  <strong>{displayName}</strong>
+                  <small>Quản trị viên</small>
+                </span>
+                <span className={`${dashboardStyles.adminProfileChevron} ${isAdminProfileMenuOpen ? dashboardStyles.adminProfileChevronOpen : ""}`}>⌄</span>
+              </button>
+            </div>
+          )}
         </nav>
 
-        <main className={dashboardStyles.workspace}>
+        <main className={`${dashboardStyles.workspace} ${isAdmin && activeTab === "overview" ? dashboardStyles.adminOverviewWorkspace : ""}`}>
           {activeTab === "leaderboard" ? (
             <Leaderboard />
           ) : (

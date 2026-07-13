@@ -6,7 +6,20 @@ import { styles } from "./styles";
 import dashboardStyles from "../dashboard.module.css";
 import PrizesPanel from "./PrizesPanel";
 import {
-  DashboardIcon,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
+import {
   TrophyIcon,
   ListIcon,
   FlagIcon,
@@ -15,7 +28,6 @@ import {
   UsersIcon,
   LockIcon,
   KeyIcon,
-  LogoutIcon,
   UserIcon,
   SearchIcon,
   PlusIcon,
@@ -152,6 +164,39 @@ export default function AdminPanel({ user, activeTab, showMsg }) {
 const approvedRegistrations = useMemo(() => {
   return registrations.filter(r => r.status === "APPROVED");
 }, [registrations]);
+
+const systemScaleData = useMemo(() => [
+  { name: "Thành viên", value: stats?.summary?.total_users || 0 },
+  { name: "Ngựa", value: stats?.summary?.total_horses || 0 },
+  { name: "Jockey", value: stats?.summary?.total_jockeys || 0 },
+  { name: "Giải đấu", value: stats?.summary?.total_tournaments || 0 },
+  { name: "Trận đua", value: stats?.summary?.total_races || 0 }
+], [stats]);
+
+const roleData = useMemo(() => {
+  const roleLabels = {
+    ADMIN: "Quản trị viên",
+    ORGANIZER: "Điều hành",
+    OWNER: "Chủ sở hữu",
+    JOCKEY: "Nài ngựa",
+    REFEREE: "Trọng tài",
+    SPECTATOR: "Khán giả"
+  };
+
+  return Object.entries(stats?.users_by_role || {}).map(([role, count]) => ({
+    role,
+    name: roleLabels[role] || role,
+    value: count
+  }));
+}, [stats]);
+
+const predictionData = useMemo(() => {
+  const accuracy = Math.min(Math.max(Number(stats?.predictions?.global_accuracy_rate) || 0, 0), 100);
+  return [
+    { name: "Dự đoán đúng", value: accuracy },
+    { name: "Dự đoán chưa đúng", value: 100 - accuracy }
+  ];
+}, [stats]);
 
   const handleUpdateTournamentStatus = async (id, status) => {
     try {      
@@ -344,137 +389,126 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     <>
       {/* TAB: Tổng quan hệ thống (Analytics)*/}
     {activeTab === "overview" && (
-      <div className={dashboardStyles.tabContent}>
-        <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <DashboardIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Tổng quan & Phân tích hệ thống
-        </h2>
-        
-        {/* Khối các thẻ con số thống kê sơ bộ */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <UsersIcon size={24} style={{ color: "var(--color-burgundy)", marginBottom: "8px" }} />
-            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Tổng Thành Viên</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-burgundy)", fontFamily: "var(--font-bungee)" }}>{stats?.summary?.total_users || 0}</h2>
+      <div className={`${dashboardStyles.tabContent} ${dashboardStyles.adminOverview}`}>
+        <div className={dashboardStyles.adminOverviewHeading}>
+          <div>
+            <span className={dashboardStyles.adminOverviewEyebrow}>Phân tích hệ thống</span>
+            <h2>Tổng quan hoạt động</h2>
           </div>
-          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <TrophyIcon size={24} style={{ color: "var(--color-forest)", marginBottom: "8px" }} />
-            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Giải Đấu / Trận Đua</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-forest)", fontFamily: "var(--font-bungee)" }}>{stats?.summary?.total_tournaments || 0} / {stats?.summary?.total_races || 0}</h2>
-          </div>
-          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <FlagIcon size={24} style={{ color: "var(--color-burgundy)", marginBottom: "8px" }} />
-            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Ngựa / Jockey</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-burgundy)", fontFamily: "var(--font-bungee)" }}>{stats?.summary?.total_horses || 0} / {stats?.summary?.total_jockeys || 0}</h2>
-          </div>
-          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <StarIcon size={24} style={{ color: "var(--color-forest)", marginBottom: "8px" }} />
-            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Tỷ lệ đoán đúng chính xác</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-forest)", fontFamily: "var(--font-bungee)" }}>{stats?.predictions?.global_accuracy_rate || 0}%</h2>
+          <span className={dashboardStyles.adminOverviewStatus}>Dữ liệu mới nhất</span>
+        </div>
+
+        <div className={dashboardStyles.adminOverviewHero}>
+          <section className={dashboardStyles.adminPrimaryStatCard}>
+            <div className={dashboardStyles.adminPrimaryStatHeader}>
+              <div>
+                <p>Tổng thành viên</p>
+                <strong>{stats?.summary?.total_users || 0}</strong>
+              </div>
+              <span><UsersIcon size={18} /> Toàn hệ thống</span>
+            </div>
+            <div className={dashboardStyles.adminPrimaryChart}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={systemScaleData} margin={{ top: 16, right: 10, left: -18, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="adminScaleGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f5f0e6" stopOpacity={0.42} />
+                      <stop offset="100%" stopColor="#f5f0e6" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="rgba(245, 240, 230, 0.16)" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#f5f0e6", fontSize: 11 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "rgba(245, 240, 230, 0.75)", fontSize: 11 }} allowDecimals={false} />
+                  <Tooltip
+                    cursor={{ stroke: "rgba(245, 240, 230, 0.35)" }}
+                    contentStyle={{ background: "#fffdf9", border: "none", borderRadius: "10px", color: "#1a1a1a" }}
+                    formatter={(value) => [value, "Số lượng"]}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="#f5f0e6" strokeWidth={3} fill="url(#adminScaleGradient)" activeDot={{ r: 5, fill: "#f5f0e6" }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+
+          <div className={dashboardStyles.adminSecondaryStats}>
+            <article className={dashboardStyles.adminSecondaryStatCard}>
+              <span className={dashboardStyles.adminStatIcon}><TrophyIcon size={19} /></span>
+              <div><p>Giải đấu / Trận đua</p><strong>{stats?.summary?.total_tournaments || 0} / {stats?.summary?.total_races || 0}</strong></div>
+            </article>
+            <article className={dashboardStyles.adminSecondaryStatCard}>
+              <span className={dashboardStyles.adminStatIcon}><FlagIcon size={19} /></span>
+              <div><p>Ngựa / Jockey</p><strong>{stats?.summary?.total_horses || 0} / {stats?.summary?.total_jockeys || 0}</strong></div>
+            </article>
+            <article className={dashboardStyles.adminSecondaryStatCard}>
+              <span className={dashboardStyles.adminStatIcon}><StarIcon size={19} /></span>
+              <div><p>Tỷ lệ dự đoán đúng</p><strong>{stats?.predictions?.global_accuracy_rate || 0}%</strong></div>
+            </article>
           </div>
         </div>
 
-        {/* KHỐI BIỂU ĐỒ TRỰC QUAN HÓA QUY MÔ HỆ THỐNG */}
-        <div className={dashboardStyles.card} style={{ padding: "20px", marginBottom: "24px" }}>
-          <h3 className={dashboardStyles.subHeading} style={{ marginBottom: "24px" }}>📈 Biểu đồ phân tích quy mô dữ liệu</h3>
-          <div style={{ 
-            display: "flex", 
-            alignItems: "flex-end", 
-            justifyContent: "space-around", 
-            height: "220px", 
-            paddingBottom: "15px", 
-            borderBottom: "2px solid var(--color-border)"
-          }}>
-            {/* Cột Users */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70px" }}>
-              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px", color: "var(--color-text-dark)" }}>{stats?.summary?.total_users || 0}</span>
-              <div style={{ 
-                width: "100%", 
-                height: `${Math.min((stats?.summary?.total_users || 0) * 1.2, 160) || 10}px`, 
-                background: "linear-gradient(to top, var(--color-burgundy-dark), var(--color-burgundy))", 
-                borderRadius: "6px 6px 0 0",
-                transition: "height 0.6s ease"
-              }}></div>
-              <span style={{ fontSize: "12px", marginTop: "10px", color: "var(--color-text-muted)" }}>User</span>
+        <div className={dashboardStyles.adminAnalyticsGrid}>
+          <section className={dashboardStyles.adminAnalyticsCard}>
+            <div className={dashboardStyles.adminCardHeading}>
+              <div><span>Cơ cấu thành viên</span><h3>Vai trò hệ thống</h3></div>
+              <UsersIcon size={20} />
             </div>
-
-            {/* Cột Tournaments */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70px" }}>
-              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px", color: "var(--color-text-dark)" }}>{stats?.summary?.total_tournaments || 0}</span>
-              <div style={{ 
-                width: "100%", 
-                height: `${Math.min((stats?.summary?.total_tournaments || 0) * 20, 160) || 10}px`, 
-                background: "linear-gradient(to top, var(--color-forest-dark), var(--color-forest))", 
-                borderRadius: "6px 6px 0 0",
-                transition: "height 0.6s ease"
-              }}></div>
-              <span style={{ fontSize: "12px", marginTop: "10px", color: "var(--color-text-muted)" }}>Giải đấu</span>
+            <div className={dashboardStyles.adminSmallChart}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={roleData} margin={{ top: 8, right: 4, left: -24, bottom: 0 }}>
+                  <CartesianGrid stroke="#e0dacd" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#6b6b63", fontSize: 10 }} interval={0} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b6b63", fontSize: 10 }} allowDecimals={false} />
+                  <Tooltip cursor={{ fill: "rgba(122, 31, 61, 0.05)" }} contentStyle={{ border: "1px solid #e0dacd", borderRadius: "10px" }} />
+                  <Bar dataKey="value" name="Tài khoản" radius={[6, 6, 0, 0]}>
+                    {roleData.map((entry, index) => <Cell key={entry.role} fill={index % 2 === 0 ? "#7a1f3d" : "#2f4a3d"} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
+          </section>
 
-            {/* Cột Races */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70px" }}>
-              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px", color: "var(--color-text-dark)" }}>{stats?.summary?.total_races || 0}</span>
-              <div style={{ 
-                width: "100%", 
-                height: `${Math.min((stats?.summary?.total_races || 0) * 6, 160) || 10}px`, 
-                background: "linear-gradient(to top, var(--color-burgundy), var(--color-forest))", 
-                borderRadius: "6px 6px 0 0",
-                transition: "height 0.6s ease"
-              }}></div>
-              <span style={{ fontSize: "12px", marginTop: "10px", color: "var(--color-text-muted)" }}>Trận đua</span>
+          <section className={dashboardStyles.adminAnalyticsCard}>
+            <div className={dashboardStyles.adminCardHeading}>
+              <div><span>Hiệu quả dự đoán</span><h3>Tỷ lệ đoán đúng</h3></div>
+              <StarIcon size={20} />
             </div>
-          </div>
-        </div>
+            <div className={dashboardStyles.adminDonutWrap}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={predictionData} dataKey="value" nameKey="name" innerRadius={62} outerRadius={88} paddingAngle={3} stroke="none">
+                    <Cell fill="#7a1f3d" />
+                    <Cell fill="#e0dacd" />
+                  </Pie>
+                  <Tooltip formatter={(value) => [`${Number(value).toFixed(1)}%`, "Tỷ lệ"]} contentStyle={{ border: "1px solid #e0dacd", borderRadius: "10px" }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className={dashboardStyles.adminDonutValue}>
+                <strong>{stats?.predictions?.global_accuracy_rate || 0}%</strong>
+                <span>chính xác</span>
+              </div>
+            </div>
+            <div className={dashboardStyles.adminChartLegend}>
+              <span><i className={dashboardStyles.legendBurgundy} />Dự đoán đúng</span>
+              <span><i className={dashboardStyles.legendMuted} />Chưa đúng</span>
+            </div>
+          </section>
 
-        {/* Khối bố cục Split Layout bên dưới */}
-        <div className={dashboardStyles.splitLayout}>
-          <div className={dashboardStyles.card} style={{ flex: 1 }}>
-            <h3 className={dashboardStyles.subHeading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <UsersIcon size={20} /> Cơ cấu Vai trò thành viên
-            </h3>
-            {Object.entries(stats?.users_by_role || {}).map(([role, count]) => {
-              const total = stats?.summary?.total_users || 1;
-              const percentage = ((count / total) * 100).toFixed(1);
-              return (
-                <div key={role} style={{ marginBottom: "12px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", marginBottom: "4px" }}>
-                    <span><b>{role}</b></span>
-                    <span>{count} tài khoản ({percentage}%)</span>
-                  </div>
-                  <div style={{ background: "var(--color-cream)", height: "10px", borderRadius: "5px", overflow: "hidden", border: "1px solid var(--color-border)" }}>
-                    <div style={{ background: "var(--color-burgundy)", height: "100%", width: `${percentage}%` }}></div>
-                  </div>
+          <section className={dashboardStyles.adminAnalyticsCard}>
+            <div className={dashboardStyles.adminCardHeading}>
+              <div><span>Bảng xếp hạng</span><h3>Top ngựa đua xuất sắc</h3></div>
+              <TrophyIcon size={20} />
+            </div>
+            <div className={dashboardStyles.adminRankingList}>
+              {(stats?.top_horses || []).map((horse, index) => (
+                <div className={dashboardStyles.adminRankingRow} key={horse.horse_id}>
+                  <span className={dashboardStyles.adminRankingDot} style={{ backgroundColor: index === 0 ? "#7a1f3d" : index === 1 ? "#2f4a3d" : "#b99b74" }} />
+                  <div><strong>{horse.name}</strong><span>{horse.breed || `Hạng ${horse.rank}`}</span></div>
+                  <b>{horse.total_points}đ</b>
                 </div>
-              );
-            })}
-          </div>
-
-          <div className={dashboardStyles.card} style={{ flex: 1 }}>
-            <h3 className={dashboardStyles.subHeading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <TrophyIcon size={20} /> Top Ngựa Đua Xuất Sắc (Bảng Xếp Hạng Hệ Thống)
-            </h3>
-            <div className={dashboardStyles.tableWrapper}>
-              <table className={dashboardStyles.table}>
-                <thead>
-                  <tr>
-                    <th className={dashboardStyles.th}>Hạng</th>
-                    <th className={dashboardStyles.th}>Tên ngựa</th>
-                    <th className={dashboardStyles.th}>Giống</th>
-                    <th className={dashboardStyles.th}>Điểm số</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats?.top_horses?.map(h => (
-                    <tr key={h.horse_id} className={dashboardStyles.rowHover}>
-                      <td className={dashboardStyles.td}>🏅 {h.rank}</td>
-                      <td className={dashboardStyles.td}><b>{h.name}</b></td>
-                      <td className={dashboardStyles.td}>{h.breed}</td>
-                      <td className={dashboardStyles.td} style={{ color: "var(--color-burgundy)", fontWeight: "bold" }}>{h.total_points}đ</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              ))}
+              {(stats?.top_horses || []).length === 0 && <p className={dashboardStyles.adminEmptyState}>Chưa có dữ liệu xếp hạng.</p>}
             </div>
-          </div>
+          </section>
         </div>
       </div>
     )}
