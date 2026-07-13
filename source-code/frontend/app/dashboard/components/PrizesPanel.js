@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
+import dashboardStyles from "../dashboard.module.css";
+import { AwardIcon, TrashIcon, TrophyIcon } from "./Icons";
 
 export default function PrizesPanel({ activeTab, showMsg }) {
   const [tournaments, setTournaments] = useState([]);
@@ -81,27 +83,29 @@ export default function PrizesPanel({ activeTab, showMsg }) {
   };
 
   return (
-    <div style={styles.tabContent}>
+    <div className={dashboardStyles.tabContent}>
       {activeTab === "prizes" && (
         <div>
-          <h2>🏅 Quản lý Giải thưởng</h2>
+          <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <AwardIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Quản lý Giải thưởng
+          </h2>
           
           {/* Select Tournament */}
           <div style={{ marginBottom: "24px" }}>
-            <label>Chọn giải đấu:</label>
+            <label style={{ fontWeight: "600" }}>Chọn giải đấu:</label>
             <select
               value={selectedTournament}
               onChange={(e) => setSelectedTournament(e.target.value)}
-              style={{ ...styles.input, marginTop: "8px" }}
+              className={dashboardStyles.inputField}
+              style={{ marginTop: "8px" }}
             >
-              <option value="" style={{ backgroundColor: "#1e293b", color: "#ffffff" }}>
+              <option value="">
                 -- Chọn giải đấu --
               </option>
               {tournaments.map((t) => (
                 <option 
                   key={t.id} 
                   value={t.id} 
-                  style={{ backgroundColor: "#1e293b", color: "#ffffff" }}
                 >
                   {t.name} ({t.status})
                 </option>
@@ -112,18 +116,17 @@ export default function PrizesPanel({ activeTab, showMsg }) {
           {selectedTournament && (
             <>
               {/* Create Prize Form */}
-              <div style={{
-                ...styles.formCard,
-                marginBottom: "24px",
-                padding: "16px",
-                background: "rgba(59,130,246,0.08)",
-                borderLeft: "4px solid var(--primary)",
-                borderRadius: "8px"
-              }}>
-                <h3 style={{ marginTop: 0, marginBottom: "12px" }}>Thêm Giải Thưởng</h3>
+              <div 
+                className={dashboardStyles.card} 
+                style={{
+                  marginBottom: "24px",
+                  borderLeft: "4px solid var(--color-burgundy)"
+                }}
+              >
+                <h3 className={dashboardStyles.subHeading} style={{ marginTop: 0, marginBottom: "12px" }}>Thêm Giải Thưởng</h3>
                 <form onSubmit={createPrize} style={{ display: "grid", gap: "12px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                    <div>
+                    <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
                       <label>Hạng (Position) *</label>
                       <input
                         type="number"
@@ -131,24 +134,24 @@ export default function PrizesPanel({ activeTab, showMsg }) {
                         value={newPrize.position}
                         onChange={(e) => setNewPrize({ ...newPrize, position: e.target.value })}
                         placeholder="1"
-                        style={styles.input}
+                        className={dashboardStyles.inputField}
                         required
                       />
                     </div>
-                    <div>
+                    <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
                       <label>Tên giải *</label>
                       <input
                         type="text"
                         value={newPrize.title}
                         onChange={(e) => setNewPrize({ ...newPrize, title: e.target.value })}
                         placeholder="Giải Nhất"
-                        style={styles.input}
+                        className={dashboardStyles.inputField}
                         required
                       />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                    <div>
+                    <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
                       <label>Giá trị giải (VNĐ)</label>
                       <input
                         type="number"
@@ -156,72 +159,77 @@ export default function PrizesPanel({ activeTab, showMsg }) {
                         value={newPrize.prize_value}
                         onChange={(e) => setNewPrize({ ...newPrize, prize_value: e.target.value })}
                         placeholder="1000000"
-                        style={styles.input}
+                        className={dashboardStyles.inputField}
                       />
                     </div>
-                    <div>
+                    <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
                       <label>Mô tả</label>
                       <input
                         type="text"
                         value={newPrize.description}
                         onChange={(e) => setNewPrize({ ...newPrize, description: e.target.value })}
                         placeholder="Mô tả giải thưởng"
-                        style={styles.input}
+                        className={dashboardStyles.inputField}
                       />
                     </div>
                   </div>
-                  <button type="submit" className="btn-primary" style={{ marginTop: "8px" }}>
+                  <button type="submit" className={dashboardStyles.btnPrimary} style={{ marginTop: "8px" }}>
                     Thêm Giải Thưởng
                   </button>
                 </form>
               </div>
 
               {/* Prizes List */}
-              <div style={styles.tableWrapper}>
-                <h3 style={{ marginTop: 0, marginBottom: "12px" }}>Danh sách giải thưởng</h3>
+              <div className={dashboardStyles.tableWrapper}>
+                <h3 className={dashboardStyles.subHeading} style={{ margin: "16px" }}>Danh sách giải thưởng</h3>
                 {loading ? (
-                  <p style={{ textAlign: "center", color: "#64748b" }}>Đang tải...</p>
+                  <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "20px" }}>Đang tải...</p>
                 ) : prizes.length === 0 ? (
-                  <p style={{ textAlign: "center", color: "#64748b" }}>Chưa có giải thưởng nào</p>
+                  <p style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "20px" }}>Chưa có giải thưởng nào</p>
                 ) : (
-                  <table style={styles.table}>
+                  <table className={dashboardStyles.table}>
                     <thead>
                       <tr>
-                        <th>Hạng</th>
-                        <th>Tên giải</th>
-                        <th>Giá trị (VNĐ)</th>
-                        <th>Mô tả</th>
-                        <th>Đã trao cho</th>
-                        <th>Thao tác</th>
+                        <th className={dashboardStyles.th}>Hạng</th>
+                        <th className={dashboardStyles.th}>Tên giải</th>
+                        <th className={dashboardStyles.th}>Giá trị (VNĐ)</th>
+                        <th className={dashboardStyles.th}>Mô tả</th>
+                        <th className={dashboardStyles.th}>Đã trao cho</th>
+                        <th className={dashboardStyles.th}>Thao tác</th>
                       </tr>
                     </thead>
                     <tbody>
                       {prizes.map((prize) => (
-                        <tr key={prize.id}>
-                          <td>#{prize.position}</td>
-                          <td style={{ fontWeight: "600" }}>{prize.title}</td>
-                          <td>{prize.prize_value?.toLocaleString() || "0"}</td>
-                          <td>{prize.description || "-"}</td>
-                          <td>
+                        <tr key={prize.id} className={dashboardStyles.rowHover}>
+                          <td className={dashboardStyles.td}>#{prize.position}</td>
+                          <td className={dashboardStyles.td} style={{ fontWeight: "600" }}>{prize.title}</td>
+                          <td className={dashboardStyles.td}>{prize.prize_value?.toLocaleString() || "0"}</td>
+                          <td className={dashboardStyles.td}>{prize.description || "-"}</td>
+                          <td className={dashboardStyles.td}>
                             {prize.awarded_to_horse ? (
-                              <span style={{ color: "var(--success)", fontWeight: "600" }}>
+                              <span style={{ color: "var(--color-burgundy)", fontWeight: "600" }}>
                                 {prize.awarded_to_horse} ({prize.awarded_to_jockey})
                               </span>
                             ) : (
-                              <span style={{ color: "#94a3b8" }}>Chưa trao</span>
+                              <span style={{ color: "var(--color-text-muted)" }}>Chưa trao</span>
                             )}
                           </td>
-                          <td>
+                          <td className={dashboardStyles.td}>
                             <button
                               onClick={() => deletePrize(prize.id)}
+                              className={dashboardStyles.btnSecondary}
                               style={{
-                                ...styles.btnSmall,
-                                background: "rgba(239,68,68,0.1)",
+                                padding: "6px 12px",
+                                fontSize: "12px",
                                 color: "var(--danger)",
-                                border: "1px solid rgba(239,68,68,0.3)"
+                                borderColor: "rgba(239, 68, 68, 0.3)",
+                                background: "rgba(239, 68, 68, 0.05)",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "4px"
                               }}
                             >
-                              Xóa
+                              <TrashIcon size={12} /> Xóa
                             </button>
                           </td>
                         </tr>
@@ -237,19 +245,25 @@ export default function PrizesPanel({ activeTab, showMsg }) {
 
       {activeTab === "awards" && (
         <div>
-          <h2>🏆 Xem Awards (Bản ghi trao giải)</h2>
-          <p style={{ color: "#64748b", marginBottom: "24px" }}>
+          <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <TrophyIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Xem Awards (Bản ghi trao giải)
+          </h2>
+          <p style={{ color: "var(--color-text-muted)", marginBottom: "24px" }}>
             Hiển thị tất cả các giải thưởng đã trao cho các đội trong các giải đấu đã hoàn thành.
           </p>
           
-          <div style={{
-            background: "rgba(59,130,246,0.08)",
-            padding: "20px",
-            borderRadius: "8px",
-            textAlign: "center",
-            color: "#64748b"
-          }}>
-            <p>Awards will be automatically generated when the tournament status changes to COMPLETED.</p>
+          <div 
+            className={dashboardStyles.card} 
+            style={{
+              padding: "24px",
+              textAlign: "center",
+              borderLeft: "4px solid var(--color-burgundy)",
+              color: "var(--color-text-muted)"
+            }}
+          >
+            <p style={{ fontWeight: "600", marginBottom: "8px", color: "var(--color-text-dark)" }}>
+              Awards will be automatically generated when the tournament status changes to COMPLETED.
+            </p>
             <p>Currently, there are no awards for this feature, or it is still under development.</p>
           </div>
         </div>

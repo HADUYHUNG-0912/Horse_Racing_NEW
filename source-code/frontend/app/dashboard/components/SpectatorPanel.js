@@ -2,7 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { api } from "../../api";
-import { styles } from "./styles";
+import dashboardStyles from "../dashboard.module.css";
+import {
+  TrophyIcon,
+  AwardIcon,
+  CalendarIcon,
+  UserIcon,
+  TrashIcon,
+  EditIcon,
+  PlusIcon,
+  ResultIcon,
+  CloseIcon,
+  FlagIcon,
+  StarIcon,
+} from "./Icons";
 
 export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh }) {
   const [predictions, setPredictions] = useState([]);
@@ -188,7 +201,11 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
   };
 
   if (loading) {
-    return <div style={styles.loading}>Đang tải dữ liệu Spectator...</div>;
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "60px", color: "var(--color-burgundy)", fontWeight: "600" }}>
+        Đang tải dữ liệu Spectator...
+      </div>
+    );
   }
 
   const uniqueSeasons = Array.from(new Set(tournaments.map(t => {
@@ -212,28 +229,31 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
     <>
       {/* TAB: Dự đoán Trận đua (Spectator) */}
       {activeTab === "predictions" && (
-        <div style={styles.tabContent}>
-          <h2>🔮 Dự đoán thứ hạng trận đua dành cho khán giả</h2>
-          <div style={styles.splitLayout}>
+        <div className={dashboardStyles.tabContent}>
+          <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <StarIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Dự đoán thứ hạng trận đua dành cho khán giả
+          </h2>
+          <div className={dashboardStyles.splitLayout}>
             {/* Make prediction */}
-            <form onSubmit={makePrediction} style={styles.formPanel} className="glass">
-              <h3>{editingPredictionId ? "Sửa dự đoán" : "Tạo dự đoán mới"}</h3>
+            <form onSubmit={makePrediction} className={dashboardStyles.formPanel}>
+              <h3 className={dashboardStyles.subHeading}>{editingPredictionId ? "Sửa dự đoán" : "Tạo dự đoán mới"}</h3>
               {isLocked && (
                 <div style={{
                   padding: "10px",
-                  background: "rgba(239, 68, 68, 0.1)",
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                  color: "#f87171",
+                  background: "rgba(239, 68, 68, 0.05)",
+                  border: "1px solid rgba(239, 68, 68, 0.15)",
+                  color: "var(--danger)",
                   borderRadius: "8px",
                   marginBottom: "12px",
-                  fontSize: "13px"
+                  fontSize: "13px",
+                  fontWeight: "600"
                 }}>
                   ⚠️ Trận đấu đã quá giờ, không thể dự đoán.
                 </div>
               )}
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn Mùa giải</label>
-                <select className="input-field"
+                <select className={dashboardStyles.inputField}
                   value={selectedSeason} 
                   onChange={(e) => {
                       setSelectedSeason(e.target.value);
@@ -245,9 +265,9 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                   ))}
                 </select>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn Giải đấu</label>
-                <select className="input-field"
+                <select className={dashboardStyles.inputField}
                   value={predictionForm.tournament_id || ""} 
                   onChange={(e) => setPredictionForm({ ...predictionForm, tournament_id: e.target.value, race_id: "", horse_id: "" })}>
                   <option value="">-- Tất cả giải đấu --</option>
@@ -259,9 +279,9 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn Trận đua</label>
-                <select className="input-field" required
+                <select className={dashboardStyles.inputField} required
                   value={predictionForm.race_id} 
                   onChange={(e) => setPredictionForm({ ...predictionForm, race_id: e.target.value, horse_id: "" })}>
                   <option value="">-- Chọn trận đua --</option>
@@ -270,9 +290,9 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                   ))}
                 </select>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn Ngựa đua</label>
-                <select className="input-field" required
+                <select className={dashboardStyles.inputField} required
                   value={predictionForm.horse_id} 
                   disabled={!predictionForm.race_id || isLocked}
                   onChange={(e) => setPredictionForm({ ...predictionForm, horse_id: e.target.value })}>
@@ -286,9 +306,9 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                   })()}
                 </select>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Dự đoán thứ hạng về đích</label>
-                <select className="input-field"
+                <select className={dashboardStyles.inputField}
                   disabled={isLocked}
                   value={predictionForm.predicted_rank} onChange={(e) => setPredictionForm({ ...predictionForm, predicted_rank: e.target.value })}>
                   <option value="1">Hạng 1 (Về nhất)</option>
@@ -298,11 +318,11 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                 </select>
               </div>
               <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-                <button type="submit" className="btn-primary" style={{ flex: 1 }} disabled={isLocked || !predictionForm.race_id || !predictionForm.horse_id}>
+                <button type="submit" className={dashboardStyles.btnPrimary} style={{ flex: 1 }} disabled={isLocked || !predictionForm.race_id || !predictionForm.horse_id}>
                   {editingPredictionId ? "Cập nhật" : "Gửi dự đoán"}
                 </button>
                 {editingPredictionId && (
-                  <button type="button" onClick={cancelEdit} className="btn-secondary" style={{ flex: 1, background: "#334155", color: "#fff" }}>
+                  <button type="button" onClick={cancelEdit} className={dashboardStyles.btnSecondary} style={{ flex: 1 }}>
                     Hủy sửa
                   </button>
                 )}
@@ -315,61 +335,61 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginBottom: "12px"
+                marginBottom: "12px",
+                flexWrap: "wrap",
+                gap: "12px"
               }}>
-                <h3 style={{ margin: 0 }}>Lịch sử dự đoán của bạn</h3>
-                <div style={{
-                  background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                  borderRadius: "12px",
+                <h3 className={dashboardStyles.subHeading} style={{ margin: 0 }}>Lịch sử dự đoán của bạn</h3>
+                <div className={dashboardStyles.card} style={{
                   padding: "8px 16px",
                   display: "flex",
                   alignItems: "center",
                   gap: "8px",
-                  boxShadow: "0 2px 8px rgba(245,158,11,0.3)"
+                  borderLeft: "4px solid var(--color-burgundy)"
                 }}>
-                  <span style={{ fontSize: "18px" }}>⭐</span>
-                  <span style={{ color: "#fff", fontWeight: "700", fontSize: "14px" }}>
-                    Điểm thưởng tích lũy: {profileStats.reward_points ?? 0} điểm
+                  <StarIcon size={16} style={{ color: "var(--color-burgundy)" }} />
+                  <span style={{ color: "var(--color-text-dark)", fontWeight: "700", fontSize: "14px" }}>
+                    Điểm thưởng: {profileStats.reward_points ?? 0} điểm
                   </span>
                 </div>
               </div>
-              <div style={styles.tableWrapper}>
-                <table style={styles.table}>
+              <div className={dashboardStyles.tableWrapper}>
+                <table className={dashboardStyles.table}>
                   <thead>
                     <tr>
-                      <th>Trận đua</th>
-                      <th>Ngựa đua</th>
-                      <th>Hạng dự đoán</th>
-                      <th>Kết quả</th>
-                      <th>Hành động</th>
+                      <th className={dashboardStyles.th}>Trận đua</th>
+                      <th className={dashboardStyles.th}>Ngựa đua</th>
+                      <th className={dashboardStyles.th}>Hạng dự đoán</th>
+                      <th className={dashboardStyles.th}>Kết quả</th>
+                      <th className={dashboardStyles.th}>Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     {predictions.length === 0 ? (
-                      <tr><td colSpan="4" style={{ textAlign: "center", color: "#64748b" }}>Chưa có dự đoán nào</td></tr>
+                      <tr><td colSpan="5" style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "24px" }} className={dashboardStyles.td}>Chưa có dự đoán nào</td></tr>
                     ) : (
                       predictions.map(p => (
-                        <tr key={p.id}>
-                          <td>{p.race_name || `Làn ${p.race_participant_id}`}</td>
-                          <td style={{ fontWeight: "700" }}>{p.horse_name}</td>
-                          <td>Hạng {p.predicted_rank}</td>
-                          <td>
-                            <span className={`badge ${
-                              p.status === "Won" ? "badge-approved" 
-                              : p.status === "Lost" ? "badge-rejected" 
-                              : "badge-pending"
+                        <tr key={p.id} className={dashboardStyles.rowHover}>
+                          <td className={dashboardStyles.td}>{p.race_name || `Làn ${p.race_participant_id}`}</td>
+                          <td style={{ fontWeight: "700" }} className={dashboardStyles.td}>{p.horse_name}</td>
+                          <td className={dashboardStyles.td}>Hạng {p.predicted_rank}</td>
+                          <td className={dashboardStyles.td}>
+                            <span className={`${dashboardStyles.badge} ${
+                              p.status === "Won" ? dashboardStyles.badgeApproved 
+                              : p.status === "Lost" ? dashboardStyles.badgeRejected 
+                              : dashboardStyles.badgePending
                             }`}>
-                              {p.status === "Won" ? "✅ Đúng" : p.status === "Lost" ? "❌ Sai" : "⏳ Chờ kết quả"}
+                              {p.status === "Won" ? "✓ Đúng" : p.status === "Lost" ? "✗ Sai" : "⏳ Chờ kết quả"}
                             </span>
                           </td>
-                          <td>
+                          <td className={dashboardStyles.td}>
                             {p.status !== "Won" && p.status !== "Lost" ? (
                               <div style={{ display: "flex", gap: "6px" }}>
-                                <button onClick={() => handleEditClick(p)} style={{ background: "#3b82f6", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Sửa</button>
-                                <button onClick={() => deletePrediction(p.id)} style={{ background: "#ef4444", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}>Xóa</button>
+                                <button onClick={() => handleEditClick(p)} className={dashboardStyles.btnPrimary} style={{ padding: "4px 8px", fontSize: "11px" }}>Sửa</button>
+                                <button onClick={() => deletePrediction(p.id)} className={dashboardStyles.btnSecondary} style={{ padding: "4px 8px", fontSize: "11px", color: "var(--danger)", borderColor: "rgba(239,68,68,0.3)" }}>Xóa</button>
                               </div>
                             ) : (
-                              <span style={{ color: "#64748b", fontSize: "12px" }}>Đã khóa</span>
+                              <span style={{ color: "var(--color-text-muted)", fontSize: "12px" }}>Đã khóa</span>
                             )}
                           </td>
                         </tr>
@@ -385,12 +405,14 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
 
       {/* TAB: Lịch thi đấu & Kết quả */}
       {activeTab === "schedules" && (
-        <div style={styles.tabContent}>
+        <div className={dashboardStyles.tabContent}>
           {/* --- Section 1: Lịch thi đấu sắp diễn ra --- */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <h2 style={{ margin: 0 }}>📅 Lịch thi đấu sắp diễn ra</h2>
-              <select className="input-field" style={{ width: "200px" }}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
+              <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
+                <CalendarIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Lịch thi đấu sắp diễn ra
+              </h2>
+              <select className={dashboardStyles.inputField} style={{ width: "200px" }}
                 value={selectedSeason} 
                 onChange={(e) => setSelectedSeason(e.target.value)}>
                 <option value="">-- Tất cả mùa giải --</option>
@@ -403,13 +425,13 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
               <div style={{
                 textAlign: "center",
                 padding: "48px 24px",
-                color: "#64748b",
-                background: "rgba(255,255,255,0.02)",
+                color: "var(--color-text-muted)",
+                background: "rgba(224, 218, 205, 0.15)",
                 borderRadius: "12px",
-                border: "1px dashed rgba(255,255,255,0.1)"
+                border: "1px dashed var(--color-border)"
               }}>
-                <div style={{ fontSize: "48px", marginBottom: "12px", opacity: 0.5 }}>📭</div>
-                <p style={{ fontSize: "15px" }}>Chưa có trận đấu nào sắp diễn ra</p>
+                <CalendarIcon size={48} style={{ color: "var(--color-border)", marginBottom: "12px", opacity: 0.5 }} />
+                <p style={{ fontSize: "15px", margin: 0, fontWeight: "600" }}>Chưa có trận đấu nào sắp diễn ra</p>
               </div>
             ) : (
               <div style={{
@@ -418,22 +440,21 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                 gap: "16px"
               }}>
                 {upcomingRaces.map(race => (
-                  <div key={race.id} className="glass-interactive" style={{
-                    padding: "20px",
-                    borderRadius: "12px",
+                  <div key={race.id} className={dashboardStyles.card} style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: "12px"
+                    gap: "12px",
+                    borderTop: "3px solid var(--color-burgundy)"
                   }}>
                     {/* Race header */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                       <div>
-                        <h3 style={{ margin: 0, fontSize: "16px", color: "var(--foreground)" }}>{race.name}</h3>
+                        <h3 style={{ margin: 0, fontSize: "16px", color: "var(--color-text-dark)", fontFamily: "var(--font-bungee)" }}>{race.name}</h3>
                         {race.referee_name && (
-                          <span style={{ fontSize: "12px", color: "#64748b" }}>Trọng tài: {race.referee_name}</span>
+                          <span style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>Trọng tài: {race.referee_name}</span>
                         )}
                       </div>
-                      <span className="badge badge-pending" style={{ fontSize: "10px" }}>{race.status}</span>
+                      <span className={`${dashboardStyles.badge} ${dashboardStyles.badgePending}`} style={{ fontSize: "10px" }}>{race.status}</span>
                     </div>
 
                     {/* Race details */}
@@ -442,22 +463,22 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                       gridTemplateColumns: "1fr 1fr",
                       gap: "8px",
                       fontSize: "13px",
-                      color: "#94a3b8"
+                      color: "var(--color-text-muted)"
                     }}>
-                      <div>🕐 <strong style={{ color: "#cbd5e1" }}>{formatDateTime(race.race_time)}</strong></div>
-                      <div>📏 <strong style={{ color: "#cbd5e1" }}>{race.distance}m</strong></div>
+                      <div>🕐 <strong style={{ color: "var(--color-text-dark)" }}>{formatDateTime(race.race_time)}</strong></div>
+                      <div>📏 <strong style={{ color: "var(--color-text-dark)" }}>{race.distance}m</strong></div>
                       <div style={{ gridColumn: "1 / -1" }}>
-                        🏟️ Đường đua: <strong style={{ color: "#cbd5e1" }}>{race.track_condition || "—"}</strong>
+                        🏟️ Đường đua: <strong style={{ color: "var(--color-text-dark)" }}>{race.track_condition || "—"}</strong>
                       </div>
                     </div>
 
                     {/* Participants */}
                     {race.participants && race.participants.length > 0 && (
                       <div style={{
-                        borderTop: "1px solid rgba(255,255,255,0.06)",
+                        borderTop: "1px solid var(--color-border)",
                         paddingTop: "10px"
                       }}>
-                        <div style={{ fontSize: "12px", color: "#64748b", marginBottom: "6px", textTransform: "uppercase", fontWeight: "600" }}>
+                        <div style={{ fontSize: "12px", color: "var(--color-text-muted)", marginBottom: "6px", textTransform: "uppercase", fontWeight: "600" }}>
                           Danh sách tham gia ({race.participants.length})
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -467,14 +488,14 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                               justifyContent: "space-between",
                               alignItems: "center",
                               fontSize: "13px",
-                              padding: "4px 8px",
+                              padding: "6px 8px",
                               borderRadius: "6px",
-                              background: "rgba(255,255,255,0.02)"
+                              background: "rgba(224, 218, 205, 0.2)"
                             }}>
                               <span>
-                                🐎 <strong style={{ color: "var(--primary)" }}>{p.horse_name}</strong>
+                                🏇 <strong style={{ color: "var(--color-burgundy)" }}>{p.horse_name}</strong>
                               </span>
-                              <span style={{ color: "#94a3b8", fontSize: "12px" }}>
+                              <span style={{ color: "var(--color-text-muted)", fontSize: "12px" }}>
                                 {p.jockey_name} · Làn {p.lane_number}
                               </span>
                             </div>
@@ -489,30 +510,32 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
           </div>
 
           {/* Divider */}
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", margin: "8px 0" }} />
+          <div style={{ borderTop: "1px solid var(--color-border)", margin: "8px 0" }} />
 
           {/* --- Section 2: Kết quả các trận đã kết thúc --- */}
           <div>
-            <h2 style={{ marginBottom: "20px" }}>🏁 Kết quả các trận đã kết thúc</h2>
+            <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+              <FlagIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Kết quả các trận đã kết thúc
+            </h2>
             {completedRaces.length === 0 ? (
               <div style={{
                 textAlign: "center",
                 padding: "48px 24px",
-                color: "#64748b",
-                background: "rgba(255,255,255,0.02)",
+                color: "var(--color-text-muted)",
+                background: "rgba(224, 218, 205, 0.15)",
                 borderRadius: "12px",
-                border: "1px dashed rgba(255,255,255,0.1)"
+                border: "1px dashed var(--color-border)"
               }}>
-                <div style={{ fontSize: "48px", marginBottom: "12px", opacity: 0.5 }}>🏁</div>
-                <p style={{ fontSize: "15px" }}>Chưa có trận đấu nào hoàn thành</p>
+                <FlagIcon size={48} style={{ color: "var(--color-border)", marginBottom: "12px", opacity: 0.5 }} />
+                <p style={{ fontSize: "15px", margin: 0, fontWeight: "600" }}>Chưa có trận đấu nào hoàn thành</p>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {completedRaces.map(race => (
-                  <div key={race.id} className="glass" style={{
-                    borderRadius: "12px",
+                  <div key={race.id} className={dashboardStyles.card} style={{
                     overflow: "hidden",
-                    transition: "all 0.3s ease"
+                    transition: "all 0.3s ease",
+                    padding: 0
                   }}>
                     {/* Clickable race header */}
                     <div
@@ -524,85 +547,88 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                         alignItems: "center",
                         cursor: "pointer",
                         transition: "background 0.2s",
-                        background: expandedRace === race.id ? "rgba(249,115,22,0.05)" : "transparent"
+                        background: expandedRace === race.id ? "rgba(122, 31, 61, 0.04)" : "transparent"
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
-                      onMouseLeave={e => e.currentTarget.style.background = expandedRace === race.id ? "rgba(249,115,22,0.05)" : "transparent"}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <span style={{
-                          fontSize: "20px",
+                          fontSize: "14px",
                           transition: "transform 0.3s ease",
                           transform: expandedRace === race.id ? "rotate(90deg)" : "rotate(0deg)",
-                          display: "inline-block"
+                          display: "inline-block",
+                          color: "var(--color-burgundy)"
                         }}>▶</span>
                         <div>
-                          <h3 style={{ margin: 0, fontSize: "15px" }}>{race.name}</h3>
-                          <span style={{ fontSize: "12px", color: "#64748b" }}>
+                          <h3 style={{ margin: 0, fontSize: "15px", color: "var(--color-text-dark)", fontWeight: "700" }}>{race.name}</h3>
+                          <span style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>
                             {formatDateTime(race.race_time)} · {race.distance}m · {race.track_condition || "—"}
                           </span>
                         </div>
                       </div>
-                      <span className="badge badge-approved" style={{ fontSize: "10px" }}>HOÀN THÀNH</span>
+                      <span className={`${dashboardStyles.badge} ${dashboardStyles.badgeApproved}`} style={{ fontSize: "10px" }}>HOÀN THÀNH</span>
                     </div>
 
                     {/* Expandable results */}
                     {expandedRace === race.id && (
                       <div style={{
                         padding: "0 20px 16px 20px",
-                        borderTop: "1px solid rgba(255,255,255,0.06)"
+                        borderTop: "1px solid var(--color-border)",
+                        background: "rgba(245, 240, 230, 0.2)"
                       }}>
                         {loadingResults[race.id] ? (
                           <div style={{
                             textAlign: "center",
                             padding: "24px",
-                            color: "var(--primary)",
-                            fontSize: "14px"
+                            color: "var(--color-burgundy)",
+                            fontSize: "14px",
+                            fontWeight: "600"
                           }}>
                             ⏳ Đang tải kết quả...
                           </div>
                         ) : raceResults[race.id] && raceResults[race.id].length > 0 ? (
-                          <table style={{ ...styles.table, marginTop: "12px" }}>
-                            <thead>
-                              <tr>
-                                <th style={{ width: "60px" }}>Hạng</th>
-                                <th>Ngựa đua</th>
-                                <th>Jockey</th>
-                                <th style={{ width: "80px" }}>Điểm</th>
-                                <th>Ghi chú</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {raceResults[race.id].map(r => (
-                                <tr key={r.id}>
-                                  <td style={{ fontSize: "18px", textAlign: "center" }}>
-                                    {getRankBadge(r.rank)}
-                                  </td>
-                                  <td style={{
-                                    fontWeight: "700",
-                                    color: r.rank === 1 ? "var(--primary)" : "var(--foreground)"
-                                  }}>
-                                    {r.horse_name}
-                                  </td>
-                                  <td>{r.jockey_name}</td>
-                                  <td style={{
-                                    fontWeight: "700",
-                                    color: "var(--secondary)"
-                                  }}>
-                                    {r.points}
-                                  </td>
-                                  <td style={{ color: "#64748b", fontSize: "13px" }}>
-                                    {r.notes || "—"}
-                                  </td>
+                          <div className={dashboardStyles.tableWrapper} style={{ marginTop: "12px" }}>
+                            <table className={dashboardStyles.table}>
+                              <thead>
+                                <tr>
+                                  <th className={dashboardStyles.th} style={{ width: "80px" }}>Hạng</th>
+                                  <th className={dashboardStyles.th}>Ngựa đua</th>
+                                  <th className={dashboardStyles.th}>Jockey</th>
+                                  <th className={dashboardStyles.th} style={{ width: "80px" }}>Điểm</th>
+                                  <th className={dashboardStyles.th}>Ghi chú</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody>
+                                {raceResults[race.id].map(r => (
+                                  <tr key={r.id} className={dashboardStyles.rowHover}>
+                                    <td className={dashboardStyles.td} style={{ fontSize: "16px", fontWeight: "800", color: "var(--color-text-dark)" }}>
+                                      {getRankBadge(r.rank)}
+                                    </td>
+                                    <td className={dashboardStyles.td} style={{
+                                      fontWeight: "700",
+                                      color: r.rank === 1 ? "var(--color-burgundy)" : "var(--color-text-dark)"
+                                    }}>
+                                      {r.horse_name}
+                                    </td>
+                                    <td className={dashboardStyles.td}>{r.jockey_name}</td>
+                                    <td className={dashboardStyles.td} style={{
+                                      fontWeight: "700",
+                                      color: "var(--color-forest)"
+                                    }}>
+                                      {r.points}
+                                    </td>
+                                    <td className={dashboardStyles.td} style={{ color: "var(--color-text-muted)", fontSize: "13px" }}>
+                                      {r.notes || "—"}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
                         ) : (
                           <div style={{
                             textAlign: "center",
                             padding: "20px",
-                            color: "#64748b",
+                            color: "var(--color-text-muted)",
                             fontSize: "13px"
                           }}>
                             Chưa có kết quả chi tiết cho trận đấu này
@@ -620,76 +646,79 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
 
       {/* TAB: Hồ sơ cá nhân */}
       {activeTab === "profile" && (
-        <div style={styles.tabContent}>
-          <h2 style={{ marginBottom: "20px" }}>👤 Hồ sơ cá nhân</h2>
+        <div className={dashboardStyles.tabContent}>
+          <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+            <UserIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Hồ sơ cá nhân khán giả
+          </h2>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "20px", alignItems: "start" }}>
-            <form onSubmit={updateProfile} style={{ ...styles.formPanel, margin: 0, maxWidth: "none" }} className="glass">
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-                <div className="form-group">
+          <div className={dashboardStyles.splitLayout}>
+            <form onSubmit={updateProfile} className={dashboardStyles.formPanel} style={{ margin: 0, flex: 1.5 }}>
+              <h3 className={dashboardStyles.subHeading}>Chỉnh sửa thông tin</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
+                <div className={dashboardStyles.formGroup}>
                   <label>Họ và Tên</label>
                   <input
                     type="text"
-                    className="input-field"
+                    className={dashboardStyles.inputField}
                     value={profileForm.full_name}
                     onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
                     placeholder="Nhập họ và tên..."
                   />
                 </div>
-                <div className="form-group">
+                <div className={dashboardStyles.formGroup}>
                   <label>Email</label>
                   <input
                     type="email"
-                    className="input-field"
+                    className={dashboardStyles.inputField}
                     value={profileForm.email}
                     onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                     placeholder="email@example.com"
                   />
                 </div>
-                <div className="form-group">
+                <div className={dashboardStyles.formGroup}>
                   <label>Số điện thoại</label>
                   <input
                     type="text"
-                    className="input-field"
+                    className={dashboardStyles.inputField}
                     value={profileForm.phone_number}
                     onChange={(e) => setProfileForm({ ...profileForm, phone_number: e.target.value })}
                     placeholder="Nhập số điện thoại..."
                   />
                 </div>
-                <div className="form-group">
+                <div className={dashboardStyles.formGroup}>
                   <label>URL Ảnh đại diện</label>
                   <input
                     type="text"
-                    className="input-field"
+                    className={dashboardStyles.inputField}
                     value={profileForm.avatar}
                     onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })}
                     placeholder="https://example.com/avatar.jpg"
                   />
                 </div>
-                <div className="form-group">
+                <div className={dashboardStyles.formGroup}>
                   <label>Giống ngựa yêu thích</label>
                   <input
                     type="text"
-                    className="input-field"
+                    className={dashboardStyles.inputField}
                     value={profileForm.favorite_horse_breed}
                     onChange={(e) => setProfileForm({ ...profileForm, favorite_horse_breed: e.target.value })}
                     placeholder="Ví dụ: Arabian..."
                   />
                 </div>
-                <div className="form-group">
+                <div className={dashboardStyles.formGroup}>
                   <label>Nài ngựa yêu thích</label>
                   <input
                     type="text"
-                    className="input-field"
+                    className={dashboardStyles.inputField}
                     value={profileForm.favorite_jockey}
                     onChange={(e) => setProfileForm({ ...profileForm, favorite_jockey: e.target.value })}
                     placeholder="Tên nài ngựa..."
                   />
                 </div>
-                <div className="form-group">
+                <div className={dashboardStyles.formGroup}>
                   <label>Giới tính</label>
                   <select
-                    className="input-field"
+                    className={dashboardStyles.inputField}
                     value={profileForm.gender}
                     onChange={(e) => setProfileForm({ ...profileForm, gender: e.target.value })}
                   >
@@ -700,66 +729,85 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                   </select>
                 </div>
               </div>
-              <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "15px" }}>
+              <button type="submit" className={dashboardStyles.btnPrimary} style={{ width: "100%", marginTop: "15px" }}>
                 Cập nhật thông tin
               </button>
             </form>
 
-            <div className="glass" style={{ padding: "20px", borderRadius: "12px", border: "1px solid #334155" }}>
-              <h3 style={{ marginBottom: "15px", fontSize: "18px", color: "#f97316" }}>Thống kê & Thành tích</h3>
-              <div style={{ marginBottom: "10px" }}>
-                <span style={{ color: "#94a3b8" }}>Thứ hạng hiện tại:</span>
-                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.current_rank || "Chưa xếp hạng"}</strong>
-              </div>
-              <div style={{ marginBottom: "10px" }}>
-                <span style={{ color: "#94a3b8" }}>Tổng số trận dự đoán:</span>
-                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.total_predictions}</strong>
-              </div>
-              <div style={{ marginBottom: "10px" }}>
-                <span style={{ color: "#94a3b8" }}>Tỷ lệ chính xác:</span>
-                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.accuracy_rate}%</strong>
-              </div>
-              <div>
-                <span style={{ color: "#94a3b8" }}>Điểm thưởng:</span>
-                <strong style={{ display: "block", fontSize: "20px" }}>{profileStats.reward_points}</strong>
+            <div className={dashboardStyles.card} style={{ flex: 1, minWidth: "280px" }}>
+              <h3 className={dashboardStyles.subHeading} style={{ color: "var(--color-burgundy)", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
+                <StarIcon size={18} /> Thống kê & Thành tích
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {profileForm.avatar && (
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: "8px" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={profileForm.avatar} alt="Avatar" width={80} height={80}
+                      style={{ borderRadius: "50%", objectFit: "cover", border: "3px solid var(--color-burgundy)" }}
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/fallback-avatar.png"; }} />
+                  </div>
+                )}
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Thứ hạng hiện tại:</label>
+                  <span style={{ fontWeight: "700" }}>{profileStats.current_rank || "Chưa xếp hạng"}</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Tổng số dự đoán:</label>
+                  <span>{profileStats.total_predictions} trận</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Tỷ lệ chính xác:</label>
+                  <span style={{ fontWeight: "700", color: "var(--color-forest)" }}>{profileStats.accuracy_rate}%</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Điểm thưởng:</label>
+                  <span style={{ fontWeight: "700", color: "var(--color-burgundy)" }}>{profileStats.reward_points} điểm</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="glass" style={{ marginTop: "20px", padding: "20px", borderRadius: "12px", border: "1px solid #334155", overflowX: "auto" }}>
-            <h3 style={{ marginBottom: "15px", fontSize: "18px", color: "#f97316" }}>Lịch sử dự đoán gần đây</h3>
+          <div className={dashboardStyles.card} style={{ marginTop: "20px", padding: "24px" }}>
+            <h3 className={dashboardStyles.subHeading} style={{ marginBottom: "16px", color: "var(--color-burgundy)", display: "flex", alignItems: "center", gap: "6px" }}>
+              <TrophyIcon size={18} /> Lịch sử dự đoán gần đây
+            </h3>
             {predictions.length > 0 ? (
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "14px" }}>
-                <thead>
-                  <tr style={{ borderBottom: "1px solid #334155", color: "#94a3b8" }}>
-                    <th style={{ padding: "12px 8px" }}>Tên trận đua</th>
-                    <th style={{ padding: "12px 8px" }}>Ngựa đã chọn</th>
-                    <th style={{ padding: "12px 8px" }}>Thời gian</th>
-                    <th style={{ padding: "12px 8px" }}>Trạng thái</th>
-                    <th style={{ padding: "12px 8px" }}>Điểm thưởng</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {predictions.map(pred => {
-                    let statusColor = "#94a3b8";
-                    let statusText = "Đang chờ";
-                    if (pred.status === "Won") { statusColor = "#22c55e"; statusText = "Thắng"; }
-                    if (pred.status === "Lost") { statusColor = "#ef4444"; statusText = "Thua"; }
-
-                    return (
-                      <tr key={pred.id} style={{ borderBottom: "1px solid #1e293b" }}>
-                        <td style={{ padding: "12px 8px" }}>{pred.race_name || `Trận #${pred.race_id}`}</td>
-                        <td style={{ padding: "12px 8px" }}>{pred.horse_name || `Ngựa #${pred.horse_id}`}</td>
-                        <td style={{ padding: "12px 8px" }}>{pred.prediction_date ? parseVNTime(pred.prediction_date).toLocaleString("vi-VN") : "—"}</td>
-                        <td style={{ padding: "12px 8px", color: statusColor, fontWeight: "600" }}>{statusText}</td>
-                        <td style={{ padding: "12px 8px" }}>{pred.status === "Won" ? "+10" : "0"}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div className={dashboardStyles.tableWrapper}>
+                <table className={dashboardStyles.table}>
+                  <thead>
+                    <tr>
+                      <th className={dashboardStyles.th}>Tên trận đua</th>
+                      <th className={dashboardStyles.th}>Ngựa đã chọn</th>
+                      <th className={dashboardStyles.th}>Thời gian</th>
+                      <th className={dashboardStyles.th}>Trạng thái</th>
+                      <th className={dashboardStyles.th}>Điểm thưởng</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {predictions.slice(0, 10).map(pred => {
+                      const isWon = pred.status === "Won";
+                      const isLost = pred.status === "Lost";
+                      return (
+                        <tr key={pred.id} className={dashboardStyles.rowHover}>
+                          <td className={dashboardStyles.td} style={{ fontWeight: "600" }}>{pred.race_name || `Trận #${pred.race_id}`}</td>
+                          <td className={dashboardStyles.td} style={{ fontWeight: "700" }}>{pred.horse_name || `Ngựa #${pred.horse_id}`}</td>
+                          <td className={dashboardStyles.td}>{pred.prediction_date ? formatDateTime(pred.prediction_date) : "—"}</td>
+                          <td className={dashboardStyles.td}>
+                            <span className={`${dashboardStyles.badge} ${isWon ? dashboardStyles.badgeApproved : isLost ? dashboardStyles.badgeRejected : dashboardStyles.badgePending}`}>
+                              {isWon ? "Thắng" : isLost ? "Thua" : "Đang chờ"}
+                            </span>
+                          </td>
+                          <td className={dashboardStyles.td} style={{ fontWeight: "700", color: isWon ? "var(--color-forest)" : "var(--color-text-muted)" }}>
+                            {isWon ? "+10" : "0"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             ) : (
-              <p style={{ color: "#94a3b8", fontSize: "14px" }}>Chưa có dự đoán nào.</p>
+              <p style={{ color: "var(--color-text-muted)", fontSize: "14px" }}>Chưa có dự đoán nào.</p>
             )}
           </div>
         </div>

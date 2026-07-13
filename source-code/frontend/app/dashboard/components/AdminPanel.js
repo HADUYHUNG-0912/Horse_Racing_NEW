@@ -3,6 +3,26 @@
 import { useEffect, useState, useMemo } from "react";
 import { api } from "../../api";
 import { styles } from "./styles";
+import dashboardStyles from "../dashboard.module.css";
+import PrizesPanel from "./PrizesPanel";
+import {
+  DashboardIcon,
+  TrophyIcon,
+  ListIcon,
+  FlagIcon,
+  StarIcon,
+  AwardIcon,
+  UsersIcon,
+  LockIcon,
+  KeyIcon,
+  LogoutIcon,
+  UserIcon,
+  SearchIcon,
+  PlusIcon,
+  TrashIcon,
+  EyeIcon,
+  PlayIcon
+} from "./Icons";
 
 
 export default function AdminPanel({ user, activeTab, showMsg }) {
@@ -316,7 +336,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
   };
 
   if (loading) {
-    return <div style={styles.loading}>Đang tải dữ liệu Admin...</div>;
+    return <div className={dashboardStyles.loading}>Đang tải dữ liệu Admin...</div>;
   }
   
 
@@ -324,85 +344,93 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     <>
       {/* TAB: Tổng quan hệ thống (Analytics)*/}
     {activeTab === "overview" && (
-      <div style={styles.tabContent}>
-        <h2>📊 Tổng quan & Phân tích hệ thống</h2>
+      <div className={dashboardStyles.tabContent}>
+        <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <DashboardIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Tổng quan & Phân tích hệ thống
+        </h2>
         
         {/* Khối các thẻ con số thống kê sơ bộ */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-          <div className="glass" style={{ padding: "16px", borderRadius: "8px", textAlign: "center" }}>
-            <p style={{ margin: 0, color: "#64748b", fontSize: "14px" }}>Tổng Thành Viên</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "#3b82f6" }}>{stats?.summary?.total_users || 0}</h2>
+          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <UsersIcon size={24} style={{ color: "var(--color-burgundy)", marginBottom: "8px" }} />
+            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Tổng Thành Viên</p>
+            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-burgundy)", fontFamily: "var(--font-bungee)" }}>{stats?.summary?.total_users || 0}</h2>
           </div>
-          <div className="glass" style={{ padding: "16px", borderRadius: "8px", textAlign: "center" }}>
-            <p style={{ margin: 0, color: "#64748b", fontSize: "14px" }}>Giải Đấu / Trận Đua</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "#10b981" }}>{stats?.summary?.total_tournaments || 0} / {stats?.summary?.total_races || 0}</h2>
+          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <TrophyIcon size={24} style={{ color: "var(--color-forest)", marginBottom: "8px" }} />
+            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Giải Đấu / Trận Đua</p>
+            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-forest)", fontFamily: "var(--font-bungee)" }}>{stats?.summary?.total_tournaments || 0} / {stats?.summary?.total_races || 0}</h2>
           </div>
-          <div className="glass" style={{ padding: "16px", borderRadius: "8px", textAlign: "center" }}>
-            <p style={{ margin: 0, color: "#64748b", fontSize: "14px" }}>Ngựa / Jockey</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "#f59e0b" }}>{stats?.summary?.total_horses || 0} / {stats?.summary?.total_jockeys || 0}</h2>
+          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <FlagIcon size={24} style={{ color: "var(--color-burgundy)", marginBottom: "8px" }} />
+            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Ngựa / Jockey</p>
+            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-burgundy)", fontFamily: "var(--font-bungee)" }}>{stats?.summary?.total_horses || 0} / {stats?.summary?.total_jockeys || 0}</h2>
           </div>
-          <div className="glass" style={{ padding: "16px", borderRadius: "8px", textAlign: "center" }}>
-            <p style={{ margin: 0, color: "#64748b", fontSize: "14px" }}>Tỷ lệ đoán đúng chính xác</p>
-            <h2 style={{ margin: "8px 0 0 0", color: "#ec4899" }}>{stats?.predictions?.global_accuracy_rate || 0}%</h2>
+          <div className={dashboardStyles.card} style={{ textAlign: "center", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <StarIcon size={24} style={{ color: "var(--color-forest)", marginBottom: "8px" }} />
+            <p style={{ margin: 0, color: "var(--color-text-muted)", fontSize: "14px" }}>Tỷ lệ đoán đúng chính xác</p>
+            <h2 style={{ margin: "8px 0 0 0", color: "var(--color-forest)", fontFamily: "var(--font-bungee)" }}>{stats?.predictions?.global_accuracy_rate || 0}%</h2>
           </div>
         </div>
 
         {/* KHỐI BIỂU ĐỒ TRỰC QUAN HÓA QUY MÔ HỆ THỐNG */}
-        <div className="glass" style={{ padding: "20px", borderRadius: "12px", marginBottom: "24px" }}>
-          <h3 style={{ marginBottom: "24px" }}>📈 Biểu đồ phân tích quy mô dữ liệu</h3>
+        <div className={dashboardStyles.card} style={{ padding: "20px", marginBottom: "24px" }}>
+          <h3 className={dashboardStyles.subHeading} style={{ marginBottom: "24px" }}>📈 Biểu đồ phân tích quy mô dữ liệu</h3>
           <div style={{ 
             display: "flex", 
             alignItems: "flex-end", 
             justifyContent: "space-around", 
             height: "220px", 
             paddingBottom: "15px", 
-            borderBottom: "2px solid rgba(255,255,255,0.1)"
+            borderBottom: "2px solid var(--color-border)"
           }}>
             {/* Cột Users */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70px" }}>
-              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px" }}>{stats?.summary?.total_users || 0}</span>
+              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px", color: "var(--color-text-dark)" }}>{stats?.summary?.total_users || 0}</span>
               <div style={{ 
                 width: "100%", 
                 height: `${Math.min((stats?.summary?.total_users || 0) * 1.2, 160) || 10}px`, 
-                background: "linear-gradient(to top, #3b82f6, #60a5fa)", 
+                background: "linear-gradient(to top, var(--color-burgundy-dark), var(--color-burgundy))", 
                 borderRadius: "6px 6px 0 0",
                 transition: "height 0.6s ease"
               }}></div>
-              <span style={{ fontSize: "12px", marginTop: "10px", color: "#94a3b8" }}>User</span>
+              <span style={{ fontSize: "12px", marginTop: "10px", color: "var(--color-text-muted)" }}>User</span>
             </div>
 
             {/* Cột Tournaments */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70px" }}>
-              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px" }}>{stats?.summary?.total_tournaments || 0}</span>
+              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px", color: "var(--color-text-dark)" }}>{stats?.summary?.total_tournaments || 0}</span>
               <div style={{ 
                 width: "100%", 
                 height: `${Math.min((stats?.summary?.total_tournaments || 0) * 20, 160) || 10}px`, 
-                background: "linear-gradient(to top, #10b981, #34d399)", 
+                background: "linear-gradient(to top, var(--color-forest-dark), var(--color-forest))", 
                 borderRadius: "6px 6px 0 0",
                 transition: "height 0.6s ease"
               }}></div>
-              <span style={{ fontSize: "12px", marginTop: "10px", color: "#94a3b8" }}>Giải đấu</span>
+              <span style={{ fontSize: "12px", marginTop: "10px", color: "var(--color-text-muted)" }}>Giải đấu</span>
             </div>
 
             {/* Cột Races */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "70px" }}>
-              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px" }}>{stats?.summary?.total_races || 0}</span>
+              <span style={{ fontSize: "12px", fontWeight: "bold", marginBottom: "6px", color: "var(--color-text-dark)" }}>{stats?.summary?.total_races || 0}</span>
               <div style={{ 
                 width: "100%", 
                 height: `${Math.min((stats?.summary?.total_races || 0) * 6, 160) || 10}px`, 
-                background: "linear-gradient(to top, #f59e0b, #fbbf24)", 
+                background: "linear-gradient(to top, var(--color-burgundy), var(--color-forest))", 
                 borderRadius: "6px 6px 0 0",
                 transition: "height 0.6s ease"
               }}></div>
-              <span style={{ fontSize: "12px", marginTop: "10px", color: "#94a3b8" }}>Trận đua</span>
+              <span style={{ fontSize: "12px", marginTop: "10px", color: "var(--color-text-muted)" }}>Trận đua</span>
             </div>
           </div>
         </div>
 
         {/* Khối bố cục Split Layout bên dưới */}
-        <div style={styles.splitLayout}>
-          <div className="glass" style={{ flex: 1, padding: "16px", borderRadius: "8px" }}>
-            <h3>👥 Cơ cấu Vai trò thành viên</h3>
+        <div className={dashboardStyles.splitLayout}>
+          <div className={dashboardStyles.card} style={{ flex: 1 }}>
+            <h3 className={dashboardStyles.subHeading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <UsersIcon size={20} /> Cơ cấu Vai trò thành viên
+            </h3>
             {Object.entries(stats?.users_by_role || {}).map(([role, count]) => {
               const total = stats?.summary?.total_users || 1;
               const percentage = ((count / total) * 100).toFixed(1);
@@ -412,100 +440,106 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                     <span><b>{role}</b></span>
                     <span>{count} tài khoản ({percentage}%)</span>
                   </div>
-                  <div style={{ background: "rgba(0,0,0,0.1)", height: "10px", borderRadius: "5px", overflow: "hidden" }}>
-                    <div style={{ background: "#3b82f6", height: "100%", width: `${percentage}%` }}></div>
+                  <div style={{ background: "var(--color-cream)", height: "10px", borderRadius: "5px", overflow: "hidden", border: "1px solid var(--color-border)" }}>
+                    <div style={{ background: "var(--color-burgundy)", height: "100%", width: `${percentage}%` }}></div>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <div className="glass" style={{ flex: 1, padding: "16px", borderRadius: "8px" }}>
-            <h3>🏆 Top Ngựa Đua Xuất Sắc (Bảng Xếp Hạng Hệ Thống)</h3>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th>Hạng</th>
-                  <th>Tên ngựa</th>
-                  <th>Giống</th>
-                  <th>Điểm số</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats?.top_horses?.map(h => (
-                  <tr key={h.horse_id}>
-                    <td>🏅 {h.rank}</td>
-                    <td><b>{h.name}</b></td>
-                    <td>{h.breed}</td>
-                    <td style={{ color: "#10b981", fontWeight: "bold" }}>{h.total_points}đ</td>
+          <div className={dashboardStyles.card} style={{ flex: 1 }}>
+            <h3 className={dashboardStyles.subHeading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <TrophyIcon size={20} /> Top Ngựa Đua Xuất Sắc (Bảng Xếp Hạng Hệ Thống)
+            </h3>
+            <div className={dashboardStyles.tableWrapper}>
+              <table className={dashboardStyles.table}>
+                <thead>
+                  <tr>
+                    <th className={dashboardStyles.th}>Hạng</th>
+                    <th className={dashboardStyles.th}>Tên ngựa</th>
+                    <th className={dashboardStyles.th}>Giống</th>
+                    <th className={dashboardStyles.th}>Điểm số</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {stats?.top_horses?.map(h => (
+                    <tr key={h.horse_id} className={dashboardStyles.rowHover}>
+                      <td className={dashboardStyles.td}>🏅 {h.rank}</td>
+                      <td className={dashboardStyles.td}><b>{h.name}</b></td>
+                      <td className={dashboardStyles.td}>{h.breed}</td>
+                      <td className={dashboardStyles.td} style={{ color: "var(--color-burgundy)", fontWeight: "bold" }}>{h.total_points}đ</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     )}
       {/* TAB: Quản lý Giải đấu (Admin) */}
       {activeTab === "tournaments" && (
-        <div style={styles.tabContent}>
-          <h2>🏆 Quản lý Giải đấu và Vòng đấu</h2>
-          <div style={styles.splitLayout}>
+        <div className={dashboardStyles.tabContent}>
+          <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <TrophyIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Quản lý Giải đấu và Vòng đấu
+          </h2>
+          <div className={dashboardStyles.splitLayout}>
             {/* Create Tournament */}
-            <form onSubmit={createTournament} style={styles.formPanel} className="glass">
-              <h3>Tạo Giải Đấu Mới</h3>
-              <div className="form-group">
+            <form onSubmit={createTournament} className={dashboardStyles.formPanel}>
+              <h3 className={dashboardStyles.subHeading}>Tạo Giải Đấu Mới</h3>
+              <div className={dashboardStyles.formGroup}>
                 <label>Tên giải đấu</label>
-                <input type="text" className="input-field" placeholder="Ví dụ: Golden Cup 2026" required
+                <input type="text" className={dashboardStyles.inputField} placeholder="Ví dụ: Golden Cup 2026" required
                   value={newTournament.name} onChange={(e) => setNewTournament({ ...newTournament, name: e.target.value })} />
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Mô tả</label>
-                <textarea className="input-field" placeholder="Chi tiết giải đấu..."
+                <textarea className={dashboardStyles.inputField} placeholder="Chi tiết giải đấu..."
                   value={newTournament.description} onChange={(e) => setNewTournament({ ...newTournament, description: e.target.value })} />
               </div>
               <div style={styles.row}>
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className={dashboardStyles.formGroup} style={{ flex: 1 }}>
                   <label>Ngày bắt đầu</label>
-                  <input type="date" className="input-field" required
+                  <input type="date" className={dashboardStyles.inputField} required
                     value={newTournament.start_date} onChange={(e) => setNewTournament({ ...newTournament, start_date: e.target.value })} />
                 </div>
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className={dashboardStyles.formGroup} style={{ flex: 1 }}>
                   <label>Ngày kết thúc</label>
-                  <input type="date" className="input-field" required
+                  <input type="date" className={dashboardStyles.inputField} required
                     value={newTournament.end_date} onChange={(e) => setNewTournament({ ...newTournament, end_date: e.target.value })} />
                 </div>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Địa điểm</label>
-                <input type="text" className="input-field" placeholder="Ví dụ: Royal Track Arena" required
+                <input type="text" className={dashboardStyles.inputField} placeholder="Ví dụ: Royal Track Arena" required
                   value={newTournament.location} onChange={(e) => setNewTournament({ ...newTournament, location: e.target.value })} />
               </div>
-              <button type="submit" className="btn-primary">Tạo Giải Đấu</button>
+              <button type="submit" className={dashboardStyles.btnPrimary}>Tạo Giải Đấu</button>
             </form>
 
 
             {/* Create Round */}
-            <form onSubmit={createRound} style={styles.formPanel} className="glass">
-              <h3>Thêm Vòng Đấu</h3>
-              <div className="form-group">
+            <form onSubmit={createRound} className={dashboardStyles.formPanel}>
+              <h3 className={dashboardStyles.subHeading}>Thêm Vòng Đấu</h3>
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn giải đấu</label>
-                <select className="input-field" required
+                <select className={dashboardStyles.inputField} required
                   value={newRound.tournament_id} onChange={(e) => setNewRound({ ...newRound, tournament_id: e.target.value })}>
                   <option value="">-- Chọn giải đấu --</option>
                   {tournaments.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Tên vòng đấu</label>
-                <input type="text" className="input-field" placeholder="Ví dụ: Bán kết, Chung kết" required
+                <input type="text" className={dashboardStyles.inputField} placeholder="Ví dụ: Bán kết, Chung kết" required
                   value={newRound.name} onChange={(e) => setNewRound({ ...newRound, name: e.target.value })} />
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Thứ tự vòng (Sequence)</label>
                 <input 
                   type="number" 
-                  className="input-field" 
+                  className={dashboardStyles.inputField} 
                   min="1" 
                   required
                   value={newRound.sequence} 
@@ -526,70 +560,73 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   }} 
                 />
               </div>
-              <button type="submit" className="btn-primary">Thêm Vòng Đấu</button>
+              <button type="submit" className={dashboardStyles.btnPrimary}>Thêm Vòng Đấu</button>
             </form>
           </div>
 
           {/* Tournament List */}
           <div style={{ marginTop: "24px" }}>
-            <h3>Danh sách Giải đấu hiện tại</h3>
-            <div style={styles.tableWrapper}>
-              <table style={styles.table}>
+            <h3 className={dashboardStyles.subHeading}>Danh sách Giải đấu hiện tại</h3>
+            <div className={dashboardStyles.tableWrapper}>
+              <table className={dashboardStyles.table}>
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Tên giải đấu</th>
-                    <th>Địa điểm</th>
-                    <th>Thời gian</th>
-                    <th>Số vòng đấu</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <th className={dashboardStyles.th}>ID</th>
+                    <th className={dashboardStyles.th}>Tên giải đấu</th>
+                    <th className={dashboardStyles.th}>Địa điểm</th>
+                    <th className={dashboardStyles.th}>Thời gian</th>
+                    <th className={dashboardStyles.th}>Số vòng đấu</th>
+                    <th className={dashboardStyles.th}>Trạng thái</th>
+                    <th className={dashboardStyles.th}>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
                   {tournaments.map(t => (
-                    <tr key={t.id}>
-                      <td>{t.id}</td>
-                      <td style={{ fontWeight: "700" }}>{t.name}</td>
-                      <td>{t.location}</td>
-                      <td>{formatDate(t.start_date)} đến {formatDate(t.end_date)}</td>
-                      <td>{t.rounds ? t.rounds.length : 0} vòng</td>                      
-                      <td><span className="badge badge-info">{t.status}</span></td>
-                      <td>
+                    <tr key={t.id} className={dashboardStyles.rowHover}>
+                      <td className={dashboardStyles.td}>{t.id}</td>
+                      <td className={dashboardStyles.td} style={{ fontWeight: "700" }}>{t.name}</td>
+                      <td className={dashboardStyles.td}>{t.location}</td>
+                      <td className={dashboardStyles.td}>{formatDate(t.start_date)} đến {formatDate(t.end_date)}</td>
+                      <td className={dashboardStyles.td}>{t.rounds ? t.rounds.length : 0} vòng</td>                      
+                      <td className={dashboardStyles.td}><span className={`${dashboardStyles.badge} ${dashboardStyles.badgeInfo}`}>{t.status}</span></td>
+                      <td className={dashboardStyles.td}>
                         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                           {t.status === "UPCOMING" && (
                             <button 
                               type="button" 
-                              className="btn-primary" 
-                              style={{ padding: "6px 12px", fontSize: "12px" }} 
+                              className={dashboardStyles.btnPrimary} 
+                              style={{ padding: "6px 12px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "4px" }} 
                               onClick={() => handleUpdateTournamentStatus(t.id, "ACTIVE")}
                             >
-                              ▶️ Mở giải
+                              <PlayIcon size={12} /> Mở giải
                             </button>
                           )}
                           {t.status === "ACTIVE" && (
                             <button 
                               type="button" 
-                              className="btn-primary" 
-                              style={{ padding: "6px 12px", fontSize: "12px", background: "#10b981", color: "#fff" }} 
+                              className={dashboardStyles.btnPrimary} 
+                              style={{ padding: "6px 12px", fontSize: "12px", backgroundColor: "var(--color-forest)", color: "#fff", display: "inline-flex", alignItems: "center", gap: "4px" }} 
                               onClick={() => handleUpdateTournamentStatus(t.id, "COMPLETED")}
                             >
-                              🏁 Kết thúc & Trao thưởng
+                              <FlagIcon size={12} /> Kết thúc & Trao thưởng
                             </button>
                           )}
                           <button 
                             type="button" 
-                            className="btn-secondary" 
+                            className={dashboardStyles.btnSecondary} 
                             style={{ 
                               padding: "6px 12px", 
                               fontSize: "12px", 
                               color: "var(--danger)",
                               border: "1px solid rgba(239, 68, 68, 0.2)",
-                              background: "rgba(239, 68, 68, 0.05)"
+                              background: "rgba(239, 68, 68, 0.05)",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px"
                             }} 
                             onClick={() => deleteTournament(t.id, t.name)}
                           >
-                            🗑️ Xóa
+                            <TrashIcon size={12} /> Xóa
                           </button>
                         </div>
                       </td>
@@ -603,53 +640,55 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       )}
       {/* TAB: Cấu hình Cơ cấu Giải thưởng */}
       {activeTab === "prizes" && (
-        <div style={styles.tabContent}>
+        <div className={dashboardStyles.tabContent}>
           <PrizesPanel tournaments={tournaments} showMsg={showMsg} />
         </div>
       )}    
       {/* TAB: Xét duyệt Đăng ký (Admin) */}
       {activeTab === "registrations" && (
-        <div style={styles.tabContent}>
-          <h2>📋 Danh sách và Xét duyệt Đăng ký thi đấu</h2>
-          <div style={styles.tableWrapper}>
-            <table style={styles.table}>
+        <div className={dashboardStyles.tabContent}>
+          <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <ListIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Danh sách và Xét duyệt Đăng ký thi đấu
+          </h2>
+          <div className={dashboardStyles.tableWrapper}>
+            <table className={dashboardStyles.table}>
               <thead>
                 <tr>
-                  <th>Giải đấu</th>
-                  <th>Ngựa đua</th>
-                  <th>Jockey</th>
-                  <th>Trạng thái đăng ký</th>
-                  <th>Thao tác</th>
+                  <th className={dashboardStyles.th}>Giải đấu</th>
+                  <th className={dashboardStyles.th}>Ngựa đua</th>
+                  <th className={dashboardStyles.th}>Jockey</th>
+                  <th className={dashboardStyles.th}>Trạng thái đăng ký</th>
+                  <th className={dashboardStyles.th}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {registrations.length === 0 ? (
-                  <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }}>Chưa có đăng ký nào</td></tr>
+                  <tr><td colSpan="5" style={{ textAlign: "center", color: "#64748b" }} className={dashboardStyles.td}>Chưa có đăng ký nào</td></tr>
                 ) : (
                   registrations.map(r => {
                     const t = tournamentMap.get(r.tournament_id);
                     return (
-                      <tr key={r.id}>
-                        <td>{t ? t.name : `Giải #${r.tournament_id}`}</td>
-                        <td style={{ fontWeight: "700" }}>{r.horse_name}</td>
-                        <td>{r.jockey_name}</td>
-                        <td>
-                          <span className={`badge ${r.status === "APPROVED" ? "badge-approved" : r.status === "PENDING" ? "badge-pending" : "badge-rejected"}`}>
+                      <tr key={r.id} className={dashboardStyles.rowHover}>
+                        <td className={dashboardStyles.td}>{t ? t.name : `Giải #${r.tournament_id}`}</td>
+                        <td className={dashboardStyles.td} style={{ fontWeight: "700" }}>{r.horse_name}</td>
+                        <td className={dashboardStyles.td}>{r.jockey_name}</td>
+                        <td className={dashboardStyles.td}>
+                          <span className={`${dashboardStyles.badge} ${r.status === "APPROVED" ? dashboardStyles.badgeApproved : r.status === "PENDING" ? dashboardStyles.badgePending : dashboardStyles.badgeRejected}`}>
                             {r.status}
                           </span>
                         </td>                        
-                        <td>
+                        <td className={dashboardStyles.td}>
                           {r.status === "PENDING" ? (
                             <div style={{ display: "flex", gap: "8px" }}>
                               <button
-                                className="btn-primary" 
+                                className={dashboardStyles.btnPrimary} 
                                 style={{ padding: "4px 8px", fontSize: "12px", cursor: "pointer" }}
                                 onClick={() => approveRegistration(r.id, "APPROVED")}
                               >
                                 Duyệt
                               </button>
                               <button
-                                className="btn-secondary"
+                                className={dashboardStyles.btnSecondary}
                                 style={{ padding: "4px 8px", fontSize: "12px", color: "var(--danger)", cursor: "pointer" }}
                                 onClick={() => approveRegistration(r.id, "REJECTED")}
                               >
@@ -658,13 +697,15 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                             </div>
                           ) : (
                             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                              <span style={{ fontSize: "12px", color: "#64748b" }}>🔒 Đã xử lý ({r.status})</span>
+                              <span style={{ fontSize: "12px", color: "#64748b", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                                <LockIcon size={12} style={{ color: "var(--color-text-muted)" }} /> Đã xử lý ({r.status})
+                              </span>
                               <button
                                 type="button"
                                 style={{
                                   background: "none",
                                   border: "none",
-                                  color: "#3b82f6",
+                                  color: "var(--color-burgundy)",
                                   textDecoration: "underline",
                                   fontSize: "11px",
                                   cursor: "pointer",
@@ -688,15 +729,17 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       )}      
       {/* TAB: Lập lịch Trận đua (Admin) */}
       {activeTab === "races" && (
-        <div style={styles.tabContent}>
-          <h2>🏁 Lập lịch Trận đua và Xếp làn</h2>
-          <div style={styles.splitLayout}>
+        <div className={dashboardStyles.tabContent}>
+          <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <FlagIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Lập lịch Trận đua và Xếp làn
+          </h2>
+          <div className={dashboardStyles.splitLayout}>
             {/* Create Race */}
-            <form onSubmit={createRace} style={styles.formPanel} className="glass">
-              <h3>Tạo Trận Đua</h3>
-              <div className="form-group">
+            <form onSubmit={createRace} className={dashboardStyles.formPanel}>
+              <h3 className={dashboardStyles.subHeading}>Tạo Trận Đua</h3>
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn Vòng đấu</label>
-                <select className="input-field" required
+                <select className={dashboardStyles.inputField} required
                   value={newRace.round_id} onChange={(e) => setNewRace({ ...newRace, round_id: e.target.value })}>
                   <option value="">-- Chọn vòng đấu --</option>
                   {tournaments.flatMap(t => 
@@ -706,27 +749,27 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   )}
                 </select> 
               </div>   
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Tên trận đua</label>
-                <input type="text" className="input-field" placeholder="Ví dụ: Heat 1, Chung kết chính thức" required
+                <input type="text" className={dashboardStyles.inputField} placeholder="Ví dụ: Heat 1, Chung kết chính thức" required
                   value={newRace.name} onChange={(e) => setNewRace({ ...newRace, name: e.target.value })} />
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Thời gian diễn ra</label>
-                <input type="datetime-local" className="input-field" required
+                <input type="datetime-local" className={dashboardStyles.inputField} required
                   value={newRace.race_time} onChange={(e) => setNewRace({ ...newRace, race_time: e.target.value })} />
               </div>
               <div style={styles.row}>
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className={dashboardStyles.formGroup} style={{ flex: 1 }}>
                   <label>Điều kiện sân bãi</label>
-                  <input type="text" className="input-field" placeholder="Ví dụ: Good, Wet" required
+                  <input type="text" className={dashboardStyles.inputField} placeholder="Ví dụ: Good, Wet" required
                     value={newRace.track_condition} onChange={(e) => setNewRace({ ...newRace, track_condition: e.target.value })} />
                 </div>
-                <div className="form-group" style={{ flex: 1 }}>
+                <div className={dashboardStyles.formGroup} style={{ flex: 1 }}>
                   <label>Khoảng cách (mét)</label>
                   <input 
                     type="number" 
-                    className="input-field" 
+                    className={dashboardStyles.inputField} 
                     min="1" 
                     required
                     value={newRace.distance} 
@@ -748,9 +791,9 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   />
                 </div>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Phân công trọng tài</label>
-                <select className="input-field"
+                <select className={dashboardStyles.inputField}
                   value={newRace.referee_id} onChange={(e) => setNewRace({ ...newRace, referee_id: e.target.value })}>
                   <option value="">-- Không phân công / Phân công sau --</option>
                   {(referees || []).map(ref => (
@@ -760,23 +803,23 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   ))}
                 </select>
               </div>
-              <button type="submit" className="btn-primary">Tạo Trận Đua</button>
+              <button type="submit" className={dashboardStyles.btnPrimary}>Tạo Trận Đua</button>
             </form>
 
             {/* Add participant / Xếp làn */}
-            <form onSubmit={addParticipant} style={styles.formPanel} className="glass">
-              <h3>Xếp Làn Cho Ngựa Đua</h3>
-              <div className="form-group">
+            <form onSubmit={addParticipant} className={dashboardStyles.formPanel}>
+              <h3 className={dashboardStyles.subHeading}>Xếp Làn Cho Ngựa Đua</h3>
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn trận đua</label>
-                <select className="input-field" required
+                <select className={dashboardStyles.inputField} required
                   value={newParticipant.race_id} onChange={(e) => setNewParticipant({ ...newParticipant, race_id: e.target.value })}>
                   <option value="">-- Chọn trận đua --</option>
                   {races.map(rc => <option key={rc.id} value={rc.id}>{rc.name} ({formatDateTime(rc.race_time)})</option>)}
                 </select>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Chọn Cặp Ngựa - Jockey đã được duyệt</label>
-                <select className="input-field" required
+                <select className={dashboardStyles.inputField} required
                   value={newParticipant.registration_id} onChange={(e) => setNewParticipant({ ...newParticipant, registration_id: e.target.value })}>
                   <option value="">-- Chọn đăng ký --</option>
                   {approvedRegistrations.map(r => {
@@ -787,11 +830,11 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   })}
                 </select>
               </div>
-              <div className="form-group">
+              <div className={dashboardStyles.formGroup}>
                 <label>Làn số (Lane Number)</label>
                 <input 
                   type="number" 
-                  className="input-field" 
+                  className={dashboardStyles.inputField} 
                   placeholder="1-8" 
                   min="1" 
                   max="8" 
@@ -816,37 +859,37 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   }} 
                 />
               </div>
-              <button type="submit" className="btn-primary">Xếp vào đường đua</button>
+              <button type="submit" className={dashboardStyles.btnPrimary}>Xếp vào đường đua</button>
             </form>
           </div>
 
           {/* Race schedules list */}
           <div style={{ marginTop: "24px" }}>
-            <h3>Lịch thi đấu các trận đua hiện tại</h3>
-            <div style={styles.tableWrapper}>
-              <table style={styles.table}>
+            <h3 className={dashboardStyles.subHeading}>Lịch thi đấu các trận đua hiện tại</h3>
+            <div className={dashboardStyles.tableWrapper}>
+              <table className={dashboardStyles.table}>
                 <thead>
                   <tr>
-                    <th>Trận đua</th>
-                    <th>Thời gian</th>
-                    <th>Khoảng cách</th>
-                    <th>Điều kiện</th>
-                    <th>Trọng tài</th>
-                    <th>Số ngựa thi đấu</th>
-                    <th>Trạng thái</th>
+                    <th className={dashboardStyles.th}>Trận đua</th>
+                    <th className={dashboardStyles.th}>Thời gian</th>
+                    <th className={dashboardStyles.th}>Khoảng cách</th>
+                    <th className={dashboardStyles.th}>Điều kiện</th>
+                    <th className={dashboardStyles.th}>Trọng tài</th>
+                    <th className={dashboardStyles.th}>Số ngựa thi đấu</th>
+                    <th className={dashboardStyles.th}>Trạng thái</th>
                   </tr>
                 </thead>
                 <tbody>
                   {races.map(rc => (
-                    <tr key={rc.id}>
-                      <td style={{ fontWeight: "700" }}>{rc.name}</td>
-                      <td>{formatDateTime(rc.race_time)}</td>
-                      <td>{rc.distance}m</td>
-                      <td>{rc.track_condition}</td>
-                      <td>{rc.referee_name || "Chưa phân công"}</td>
-                     <td>{rc.participants?.length || 0} cặp</td>
-                      <td>
-                        <span className={`badge ${rc.status === "COMPLETED" ? "badge-approved" : "badge-pending"}`}>
+                    <tr key={rc.id} className={dashboardStyles.rowHover}>
+                      <td className={dashboardStyles.td} style={{ fontWeight: "700" }}>{rc.name}</td>
+                      <td className={dashboardStyles.td}>{formatDateTime(rc.race_time)}</td>
+                      <td className={dashboardStyles.td}>{rc.distance}m</td>
+                      <td className={dashboardStyles.td}>{rc.track_condition}</td>
+                      <td className={dashboardStyles.td}>{rc.referee_name || "Chưa phân công"}</td>
+                      <td className={dashboardStyles.td}>{rc.participants?.length || 0} cặp</td>
+                      <td className={dashboardStyles.td}>
+                        <span className={`${dashboardStyles.badge} ${rc.status === "COMPLETED" ? dashboardStyles.badgeApproved : dashboardStyles.badgePending}`}>
                           {rc.status}
                         </span>
                       </td>
@@ -860,89 +903,101 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       )}
       {activeTab === "users" && (
   <div>
-    <h2>👥 Quản lý Thành viên hệ thống</h2>  
+    <h2 className={dashboardStyles.heading} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+      <UsersIcon size={24} style={{ color: "var(--color-burgundy)" }} /> Quản lý Thành viên hệ thống
+    </h2>  
     
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", gap: "12px" }}>
-      <input 
-        type="text" 
-        className="input-field" 
-        style={{ maxWidth: "320px", margin: 0 }}
-        placeholder="🔎 Nhập tên tài khoản hoặc email để tìm kiếm..." 
-        value={userSearch}
-        onChange={(e) => { setUserSearch(e.target.value); setUserPage(1); }} 
-      />
+      <div style={{ position: "relative", width: "100%", maxWidth: "320px" }}>
+        <SearchIcon size={16} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--color-text-muted)" }} />
+        <input 
+          type="text" 
+          className={dashboardStyles.inputField} 
+          style={{ paddingLeft: "36px", margin: 0, width: "100%" }}
+          placeholder="Nhập tên tài khoản hoặc email để tìm kiếm..." 
+          value={userSearch}
+          onChange={(e) => { setUserSearch(e.target.value); setUserPage(1); }} 
+        />
+      </div>
       <div style={{ display: "flex", gap: "8px" }}>
         <button 
           type="button" 
-          className="btn-primary" 
-          style={{ width: "auto", padding: "10px 16px", margin: 0 }} 
-          nClick={() => setShowCreateAdminModal(true)}
+          className={dashboardStyles.btnPrimary} 
+          style={{ width: "auto", padding: "10px 16px", margin: 0, display: "inline-flex", alignItems: "center", gap: "6px" }} 
+          onClick={() => setShowCreateAdminModal(true)}
         >
-          ➕ Tạo Admin / Organizer
+          <PlusIcon size={16} /> Tạo Admin / Organizer
         </button>
       </div>
     </div>
 
     {/* 2. BẢNG DỮ LIỆU THÀNH VIÊN */}
-    <div style={styles.tableWrapper}>
-      <table style={styles.table}>        
+    <div className={dashboardStyles.tableWrapper}>
+      <table className={dashboardStyles.table}>        
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Tên tài khoản</th>
-            <th>Email</th>
-            <th>Vai trò (Role)</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
+            <th className={dashboardStyles.th}>ID</th>
+            <th className={dashboardStyles.th}>Tên tài khoản</th>
+            <th className={dashboardStyles.th}>Email</th>
+            <th className={dashboardStyles.th}>Vai trò (Role)</th>
+            <th className={dashboardStyles.th}>Trạng thái</th>
+            <th className={dashboardStyles.th}>Thao tác</th>
           </tr>
         </thead>
         <tbody>
           {(!users || !Array.isArray(users) || users.length === 0) ? (
             <tr>
-              <td colSpan="6" style={{ textAlign: "center", color: "#64748b" }}>
+              <td colSpan="6" style={{ textAlign: "center", color: "#64748b" }} className={dashboardStyles.td}>
                 Chưa có dữ liệu thành viên
               </td>
             </tr>
           ) : (
             users.map((u) => (
-              <tr key={u.id}>        
-                <td>{u.id}</td> 
-                <td style={{ fontWeight: "700" }}>{u.username}</td>
-                <td>{u.email}</td>
-                <td><span className="badge badge-info">{u.role_name}</span></td>
-                <td>
+              <tr key={u.id} className={dashboardStyles.rowHover}>        
+                <td className={dashboardStyles.td}>{u.id}</td> 
+                <td style={{ fontWeight: "700" }} className={dashboardStyles.td}>{u.username}</td>
+                <td className={dashboardStyles.td}>{u.email}</td>
+                <td className={dashboardStyles.td}><span className={`${dashboardStyles.badge} ${dashboardStyles.badgeInfo}`}>{u.role_name}</span></td>
+                <td className={dashboardStyles.td}>
                   {u.is_active ? (
-                    <span className="badge badge-approved">Đang hoạt động</span>
+                    <span className={`${dashboardStyles.badge} ${dashboardStyles.badgeApproved}`}>Đang hoạt động</span>
                   ) : (
-                    <span className="badge badge-rejected">Đã khóa</span>
+                    <span className={`${dashboardStyles.badge} ${dashboardStyles.badgeRejected}`}>Đã khóa</span>
                   )}
                 </td>
-                <td>
+                <td className={dashboardStyles.td}>
                   <div style={{ display: "flex", gap: "8px" }}>
                     <button
-                    className="btn-primary"
-                    style={{
-                      padding: "6px 12px",
-                      fontSize: "12px",
-                      backgroundColor: "#3b82f6", 
-                      color: "#fff",
-                    }}
+                      className={dashboardStyles.btnPrimary}
+                      style={{
+                        padding: "6px 12px",
+                        fontSize: "12px",
+                        backgroundColor: "var(--color-forest)", 
+                        color: "#fff",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "4px"
+                      }}
                       onClick={() => handleViewUserDetails(u.id)}
                     >
-                      👁 Xem chi tiết
+                      <EyeIcon size={12} /> Xem chi tiết
                     </button>    
                     <button
-                      className={u.is_active ? "btn-secondary" : "btn-primary"}
+                      className={u.is_active ? dashboardStyles.btnSecondary : dashboardStyles.btnPrimary}
                       style={{
                         padding: "6px 12px",
                         fontSize: "12px",
                         color: u.is_active ? "var(--danger)" : "#fff",
+                        borderColor: u.is_active ? "rgba(239,68,68,0.3)" : "transparent",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "4px"
                       }}
-                        onClick={() => handleToggleUserStatus(u.id, u.is_active)}
-                      >
-                        {u.is_active ? " Khóa tài khoản" : " Mở khóa"}
-                      </button>
-                    </div>
+                      onClick={() => handleToggleUserStatus(u.id, u.is_active)}
+                    >
+                      {u.is_active ? <><LockIcon size={12} /> Khóa</> : <><KeyIcon size={12} /> Mở khóa</>}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))
@@ -954,7 +1009,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
     <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "12px" }}>
       <button 
         type="button" 
-        className="btn-secondary" 
+        className={dashboardStyles.btnSecondary} 
         style={{ padding: "4px 10px" }} 
         disabled={userPage === 1} 
         onClick={() => setUserPage(p => p - 1)}
@@ -964,7 +1019,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
       <span style={{ alignSelf: "center", fontSize: "14px" }}>Trang {userPage}</span>
       <button 
         type="button" 
-        className="btn-secondary" 
+        className={dashboardStyles.btnSecondary} 
         style={{ padding: "4px 10px" }} 
         disabled={users.length < 10} 
         onClick={() => setUserPage(p => p + 1)}
@@ -976,38 +1031,33 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
   </div>
 )}      
       {showCreateAdminModal && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.7)", display: "flex",
-          justifyContent: "center", alignItems: "center", zIndex: 9999
-        }}>
-          <div className="glass" style={{
-            padding: "24px", borderRadius: "12px", width: "100%", 
-            maxWidth: "450px", border: "1px solid rgba(255,255,255,0.1)"
-          }}>
-            <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Tạo thành viên quản trị mới</h3>
+        <div className={dashboardStyles.modalBackdrop}>
+          <div className={dashboardStyles.modalContent}>
+            <h3 className={dashboardStyles.modalTitle} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <PlusIcon size={18} /> Tạo thành viên quản trị mới
+            </h3>
             <form onSubmit={handleCreateAdmin} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <div className="form-group" style={{ margin: 0 }}>
-                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Tên đăng nhập</label>
-                <input type="text" className="input-field" placeholder="Ví dụ: admin_racing" required
+              <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
+                <label>Tên đăng nhập</label>
+                <input type="text" className={dashboardStyles.inputField} placeholder="Ví dụ: admin_racing" required
                   value={adminForm.username} onChange={e => setAdminForm({...adminForm, username: e.target.value})} />
               </div>
-              <div className="form-group" style={{ margin: 0 }}>
-                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Địa chỉ Email</label>
-                <input type="email" className="input-field" placeholder="admin@example.com" required
+              <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
+                <label>Địa chỉ Email</label>
+                <input type="email" className={dashboardStyles.inputField} placeholder="admin@example.com" required
                   value={adminForm.email} onChange={e => setAdminForm({...adminForm, email: e.target.value})} />
               </div>
-              <div className="form-group" style={{ margin: 0 }}>
-                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Họ và tên</label>
-                <input type="text" className="input-field" placeholder="Ví dụ: Nguyễn Văn Quản Trị" required
+              <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
+                <label>Họ và tên</label>
+                <input type="text" className={dashboardStyles.inputField} placeholder="Ví dụ: Nguyễn Văn Quản Trị" required
                   value={adminForm.fullName} onChange={e => setAdminForm({...adminForm, fullName: e.target.value})} />
               </div>
-              <div className="form-group" style={{ margin: 0 }}>
-                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Mật khẩu tài khoản</label>
+              <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
+                <label>Mật khẩu tài khoản</label>
                 <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
                   <input 
                     type={showPassword ? "text" : "password"} 
-                    className="input-field" 
+                    className={dashboardStyles.inputField} 
                     placeholder="Nhập mật khẩu bí mật" 
                     required
                     minLength="8"
@@ -1024,7 +1074,7 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                       background: "none",
                       border: "none",
                       cursor: "pointer",
-                      color: "rgba(255, 255, 255, 0.6)",
+                      color: "var(--color-text-muted)",
                       fontSize: "16px",
                       padding: "4px",
                       display: "flex",
@@ -1036,19 +1086,19 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                   </button>
                 </div>
               </div>
-              <div className="form-group" style={{ margin: 0 }}>
-                <label style={{ fontSize: "12px", marginBottom: "4px", display: "block" }}>Chọn vai trò cấp phát</label>
-                <select className="input-field" value={adminForm.roleName} onChange={e => setAdminForm({...adminForm, roleName: e.target.value})}>
+              <div className={dashboardStyles.formGroup} style={{ margin: 0 }}>
+                <label>Chọn vai trò cấp phát</label>
+                <select className={dashboardStyles.inputField} value={adminForm.roleName} onChange={e => setAdminForm({...adminForm, roleName: e.target.value})}>
                   <option value="ADMIN">ADMIN (Quản trị viên tối cao)</option>
                   <option value="ORGANIZER">ORGANIZER (Điều hành giải đấu)</option>
                 </select>
               </div>
               <div style={{ display: "flex", gap: "12px", marginTop: "10px" }}>
-                <button type="submit" className="btn-primary" style={{ flex: 1, margin: 0 }}>Lưu thông tin</button>
+                <button type="submit" className={dashboardStyles.btnPrimary} style={{ flex: 1, margin: 0 }}>Lưu thông tin</button>
                 <button 
                   type="button" 
-                  className="btn-secondary" 
-                  style={{ flex: 1, margin: 0, backgroundColor: "rgba(255,255,255,0.1)" }} 
+                  className={dashboardStyles.btnSecondary} 
+                  style={{ flex: 1, margin: 0 }} 
                   onClick={() => {
                     setShowCreateAdminModal(false);
                     setShowPassword(false); 
@@ -1058,6 +1108,98 @@ const handleToggleUserStatus = async (userId, currentStatus) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL XEM CHI TIẾT THÀNH VIÊN */}
+      {showUserDetailModal && (
+        <div className={dashboardStyles.modalBackdrop}>
+          <div className={dashboardStyles.modalContent}>
+            <h3 className={dashboardStyles.modalTitle} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <UserIcon size={20} /> Chi tiết tài khoản
+            </h3>
+            {loadingDetail ? (
+              <div style={{ textAlign: "center", padding: "20px", color: "var(--color-burgundy)", fontWeight: "bold" }}>Đang tải chi tiết...</div>
+            ) : selectedUserDetails ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Username:</label>
+                  <span>{selectedUserDetails.username || "—"}</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Họ và tên:</label>
+                  <span>{selectedUserDetails.full_name || "—"}</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Email:</label>
+                  <span>{selectedUserDetails.email || "—"}</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Số điện thoại:</label>
+                  <span>{selectedUserDetails.phone_number || "Chưa có"}</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Vai trò:</label>
+                  <span className={`${dashboardStyles.badge} ${dashboardStyles.badgeInfo}`}>{selectedUserDetails.role_name}</span>
+                </div>
+                <div className={dashboardStyles.infoListItem}>
+                  <label>Trạng thái:</label>
+                  <span className={`${dashboardStyles.badge} ${selectedUserDetails.is_active ? dashboardStyles.badgeApproved : dashboardStyles.badgeRejected}`}>
+                    {selectedUserDetails.is_active ? "Đang hoạt động" : "Đã khóa"}
+                  </span>
+                </div>
+                
+                {/* Chi tiết cho từng vai trò đặc thù */}
+                {selectedUserDetails.role_name === "SPECTATOR" && selectedUserDetails.spectator_profile && (
+                  <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed var(--color-border)" }}>
+                    <h4 style={{ fontSize: "14px", marginBottom: "8px", color: "var(--color-burgundy)" }}>Hồ sơ Khán giả</h4>
+                    <div className={dashboardStyles.infoListItem}>
+                      <label>Điểm tích lũy:</label>
+                      <span>{selectedUserDetails.spectator_profile.reward_points ?? 0} pts</span>
+                    </div>
+                  </div>
+                )}
+                {selectedUserDetails.role_name === "JOCKEY" && selectedUserDetails.jockey_profile && (
+                  <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed var(--color-border)" }}>
+                    <h4 style={{ fontSize: "14px", marginBottom: "8px", color: "var(--color-burgundy)" }}>Hồ sơ Jockey</h4>
+                    <div className={dashboardStyles.infoListItem}>
+                      <label>Số giấy phép:</label>
+                      <span>{selectedUserDetails.jockey_profile.license_number || "—"}</span>
+                    </div>
+                    <div className={dashboardStyles.infoListItem}>
+                      <label>Số năm kinh nghiệm:</label>
+                      <span>{selectedUserDetails.jockey_profile.experience_years ?? 0} năm</span>
+                    </div>
+                  </div>
+                )}
+                {selectedUserDetails.role_name === "REFEREE" && selectedUserDetails.referee_profile && (
+                  <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px dashed var(--color-border)" }}>
+                    <h4 style={{ fontSize: "14px", marginBottom: "8px", color: "var(--color-burgundy)" }}>Hồ sơ Trọng tài</h4>
+                    <div className={dashboardStyles.infoListItem}>
+                      <label>Số giấy phép:</label>
+                      <span>{selectedUserDetails.referee_profile.license_number || "—"}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ display: "flex", justifyContent: "center", marginTop: "16px" }}>
+                  <button
+                    type="button"
+                    className={dashboardStyles.btnPrimary}
+                    style={{ width: "100%" }}
+                    onClick={() => {
+                      setShowUserDetailModal(false);
+                      setSelectedUserDetails(null);
+                    }}
+                  >
+                    Đóng cửa sổ
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ textAlign: "center", padding: "20px", color: "var(--danger)" }}>Không thể tải thông tin chi tiết</div>
+            )}
           </div>
         </div>
       )}
