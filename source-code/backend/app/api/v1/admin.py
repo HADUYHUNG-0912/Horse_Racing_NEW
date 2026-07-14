@@ -9,7 +9,7 @@ from app.models.database_models import (
     Registration, Prediction, SpectatorProfile, Result,
     RaceParticipant, Ranking, Prize, Award
 )
-from app.schemas.auth import UserOut, UserStatusUpdate, UserRoleUpdate, AdminUserCreate
+from app.schemas.auth import UserOut, UserStatusUpdate, UserRoleUpdate, AdminUserCreate, UserDetailOut
 
 router = APIRouter()
 
@@ -61,6 +61,78 @@ def get_all_users(
     for u in users:
         u.role_name = u.role.name
     return users
+
+
+@router.get("/users/{id}", response_model=UserDetailOut)
+def get_user_detail(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(RoleChecker(["ADMIN"]))
+):
+    """
+    Lấy thông tin chi tiết một người dùng theo ID, bao gồm hồ sơ theo từng vai trò.
+    """
+    user = db.query(User).filter(User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    role_name = user.role.name if user.role else None
+
+    # Lấy thông tin profile tương ứng với role
+    profile = None
+    if role_name == "JOCKEY" and user.jockey_profile:
+        jp = user.jockey_profile
+        profile = {
+            "license_number": jp.phone,
+            "experience_years": jp.experience_years,
+            "bio": jp.bio,
+            "weight": float(jp.weight) if jp.weight is not None else None,
+            "height": float(jp.height) if jp.height is not None else None,
+            "gender": jp.gender,
+        }
+    elif role_name == "SPECTATOR" and user.spectator_profile:
+        sp = user.spectator_profile
+        profile = {
+            "reward_points": sp.reward_points,
+            "favorite_horse_breed": sp.favorite_horse_breed,
+        }
+    elif role_name == "REFEREE" and user.referee_profile:
+        rp = user.referee_profile
+        profile = {
+            "license_number": rp.certification_level,
+            "certification_level": rp.certification_level,
+        }
+    elif role_name in ("OWNER", "HORSE_OWNER") and user.owner_profile:
+        op = user.owner_profile
+        profile = {
+            "company_name": op.company_name,
+            "experience_years": op.experience_years,
+            "occupation": op.occupation,
+            "address": op.address,
+            "nationality": op.nationality,
+        }
+
+    result = UserDetailOut(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        full_name=user.full_name,
+        phone_number=user.phone_number,
+        avatar=user.avatar,
+        role_id=user.role_id,
+        role_name=role_name,
+        is_active=user.is_active,
+        created_at=user.created_at,
+        profile=profile,
+    )
+
+    # Gắn thêm các profile fields để frontend hiển thị đúng
+    result.jockey_profile = user.jockey_profile if role_name == "JOCKEY" else None
+    result.spectator_profile = user.spectator_profile if role_name == "SPECTATOR" else None
+    result.referee_profile = user.referee_profile if role_name == "REFEREE" else None
+
+    return result
+
 
 
 @router.put("/users/{id}/status", response_model=UserOut)

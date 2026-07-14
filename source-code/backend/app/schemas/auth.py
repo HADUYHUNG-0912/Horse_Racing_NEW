@@ -269,7 +269,14 @@ class UserDetailOut(BaseModel):
     created_at: Optional[datetime] = None
     profile: Optional[Dict[str, Any]] = None
 
+    # Profile theo vai trò (để frontend hiển thị chi tiết đặc thù)
+    jockey_profile: Optional[JockeyProfileOut] = None
+    spectator_profile: Optional[SpectatorProfileOut] = None
+    referee_profile: Optional[RefereeProfileOut] = None
+    owner_profile: Optional[OwnerProfileOut] = None
+
     model_config = {"from_attributes": True, "arbitrary_types_allowed": True}
+
 
 
 class AdminUserCreate(BaseModel):
