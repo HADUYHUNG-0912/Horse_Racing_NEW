@@ -56,7 +56,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
       const preds = await api.get("/spectators/predictions");
       setPredictions(preds);
 
-      const allRaces = await api.get("/races");
+      const allRaces = await api.get("/races?limit=100");
       setRaces(allRaces);
 
       const allTournaments = await api.get("/tournaments");
@@ -219,7 +219,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
     return new Date(tournament.start_date).getFullYear().toString() === selectedSeason;
   });
 
-  const upcomingRaces = filteredRaces.filter(rc => rc.status === "SCHEDULED" || rc.status === "PENDING");
+  const upcomingRaces = filteredRaces.filter(rc => rc.status === "SCHEDULED" || rc.status === "RUNNING");
   const completedRaces = filteredRaces.filter(rc => rc.status === "COMPLETED");
 
   const selectedRaceObj = races.find(rc => rc.id === parseInt(predictionForm.race_id));
@@ -285,7 +285,7 @@ export default function SpectatorPanel({ user, activeTab, showMsg, onUserRefresh
                   value={predictionForm.race_id} 
                   onChange={(e) => setPredictionForm({ ...predictionForm, race_id: e.target.value, horse_id: "" })}>
                   <option value="">-- Chọn trận đua --</option>
-                  {races.filter(rc => (rc.status === "SCHEDULED" || rc.status === "PENDING") && (!predictionForm.tournament_id || rc.tournament_id === parseInt(predictionForm.tournament_id))).map(rc => (
+                  {races.filter(rc => (rc.status === "SCHEDULED" || rc.status === "RUNNING") && (!predictionForm.tournament_id || rc.tournament_id === parseInt(predictionForm.tournament_id))).map(rc => (
                     <option key={rc.id} value={rc.id}>{rc.name} ({rc.track_condition} - {rc.distance}m)</option>
                   ))}
                 </select>
